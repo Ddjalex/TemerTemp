@@ -1,0 +1,229 @@
+<% 
+const pageTitle = 'Dashboard';
+const extraHead = `
+<style>
+  .stats-card {
+    border-radius: 0.5rem;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+  }
+  .stats-card:hover {
+    transform: translateY(-2px);
+  }
+  .stats-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+  }
+  .bg-primary-custom { background: #198754; }
+  .bg-info-custom { background: #0dcaf0; }
+  .bg-warning-custom { background: #ffc107; }
+  .bg-success-custom { background: #20c997; }
+</style>
+`;
+%>
+
+<%- include('../layout', { 
+  title: 'Dashboard - Temer Properties Admin', 
+  pageTitle,
+  extraHead,
+  body: `
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card stats-card h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="stats-icon bg-primary-custom me-3">
+                <i class="bi bi-building"></i>
+              </div>
+              <div>
+                <h6 class="card-title text-muted mb-1">Total Properties</h6>
+                <h3 class="mb-0">${stats.properties.total}</h3>
+                <small class="text-success">
+                  <i class="bi bi-arrow-up"></i>
+                  ${stats.properties.active} active
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card stats-card h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="stats-icon bg-info-custom me-3">
+                <i class="bi bi-people"></i>
+              </div>
+              <div>
+                <h6 class="card-title text-muted mb-1">Total Users</h6>
+                <h3 class="mb-0">${stats.users.total}</h3>
+                <small class="text-info">
+                  <i class="bi bi-person-badge"></i>
+                  ${stats.users.agents} agents
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card stats-card h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="stats-icon bg-warning-custom me-3">
+                <i class="bi bi-journal-text"></i>
+              </div>
+              <div>
+                <h6 class="card-title text-muted mb-1">Blog Posts</h6>
+                <h3 class="mb-0">${stats.blog.total}</h3>
+                <small class="text-warning">
+                  <i class="bi bi-eye"></i>
+                  ${stats.blog.published} published
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card stats-card h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="stats-icon bg-success-custom me-3">
+                <i class="bi bi-currency-dollar"></i>
+              </div>
+              <div>
+                <h6 class="card-title text-muted mb-1">Avg. Property Price</h6>
+                <h3 class="mb-0">$${Math.round(stats.properties.value.avgPrice || 0).toLocaleString()}</h3>
+                <small class="text-success">
+                  <i class="bi bi-graph-up"></i>
+                  Properties sold: ${stats.properties.sold}
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Recent Properties -->
+      <div class="col-lg-6 mb-4">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              <i class="bi bi-building"></i>
+              Recent Properties
+            </h5>
+            <a href="/admin/properties" class="btn btn-sm btn-outline-primary">View All</a>
+          </div>
+          <div class="card-body">
+            ${stats.recent.properties.length > 0 ? 
+              stats.recent.properties.map(property => `
+                <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1">${property.title}</h6>
+                    <p class="text-muted mb-1 small">${property.address.street}, ${property.address.city}</p>
+                    <small class="text-success fw-bold">$${property.price.toLocaleString()}</small>
+                  </div>
+                  <div class="text-end">
+                    <span class="badge bg-${property.status === 'for-sale' ? 'success' : property.status === 'for-rent' ? 'info' : 'secondary'}">${property.status}</span>
+                    <br>
+                    <small class="text-muted">${property.agent ? property.agent.firstName + ' ' + property.agent.lastName : 'No agent'}</small>
+                  </div>
+                </div>
+              `).join('') : 
+              '<p class="text-muted text-center">No recent properties</p>'
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Blog Posts -->
+      <div class="col-lg-6 mb-4">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              <i class="bi bi-journal-text"></i>
+              Recent Blog Posts
+            </h5>
+            <a href="/admin/blog" class="btn btn-sm btn-outline-primary">View All</a>
+          </div>
+          <div class="card-body">
+            ${stats.recent.blogPosts.length > 0 ? 
+              stats.recent.blogPosts.map(post => `
+                <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1">${post.title}</h6>
+                    <p class="text-muted mb-1 small">${post.excerpt.substring(0, 80)}...</p>
+                    <small class="text-muted">by ${post.author ? post.author.firstName + ' ' + post.author.lastName : 'Unknown'}</small>
+                  </div>
+                  <div class="text-end">
+                    <span class="badge bg-${post.status === 'published' ? 'success' : post.status === 'draft' ? 'warning' : 'secondary'}">${post.status}</span>
+                    <br>
+                    <small class="text-muted">${post.views || 0} views</small>
+                  </div>
+                </div>
+              `).join('') : 
+              '<p class="text-muted text-center">No recent blog posts</p>'
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="bi bi-lightning"></i>
+              Quick Actions
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3 mb-3">
+                <a href="/admin/properties/new" class="btn btn-outline-primary w-100">
+                  <i class="bi bi-plus-lg"></i><br>
+                  Add Property
+                </a>
+              </div>
+              <div class="col-md-3 mb-3">
+                <a href="/admin/blog/new" class="btn btn-outline-info w-100">
+                  <i class="bi bi-plus-lg"></i><br>
+                  Write Blog Post
+                </a>
+              </div>
+              <div class="col-md-3 mb-3">
+                <a href="/admin/team/new" class="btn btn-outline-success w-100">
+                  <i class="bi bi-plus-lg"></i><br>
+                  Add Team Member
+                </a>
+              </div>
+              <div class="col-md-3 mb-3">
+                <a href="/admin/users/new" class="btn btn-outline-warning w-100">
+                  <i class="bi bi-plus-lg"></i><br>
+                  Add User
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
+  user
+}) %>
