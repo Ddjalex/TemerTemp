@@ -122,7 +122,9 @@ export default function HomePage() {
   const handleViewDetails = (id: string) => console.log("View property:", id);
   const handleFavorite = (id: string) => console.log("Favorite property:", id);
   const handleShare = (id: string) => console.log("Share property:", id);
-  const handleCall = (phone: string) => console.log("Call:", phone);
+  const handleCall = (id: string) => console.log("Call property:", id);
+  const handleWhatsApp = (id: string) => console.log("WhatsApp property:", id);
+  const handleAgentCall = (phone: string) => console.log("Call:", phone);
   const handleEmail = (email: string) => console.log("Email:", email);
   const handleMessage = (id: string) => console.log("Message agent:", id);
   const handleReadMore = (id: string) => console.log("Read blog post:", id);
@@ -179,6 +181,8 @@ export default function HomePage() {
                 onViewDetails={handleViewDetails}
                 onFavorite={handleFavorite}
                 onShare={handleShare}
+                onCall={handleCall}
+                onWhatsApp={handleWhatsApp}
               />
             ))}
           </div>
@@ -269,7 +273,7 @@ export default function HomePage() {
               <TeamMemberCard
                 key={agent.id}
                 {...agent}
-                onCall={handleCall}
+                onCall={handleAgentCall}
                 onEmail={handleEmail}
                 onMessage={handleMessage}
               />

@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Bed, Bath, Square, Heart, Share2 } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Heart, Share2, Phone, MessageCircle } from "lucide-react";
 
 interface PropertyCardProps {
   id: string;
@@ -17,6 +17,8 @@ interface PropertyCardProps {
   onViewDetails: (id: string) => void;
   onFavorite: (id: string) => void;
   onShare: (id: string) => void;
+  onCall: (id: string) => void;
+  onWhatsApp: (id: string) => void;
 }
 
 export default function PropertyCard({
@@ -32,7 +34,9 @@ export default function PropertyCard({
   featured = false,
   onViewDetails,
   onFavorite,
-  onShare
+  onShare,
+  onCall,
+  onWhatsApp
 }: PropertyCardProps) {
   
   const handleViewDetails = () => {
@@ -48,6 +52,16 @@ export default function PropertyCard({
   const handleShare = () => {
     console.log('Share clicked for property:', id);
     onShare(id);
+  };
+
+  const handleCall = () => {
+    console.log('Call clicked for property:', id);
+    onCall(id);
+  };
+
+  const handleWhatsApp = () => {
+    console.log('WhatsApp clicked for property:', id);
+    onWhatsApp(id);
   };
 
   const getStatusColor = (status: string) => {
@@ -144,14 +158,39 @@ export default function PropertyCard({
           </div>
         </div>
         
-        <Button 
-          onClick={handleViewDetails} 
-          className="w-full" 
-          variant="outline"
-          data-testid={`button-view-details-${id}`}
-        >
-          View Details
-        </Button>
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              onClick={handleCall}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+              data-testid={`button-call-${id}`}
+            >
+              <Phone className="w-4 h-4" />
+              Call
+            </Button>
+            <Button
+              onClick={handleWhatsApp}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+              data-testid={`button-whatsapp-${id}`}
+            >
+              <MessageCircle className="w-4 h-4" />
+              WhatsApp
+            </Button>
+          </div>
+          
+          <Button 
+            onClick={handleViewDetails} 
+            className="w-full" 
+            variant="outline"
+            data-testid={`button-view-details-${id}`}
+          >
+            View Details
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

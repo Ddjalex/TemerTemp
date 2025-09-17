@@ -111,6 +111,8 @@ export default function ListingsPage() {
   const handleViewDetails = (id: string) => console.log("View property:", id);
   const handleFavorite = (id: string) => console.log("Favorite property:", id);
   const handleShare = (id: string) => console.log("Share property:", id);
+  const handleCall = (id: string) => console.log("Call property:", id);
+  const handleWhatsApp = (id: string) => console.log("WhatsApp property:", id);
 
   const handleSortChange = (value: string) => {
     setSortBy(value);
@@ -212,6 +214,8 @@ export default function ListingsPage() {
                   onViewDetails={handleViewDetails}
                   onFavorite={handleFavorite}
                   onShare={handleShare}
+                  onCall={handleCall}
+                  onWhatsApp={handleWhatsApp}
                 />
               ))}
             </div>

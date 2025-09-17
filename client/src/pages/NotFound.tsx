@@ -23,11 +23,14 @@ export default function NotFound() {
               Go Home
             </Link>
           </Button>
-          <Button asChild variant="outline" size="lg" data-testid="button-go-back">
-            <a href="javascript:history.back()">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Go Back
-            </a>
+          <Button 
+            variant="outline" 
+            size="lg" 
+            onClick={() => window.history.back()}
+            data-testid="button-go-back"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Go Back
           </Button>
         </div>
 

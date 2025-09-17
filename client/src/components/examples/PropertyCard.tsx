@@ -6,6 +6,8 @@ export default function PropertyCardExample() {
   const handleViewDetails = (id: string) => console.log('View details:', id);
   const handleFavorite = (id: string) => console.log('Favorite:', id);
   const handleShare = (id: string) => console.log('Share:', id);
+  const handleCall = (id: string) => console.log('Call:', id);
+  const handleWhatsApp = (id: string) => console.log('WhatsApp:', id);
 
   return (
     <div className="p-6 max-w-sm">
@@ -23,6 +25,8 @@ export default function PropertyCardExample() {
         onViewDetails={handleViewDetails}
         onFavorite={handleFavorite}
         onShare={handleShare}
+        onCall={handleCall}
+        onWhatsApp={handleWhatsApp}
       />
     </div>
   );
