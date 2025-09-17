@@ -1,0 +1,162 @@
+Title: Temer Properties – Static Real-Estate Website + Admin (CommonJS, JS-only, cPanel-ready)
+
+Build a production-ready real-estate website similar to temerproperties.com with these STRICT requirements:
+
+CORE CONSTRAINTS
+- Two separate projects/folders: frontend (static site) and backend (Node.js).
+- NO ES modules. Use CommonJS ONLY (require/module.exports everywhere).
+- NO TypeScript. Plain JavaScript ONLY.
+- Backend renders the /admin dashboard (server-side EJS) and exposes a JSON API for the static frontend.
+- Must deploy cleanly on cPanel (Apache + Passenger) with MongoDB Atlas.
+
+FOLDER STRUCTURE
+/
+├─ frontend/                          # static public website (no React/build tools)
+│  ├─ src/
+│  │  ├─ index.html                   # home (hero slider + featured properties)
+│  │  ├─ listings.html                # all properties + filters (location/type/price/bedrooms)
+│  │  ├─ property.html                # property detail (id via ?id=...)
+│  │  ├─ team.html
+│  │  ├─ blog.html
+│  │  ├─ post.html
+│  │  ├─ about.html
+│  │  ├─ contact.html
+│  │  └─ assets/
+│  │     ├─ css/main.css
+│  │     └─ js/
+│  │        ├─ api.js                 # IIFE; reads API_BASE from <meta name="api-base">; uses fetch()
+│  │        ├─ ui.js                  # sliders, lightbox, helpers
+│  │        └─ pages/…                # per-page scripts (no import/export)
+│  └─ dist/                           # final files to upload into /public_html (index.html + /assets/*)
+│
+└─ backend/
+   ├─ app.js                          # Express (CommonJS), sessions, EJS views, routes
+   ├─ routes/
+   │  ├─ public/                      # JSON API (consumed by frontend)
+   │  │  ├─ properties.js
+   │  │  ├─ hero.js
+   │  │  ├─ team.js
+   │  │  ├─ blog.js
+   │  │  └─ settings.js
+   │  └─ admin/                       # server-rendered admin (EJS)
+   │     ├─ auth.js                   # login/logout (sessions)
+   │     ├─ dashboard.js
+   │     ├─ properties.js             # CRUD + multer uploads
+   │     ├─ hero.js                   # CRUD
+   │     ├─ team.js                   # CRUD
+   │     ├─ blog.js                   # CRUD (with WYSIWYG)
+   │     └─ settings.js               # phones, WhatsApp, emails, socials, SEO
+   ├─ views/                          # EJS templates for /admin
+   │  ├─ layout.ejs
+   │  ├─ login.ejs
+   │  ├─ dashboard.ejs
+   │  ├─ properties/*.ejs
+   │  ├─ hero/*.ejs
+   │  ├─ team/*.ejs
+   │  ├─ blog/*.ejs
+   │  └─ settings/*.ejs
+   ├─ models/                         # Mongoose (CommonJS)
+   │  ├─ User.js
+   │  ├─ Property.js
+   │  ├─ HeroSlide.js
+   │  ├─ TeamMember.js
+   │  ├─ BlogPost.js
+   │  └─ Setting.js
+   ├─ middleware/auth.js              # requireLogin (session check)
+   ├─ lib/db.js                       # mongoose connect()
+   ├─ lib/storage.js                  # filename/paths for uploads
+   ├─ uploads/                        # image files (served at /uploads/*)
+   ├─ public/                         # admin static (css/js)
+   ├─ package.json                    # CommonJS only
+   └─ .env.example
+
+BACKEND REQUIREMENTS (CommonJS + JS-only)
+- Use: express, ejs, express-session, connect-mongo, mongoose, bcrypt, multer, helmet, compression, cors, morgan, uuid, csurf, sanitize-html.
+- app.js (must):
+  - app.set('trust proxy', 1)
+  - Use helmet, compression, cors, morgan
+  - express.json({limit:'50mb'}), express.urlencoded({extended:true, limit:'50mb'})
+  - Sessions: express-session + connect-mongo (cookieName=temer_admin, httpOnly, secure in production, sameSite=lax)
+  - Static: app.use('/uploads', express.static(path.join(__dirname,'uploads')))
+  - Views: EJS; set views dir
+  - Public JSON API mounted under /api:
+    • GET /api/health → {status:'OK'}
+    • GET /api/settings
+    • GET /api/properties  (filters: q, location, type, minPrice, maxPrice, bedrooms, page=1, limit=12, featured=bool)
+    • GET /api/properties/:id
+    • GET /api/properties/featured
+    • GET /api/hero-slides
+    • GET /api/team
+    • GET /api/blog
+    • GET /api/blog/:id
+  - Admin (server-rendered EJS) mounted under /admin:
+    • GET /admin/login (form), POST /admin/login (bcrypt.compare), POST /admin/logout
+    • GET /admin (dashboard) — requireLogin
+    • CRUD pages/forms: properties (with multer multiple images), hero, team, blog (TinyMCE CDN → sanitize on save), settings
+    • All /admin/* protected by requireLogin middleware
+  - Error handler + 404 JSON
+  - Listen on process.env.PORT || 5000 at host 0.0.0.0
+- Models:
+  - User: name, email(unique), passwordHash (bcrypt), role('admin'|'editor'), timestamps
+  - Property: title, slug, description, location, type, price, bedrooms, bathrooms, size, status('sale'|'rent'|'sold'), images[{url,alt}], featured(bool), timestamps
+  - HeroSlide: title, subtitle, imageUrl, ctaText, ctaLink, order, active
+  - TeamMember: name, role, photoUrl, phone, email, socials
+  - BlogPost: title, slug, coverUrl, excerpt, html, tags[], publishedAt, draft(bool)
+  - Setting: single-doc (WhatsApp, phones, emails, address, map, SEO, socials)
+- Auth:
+  - Session-based (no JWT). Login writes req.session.uid, req.session.role. Middleware blocks /admin/* when not logged in.
+- Uploads:
+  - Multer disk storage to backend/uploads/
+  - Save relative URL (/uploads/<file>) in DB, serve via GET /uploads/*
+- Security:
+  - Rate-limit /admin/login, sanitize blog HTML on save (sanitize-html), set CSP via helmet (allow self + trusted CDNs).
+
+FRONTEND REQUIREMENTS (Static, no modules)
+- Pure HTML/CSS/JS (no bundlers/React). Use Tailwind via CDN and Swiper via CDN for hero slider.
+- Each HTML file includes: <meta name="api-base" content="https://YOUR_DOMAIN/api">
+- Provide /src/assets/js/api.js: an IIFE that reads the meta tag and exposes a global API with:
+  • API.properties.list(params)  • API.properties.byId(id)
+  • API.hero.list()              • API.team.list()
+  • API.blog.list()              • API.blog.byId(id)
+  • API.settings.get()
+- UI: index shows hero slider + featured properties; listings has filters + pagination; property has gallery; team/blog/contact/about pull content from API; contact posts leads if provided.
+- Build step (if any) must output plain files into /frontend/dist with index.html + /assets/* only (no modules).
+
+DEPLOYMENT (cPanel without subdomains)
+- FRONTEND: Upload /frontend/dist/* into /home/<cpanel_user>/public_html/
+- BACKEND: Place backend in /home/<cpanel_user>/public_html/api
+  • cPanel → Setup Node.js App:
+    - Application root: /home/<cpanel_user>/public_html/api
+    - Startup file: app.js
+    - Run NPM Install, then Restart
+  • Environment variables (.env via cPanel UI):
+    NODE_ENV=production
+    PORT=5000
+    MONGODB_URI=mongodb+srv://USER:PASS@HOST/?retryWrites=true&w=majority&appName=APP
+    SESSION_SECRET=<long-random-secret>
+- .htaccess in /public_html (must create):
+  RewriteEngine On
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  # Let API/health hit Node app; don’t rewrite to index.html
+  RewriteCond %{REQUEST_URI} ^/(api|health) [NC]
+  RewriteRule ^ - [L]
+  # Optional pretty URLs for static pages:
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+
+ACCEPTANCE CHECKLIST
+- GET https://YOUR_DOMAIN/api/health → {"status":"OK",...}
+- Open site root → hero slider + featured data load via API.
+- /admin/login renders (EJS), login creates session cookie, /admin dashboard accessible.
+- Create/edit property with multiple images → saved in /uploads and visible on the public site.
+- All pages work as static files (no client-side module system), API calls succeed from same origin.
+
+Deliverables
+- Full source per structure above.
+- .env.example and README-cpanel.md with step-by-step deploy instructions.
+- Optional seed script: creates an admin user, a few properties, slides, team members, settings.
+
+Important
+- CommonJS ONLY. JavaScript ONLY. No ES imports/exports. No TypeScript. Keep code cPanel-friendly.
