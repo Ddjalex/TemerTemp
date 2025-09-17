@@ -60,27 +60,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  // Connect to database and create admin user
-  const connectDB = require(path.join(process.cwd(), 'backend/lib/database.js'));
-  const { createAdminUser } = require(path.join(process.cwd(), 'backend/create-admin.js'));
-  
-  // Connect to MongoDB Atlas
-  await connectDB();
+  // Initialize database storage and create admin user if needed
+  const { storage } = await import("./storage.js");
   
   // Create admin user if it doesn't exist
   try {
-    await createAdminUser();
+    const existingAdmin = await storage.getUserByUsername('admin');
+    if (!existingAdmin) {
+      console.log('Creating default admin user...');
+      await storage.createUser({
+        username: 'admin',
+        email: 'admin@temerproperties.com',
+        password: 'admin123', // Note: In production, this should be hashed
+        firstName: 'Admin',
+        lastName: 'User',
+        role: 'admin',
+        isActive: true
+      });
+      console.log('Admin user created successfully!');
+      console.log('Email: admin@temerproperties.com');
+      console.log('Password: admin123');
+    }
   } catch (error) {
     console.error('Failed to create admin user:', error);
   }
 
-  // Load backend routes using require (CommonJS modules)
-  const adminRoutes = require(path.join(process.cwd(), 'backend/routes/admin.js'));
-  const publicRoutes = require(path.join(process.cwd(), 'backend/routes/public.js'));
-
-  // Register the backend routes
-  app.use('/api', publicRoutes);
-  app.use('/admin', adminRoutes);
+  // Use the new PostgreSQL-based API routes
+  const apiRoutes = await import("./api.js");
+  app.use('/api', apiRoutes.default);
 
   // Health check endpoint
   app.get('/health', (req, res) => {
