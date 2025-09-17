@@ -60,6 +60,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Connect to database and create admin user
+  const connectDB = require(path.join(process.cwd(), 'backend/lib/database.js'));
+  const { createAdminUser } = require(path.join(process.cwd(), 'backend/create-admin.js'));
+  
+  // Connect to MongoDB Atlas
+  await connectDB();
+  
+  // Create admin user if it doesn't exist
+  try {
+    await createAdminUser();
+  } catch (error) {
+    console.error('Failed to create admin user:', error);
+  }
+
   // Load backend routes using require (CommonJS modules)
   const adminRoutes = require(path.join(process.cwd(), 'backend/routes/admin.js'));
   const publicRoutes = require(path.join(process.cwd(), 'backend/routes/public.js'));

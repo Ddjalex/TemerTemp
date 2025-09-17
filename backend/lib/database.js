@@ -2,7 +2,12 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/temer-properties';
+    let mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/temer-properties';
+    
+    // Fix MongoDB Atlas URI by adding the proper prefix if missing
+    if (mongoURI.includes('cluster0') && !mongoURI.startsWith('mongodb')) {
+      mongoURI = `mongodb+srv://${mongoURI}`;
+    }
     
     const options = {
       useNewUrlParser: true,

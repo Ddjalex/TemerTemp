@@ -7,10 +7,18 @@ const morgan = require("morgan");
 
 // Connect to database
 const connectDB = require(path.join(process.cwd(), 'backend/lib/database.js'));
+const { createAdminUser } = require(path.join(process.cwd(), 'backend/create-admin.js'));
 
 async function registerRoutes(app) {
   // Connect to MongoDB Atlas
   await connectDB();
+  
+  // Create admin user if it doesn't exist
+  try {
+    await createAdminUser();
+  } catch (error) {
+    console.error('Failed to create admin user:', error);
+  }
 
   // Configure middleware needed for admin routes
   app.use(helmet({
