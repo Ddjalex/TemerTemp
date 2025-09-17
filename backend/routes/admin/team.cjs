@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const TeamMember = require('../../models/TeamMember');
-const User = require('../../models/User');
-const { uploadConfigs } = require('../../lib/storage');
-const { paginate } = require('../../lib/utils');
+const TeamMember = require('../../models/TeamMember.cjs');
+const User = require('../../models/User.cjs');
+const { uploadConfigs } = require('../../lib/storage.cjs');
+const { paginate } = require('../../lib/utils.cjs');
 
 // GET team members list
 router.get('/', async (req, res) => {

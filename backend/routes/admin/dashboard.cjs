@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const Property = require('../../models/Property');
-const User = require('../../models/User');
-const BlogPost = require('../../models/BlogPost');
-const TeamMember = require('../../models/TeamMember');
+const Property = require('../../models/Property.cjs');
+const User = require('../../models/User.cjs');
+const BlogPost = require('../../models/BlogPost.cjs');
+const TeamMember = require('../../models/TeamMember.cjs');
 
 // GET dashboard home
 router.get('/', async (req, res) => {

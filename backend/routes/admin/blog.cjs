@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const BlogPost = require('../../models/BlogPost');
-const User = require('../../models/User');
-const { uploadConfigs } = require('../../lib/storage');
-const { paginate, generateSlug, sanitizeContent } = require('../../lib/utils');
+const BlogPost = require('../../models/BlogPost.cjs');
+const User = require('../../models/User.cjs');
+const { uploadConfigs } = require('../../lib/storage.cjs');
+const { paginate, generateSlug, sanitizeContent } = require('../../lib/utils.cjs');
 
 // GET blog posts list
 router.get('/', async (req, res) => {

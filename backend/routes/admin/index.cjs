@@ -2,17 +2,17 @@ const express = require('express');
 const router = express.Router();
 
 // Import middleware
-const { isAuthenticated, isAdmin, attachUser } = require('../../middleware/auth');
+const { isAuthenticated, isAdmin, attachUser } = require('../../middleware/auth.cjs');
 
 // Import admin route modules
-const authRoutes = require('./auth');
-const dashboardRoutes = require('./dashboard');
-const propertyRoutes = require('./properties');
-const heroRoutes = require('./hero');
-const teamRoutes = require('./team');
-const blogRoutes = require('./blog');
-const settingsRoutes = require('./settings');
-const userRoutes = require('./users');
+const authRoutes = require('./auth.cjs');
+const dashboardRoutes = require('./dashboard.cjs');
+const propertyRoutes = require('./properties.cjs');
+const heroRoutes = require('./hero.cjs');
+const teamRoutes = require('./team.cjs');
+const blogRoutes = require('./blog.cjs');
+const settingsRoutes = require('./settings.cjs');
+const userRoutes = require('./users.cjs');
 
 // Attach user to all admin routes for nav/layout purposes
 router.use(attachUser);

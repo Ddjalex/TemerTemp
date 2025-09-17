@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Property = require('../../models/Property');
-const { paginate, sendError, sendSuccess } = require('../../lib/utils');
+const Property = require('../../models/Property.cjs');
+const { paginate, sendError, sendSuccess } = require('../../lib/utils.cjs');
 
 // Get all active properties with pagination and filtering
 router.get('/', async (req, res) => {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const HeroSlide = require('../../models/HeroSlide');
-const { sendError, sendSuccess } = require('../../lib/utils');
+const HeroSlide = require('../../models/HeroSlide.cjs');
+const { sendError, sendSuccess } = require('../../lib/utils.cjs');
 
 // Get all active hero slides
 router.get('/', async (req, res) => {

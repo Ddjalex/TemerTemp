@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Setting = require('../../models/Setting');
+const Setting = require('../../models/Setting.cjs');
 
 // GET settings page
 router.get('/', async (req, res) => {

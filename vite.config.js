@@ -1,14 +1,17 @@
-const { defineConfig } = require("vite");
-const react = require("@vitejs/plugin-react");
-const path = require("path");
-const runtimeErrorOverlay = require("@replit/vite-plugin-runtime-error-modal");
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+import { fileURLToPath, URL } from "url";
 
-module.exports = defineConfig({
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export default defineConfig({
   plugins: [
-    react.default(),
-    runtimeErrorOverlay.default(),
+    react(),
+    runtimeErrorOverlay(),
     ...(process.env.NODE_ENV !== "production" && process.env.REPL_ID !== undefined
-      ? [require("@replit/vite-plugin-cartographer").cartographer()]
+      ? [(await import("@replit/vite-plugin-cartographer")).cartographer()]
       : []),
   ],
   resolve: {

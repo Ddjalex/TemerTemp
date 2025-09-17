@@ -9,14 +9,14 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 // Import routes
-const publicRoutes = require('./routes/public');
-const adminRoutes = require('./routes/admin');
+const publicRoutes = require('./routes/public.cjs');
+const adminRoutes = require('./routes/admin.cjs');
 
 // Import middleware
-const authMiddleware = require('./middleware/auth');
+const authMiddleware = require('./middleware/auth.cjs');
 
 // Import database connection
-const connectDB = require('./lib/database');
+const connectDB = require('./lib/database.cjs');
 
 const app = express();
 const PORT = process.env.PORT || 5000;

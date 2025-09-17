@@ -1,5 +1,5 @@
 // Use existing User model instead of creating a new one
-const User = require('./models/User');
+const User = require('./models/User.cjs');
 
 async function createAdminUser() {
   try {

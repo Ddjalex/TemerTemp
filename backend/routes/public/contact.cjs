@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { isValidEmail, isValidPhone, sendError, sendSuccess } = require('../../lib/utils');
-const { rateLimiter } = require('../../middleware/auth');
+const { isValidEmail, isValidPhone, sendError, sendSuccess } = require('../../lib/utils.cjs');
+const { rateLimiter } = require('../../middleware/auth.cjs');
 
 // Apply stricter rate limiting for contact forms
 router.use(rateLimiter(15 * 60 * 1000, 5)); // 5 requests per 15 minutes
@@ -94,7 +94,7 @@ router.post('/property-inquiry', async (req, res) => {
     }
 
     // Verify property exists
-    const Property = require('../../models/Property');
+    const Property = require('../../models/Property.cjs');
     const property = await Property.findOne({ _id: propertyId, isActive: true });
     
     if (!property) {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../../models/User');
-const { isValidEmail, sendError } = require('../../lib/utils');
+const User = require('../../models/User.cjs');
+const { isValidEmail, sendError } = require('../../lib/utils.cjs');
 
 // GET login page
 router.get('/login', (req, res) => {

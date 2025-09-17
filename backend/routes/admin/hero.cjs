@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const HeroSlide = require('../../models/HeroSlide');
-const Property = require('../../models/Property');
-const { uploadConfigs } = require('../../lib/storage');
-const { paginate } = require('../../lib/utils');
+const HeroSlide = require('../../models/HeroSlide.cjs');
+const Property = require('../../models/Property.cjs');
+const { uploadConfigs } = require('../../lib/storage.cjs');
+const { paginate } = require('../../lib/utils.cjs');
 
 // GET hero slides list
 router.get('/', async (req, res) => {

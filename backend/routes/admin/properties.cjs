@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const Property = require('../../models/Property');
-const User = require('../../models/User');
-const { uploadConfigs } = require('../../lib/storage');
-const { paginate, formatCurrency, generateSlug } = require('../../lib/utils');
+const Property = require('../../models/Property.cjs');
+const User = require('../../models/User.cjs');
+const { uploadConfigs } = require('../../lib/storage.cjs');
+const { paginate, formatCurrency, generateSlug } = require('../../lib/utils.cjs');
 
 // GET properties list
 router.get('/', async (req, res) => {

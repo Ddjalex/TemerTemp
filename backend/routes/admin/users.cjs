@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../../models/User');
-const { uploadConfigs } = require('../../lib/storage');
-const { paginate, isValidEmail } = require('../../lib/utils');
+const User = require('../../models/User.cjs');
+const { uploadConfigs } = require('../../lib/storage.cjs');
+const { paginate, isValidEmail } = require('../../lib/utils.cjs');
 
 // GET users list
 router.get('/', async (req, res) => {

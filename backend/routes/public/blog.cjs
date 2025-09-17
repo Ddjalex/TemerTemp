@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const BlogPost = require('../../models/BlogPost');
-const { paginate, sendError, sendSuccess } = require('../../lib/utils');
+const BlogPost = require('../../models/BlogPost.cjs');
+const { paginate, sendError, sendSuccess } = require('../../lib/utils.cjs');
 
 // Get all published blog posts with pagination
 router.get('/', async (req, res) => {

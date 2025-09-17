@@ -2,15 +2,15 @@ const express = require('express');
 const router = express.Router();
 
 // Import route modules
-const propertyRoutes = require('./properties');
-const heroRoutes = require('./hero');
-const teamRoutes = require('./team');
-const blogRoutes = require('./blog');
-const contactRoutes = require('./contact');
-const settingsRoutes = require('./settings');
+const propertyRoutes = require('./properties.cjs');
+const heroRoutes = require('./hero.cjs');
+const teamRoutes = require('./team.cjs');
+const blogRoutes = require('./blog.cjs');
+const contactRoutes = require('./contact.cjs');
+const settingsRoutes = require('./settings.cjs');
 
 // Import middleware
-const { rateLimiter } = require('../../middleware/auth');
+const { rateLimiter } = require('../../middleware/auth.cjs');
 
 // Apply rate limiting to all public API routes
 router.use(rateLimiter(15 * 60 * 1000, 100)); // 100 requests per 15 minutes

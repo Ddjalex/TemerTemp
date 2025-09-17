@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../models/User.cjs');
 
 // Check if user is authenticated
 const isAuthenticated = (req, res, next) => {
