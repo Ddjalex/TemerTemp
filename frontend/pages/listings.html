@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Listings - Temer Properties | Miami Real Estate</title>
+    <meta name="description" content="Browse luxury homes, condos, and investment properties for sale and rent in Miami. Filter by price, location, and property type to find your perfect home.">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Property Listings - Temer Properties">
+    <meta property="og:description" content="Discover premium real estate listings in Miami including luxury homes, condos, and investment properties.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://temerproperties.com/listings">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+    
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css">
+</head>
+<body class="min-h-screen flex flex-col bg-background text-foreground">
+    <!-- Header -->
+    <header class="navbar">
+        <div class="container">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <a href="../index.html" class="navbar-brand">
+                    <img src="../assets/images/temer-logo.jpg" alt="Temer Properties" class="h-12 w-auto rounded-md">
+                    <span>Temer Properties</span>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <nav class="navbar-nav hidden lg:flex">
+                    <a href="../index.html">Home</a>
+                    <a href="./listings.html" class="text-primary-foreground font-semibold">Properties</a>
+                    <a href="./team.html">Our Team</a>
+                    <a href="./blog.html">Blog</a>
+                    <a href="./about.html">About</a>
+                    <a href="./contact.html">Contact</a>
+                </nav>
+
+                <!-- CTA Button -->
+                <div class="hidden lg:block">
+                    <button class="btn btn-outline" style="background-color: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: white;">
+                        Schedule Showing
+                    </button>
+                </div>
+
+                <!-- Mobile menu button -->
+                <button class="mobile-menu-toggle lg:hidden" id="mobileMenuToggle">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <div class="mobile-menu" id="mobileMenu">
+                <a href="../index.html">Home</a>
+                <a href="./listings.html">Properties</a>
+                <a href="./team.html">Our Team</a>
+                <a href="./blog.html">Blog</a>
+                <a href="./about.html">About</a>
+                <a href="./contact.html">Contact</a>
+                <button class="btn btn-outline mt-4 w-full">Schedule Showing</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        <!-- Page Header -->
+        <section class="bg-muted/30 py-16">
+            <div class="container">
+                <div class="text-center mb-8">
+                    <span class="badge badge-primary mb-4">Property Listings</span>
+                    <h1 class="text-3xl lg:text-5xl font-bold mb-6">Find Your Perfect Property</h1>
+                    <p class="text-muted-foreground max-w-3xl mx-auto text-lg">
+                        Discover premium real estate opportunities in Miami's most desirable neighborhoods. From luxury waterfront homes to modern downtown condos.
+                    </p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+                    <div class="card p-4">
+                        <h3 class="text-2xl font-bold text-primary" id="totalListings">200+</h3>
+                        <p class="text-sm text-muted-foreground">Active Listings</p>
+                    </div>
+                    <div class="card p-4">
+                        <h3 class="text-2xl font-bold text-primary">$2.5M</h3>
+                        <p class="text-sm text-muted-foreground">Avg. Sale Price</p>
+                    </div>
+                    <div class="card p-4">
+                        <h3 class="text-2xl font-bold text-primary">15</h3>
+                        <p class="text-sm text-muted-foreground">Neighborhoods</p>
+                    </div>
+                    <div class="card p-4">
+                        <h3 class="text-2xl font-bold text-primary">24hr</h3>
+                        <p class="text-sm text-muted-foreground">Response Time</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters and Search -->
+        <section class="py-8 bg-background border-b">
+            <div class="container">
+                <div class="card">
+                    <div class="card-content">
+                        <!-- Search Form -->
+                        <form id="propertySearchForm" class="space-y-6">
+                            <!-- Main Search Row -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div class="form-group">
+                                    <label for="searchKeyword" class="form-label">Search</label>
+                                    <input 
+                                        type="text" 
+                                        id="searchKeyword" 
+                                        name="keyword" 
+                                        class="form-input" 
+                                        placeholder="Enter location, property type..."
+                                        data-testid="input-search-keyword"
+                                    >
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="propertyStatus" class="form-label">Status</label>
+                                    <select id="propertyStatus" name="status" class="form-input form-select" data-testid="select-property-status">
+                                        <option value="">Any Status</option>
+                                        <option value="sale">For Sale</option>
+                                        <option value="rent">For Rent</option>
+                                        <option value="sold">Sold</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="propertyTypeFilter" class="form-label">Property Type</label>
+                                    <select id="propertyTypeFilter" name="type" class="form-input form-select" data-testid="select-property-type-filter">
+                                        <option value="">All Types</option>
+                                        <option value="house">House</option>
+                                        <option value="condo">Condominium</option>
+                                        <option value="townhouse">Townhouse</option>
+                                        <option value="land">Land</option>
+                                        <option value="commercial">Commercial</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="priceRangeFilter" class="form-label">Price Range</label>
+                                    <select id="priceRangeFilter" name="priceRange" class="form-input form-select" data-testid="select-price-range-filter">
+                                        <option value="">Any Price</option>
+                                        <option value="0-500000">Under $500K</option>
+                                        <option value="500000-1000000">$500K - $1M</option>
+                                        <option value="1000000-2000000">$1M - $2M</option>
+                                        <option value="2000000-5000000">$2M - $5M</option>
+                                        <option value="5000000+">$5M+</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Advanced Filters (Collapsible) -->
+                            <div id="advancedFilters" class="hidden">
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <div class="form-group">
+                                        <label for="bedsFilter" class="form-label">Min Bedrooms</label>
+                                        <select id="bedsFilter" name="beds" class="form-input form-select" data-testid="select-beds-filter">
+                                            <option value="">Any</option>
+                                            <option value="1">1+</option>
+                                            <option value="2">2+</option>
+                                            <option value="3">3+</option>
+                                            <option value="4">4+</option>
+                                            <option value="5">5+</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="bathsFilter" class="form-label">Min Bathrooms</label>
+                                        <select id="bathsFilter" name="baths" class="form-input form-select" data-testid="select-baths-filter">
+                                            <option value="">Any</option>
+                                            <option value="1">1+</option>
+                                            <option value="2">2+</option>
+                                            <option value="3">3+</option>
+                                            <option value="4">4+</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="sqftFilter" class="form-label">Min Sq Ft</label>
+                                        <select id="sqftFilter" name="sqft" class="form-input form-select" data-testid="select-sqft-filter">
+                                            <option value="">Any Size</option>
+                                            <option value="1000">1,000+</option>
+                                            <option value="2000">2,000+</option>
+                                            <option value="3000">3,000+</option>
+                                            <option value="4000">4,000+</option>
+                                            <option value="5000">5,000+</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label">Features</label>
+                                        <div class="flex flex-wrap gap-2">
+                                            <label class="flex items-center gap-1 text-sm">
+                                                <input type="checkbox" name="features" value="featured" data-testid="checkbox-featured">
+                                                Featured
+                                            </label>
+                                            <label class="flex items-center gap-1 text-sm">
+                                                <input type="checkbox" name="features" value="waterfront" data-testid="checkbox-waterfront">
+                                                Waterfront
+                                            </label>
+                                            <label class="flex items-center gap-1 text-sm">
+                                                <input type="checkbox" name="features" value="pool" data-testid="checkbox-pool">
+                                                Pool
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex flex-wrap items-center justify-between gap-4">
+                                <div class="flex gap-2">
+                                    <button type="submit" class="btn btn-primary" data-testid="button-search-properties">
+                                        <i data-lucide="search" class="w-4 h-4"></i>
+                                        Search Properties
+                                    </button>
+                                    <button type="button" id="advancedFiltersToggle" class="btn btn-outline" data-testid="button-advanced-filters">
+                                        <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+                                        Advanced Filters
+                                    </button>
+                                    <button type="button" id="resetFilters" class="btn btn-ghost" data-testid="button-reset-filters">
+                                        <i data-lucide="x" class="w-4 h-4"></i>
+                                        Reset
+                                    </button>
+                                </div>
+                                
+                                <div class="flex items-center gap-4">
+                                    <!-- Sort By -->
+                                    <div class="flex items-center gap-2">
+                                        <label for="sortBy" class="text-sm font-medium">Sort by:</label>
+                                        <select id="sortBy" name="sort" class="form-input form-select" style="width: auto;" data-testid="select-sort-by">
+                                            <option value="newest">Newest First</option>
+                                            <option value="price-low">Price: Low to High</option>
+                                            <option value="price-high">Price: High to Low</option>
+                                            <option value="beds">Most Bedrooms</option>
+                                            <option value="sqft">Largest</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <!-- View Toggle -->
+                                    <div class="flex items-center gap-1 border rounded-md p-1">
+                                        <button type="button" id="gridViewBtn" class="btn btn-sm btn-ghost active" data-testid="button-grid-view">
+                                            <i data-lucide="grid" class="w-4 h-4"></i>
+                                        </button>
+                                        <button type="button" id="listViewBtn" class="btn btn-sm btn-ghost" data-testid="button-list-view">
+                                            <i data-lucide="list" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Properties Listing -->
+        <section class="py-16">
+            <div class="container">
+                <!-- Results Header -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-2">Property Listings</h2>
+                        <p class="text-muted-foreground" id="resultsCount">Showing all properties</p>
+                    </div>
+                    
+                    <!-- Active Filters -->
+                    <div id="activeFilters" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="hidden">
+                    <div class="property-grid">
+                        <div class="card skeleton h-80"></div>
+                        <div class="card skeleton h-80"></div>
+                        <div class="card skeleton h-80"></div>
+                        <div class="card skeleton h-80"></div>
+                        <div class="card skeleton h-80"></div>
+                        <div class="card skeleton h-80"></div>
+                    </div>
+                </div>
+
+                <!-- Properties Grid -->
+                <div id="propertiesContainer" class="property-grid">
+                    <!-- Properties will be loaded by JavaScript -->
+                </div>
+
+                <!-- No Results -->
+                <div id="noResults" class="hidden text-center py-16">
+                    <i data-lucide="search-x" class="w-16 h-16 text-muted-foreground mx-auto mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">No Properties Found</h3>
+                    <p class="text-muted-foreground mb-6">Try adjusting your search criteria or filters.</p>
+                    <button class="btn btn-primary" onclick="resetAllFilters()" data-testid="button-clear-all-filters">
+                        Clear All Filters
+                    </button>
+                </div>
+
+                <!-- Pagination -->
+                <div id="pagination" class="flex justify-center mt-12">
+                    <div class="flex items-center gap-2">
+                        <button id="prevPage" class="btn btn-outline" disabled data-testid="button-prev-page">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                            Previous
+                        </button>
+                        
+                        <div id="pageNumbers" class="flex gap-1">
+                            <!-- Page numbers will be generated by JavaScript -->
+                        </div>
+                        
+                        <button id="nextPage" class="btn btn-outline" data-testid="button-next-page">
+                            Next
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <!-- Newsletter Section -->
+        <div class="bg-primary text-primary-foreground py-12">
+            <div class="container">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2">Stay Updated with Market Trends</h3>
+                        <p class="opacity-90">
+                            Get the latest property listings, market insights, and exclusive deals delivered to your inbox.
+                        </p>
+                    </div>
+                    <form class="flex gap-2" id="newsletterForm">
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="Enter your email address"
+                            class="form-input flex-1"
+                            style="background-color: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: white;"
+                            required
+                        />
+                        <button type="submit" class="btn btn-secondary">
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                            Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Footer Content -->
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <img src="../assets/images/temer-logo.jpg" alt="Temer Properties" class="h-10 w-auto rounded">
+                        <span class="font-bold text-xl">Temer Properties</span>
+                    </div>
+                    <p class="text-muted-foreground mb-4">
+                        Your trusted partner in Miami real estate. We specialize in luxury homes, investment properties,
+                        and providing exceptional service to our clients.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="text-muted-foreground hover:text-primary">
+                            <i data-lucide="facebook" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="text-muted-foreground hover:text-primary">
+                            <i data-lucide="twitter" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="text-muted-foreground hover:text-primary">
+                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="text-muted-foreground hover:text-primary">
+                            <i data-lucide="linkedin" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-muted-foreground">
+                        <li><a href="../index.html" class="hover:text-primary">Home</a></li>
+                        <li><a href="./listings.html" class="hover:text-primary">Properties</a></li>
+                        <li><a href="./team.html" class="hover:text-primary">Our Team</a></li>
+                        <li><a href="./about.html" class="hover:text-primary">About Us</a></li>
+                        <li><a href="./contact.html" class="hover:text-primary">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Property Types -->
+                <div>
+                    <h4 class="font-semibold mb-4">Property Types</h4>
+                    <ul class="space-y-2 text-muted-foreground">
+                        <li><a href="./listings.html?type=house" class="hover:text-primary">Houses</a></li>
+                        <li><a href="./listings.html?type=condo" class="hover:text-primary">Condominiums</a></li>
+                        <li><a href="./listings.html?type=townhouse" class="hover:text-primary">Townhouses</a></li>
+                        <li><a href="./listings.html?type=commercial" class="hover:text-primary">Commercial</a></li>
+                        <li><a href="./listings.html?featured=true" class="hover:text-primary">Luxury Properties</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h4 class="font-semibold mb-4">Contact Info</h4>
+                    <div class="space-y-3 text-muted-foreground">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="map-pin" class="w-4 h-4"></i>
+                            <span>123 Real Estate Blvd<br>Miami, FL 33101</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="phone" class="w-4 h-4"></i>
+                            <a href="tel:+15551234567" class="hover:text-primary">+1 (555) 123-4567</a>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                            <a href="mailto:info@temerproperties.com" class="hover:text-primary">info@temerproperties.com</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p>&copy; 2024 Temer Properties. All rights reserved.</p>
+                    <div class="flex gap-6">
+                        <a href="./privacy.html" class="hover:text-primary">Privacy Policy</a>
+                        <a href="./terms.html" class="hover:text-primary">Terms of Service</a>
+                        <a href="./sitemap.html" class="hover:text-primary">Sitemap</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/modules/propertyCards.js"></script>
+    <script src="../assets/js/modules/api.js"></script>
+    <script src="../assets/js/modules/propertyFilters.js"></script>
+    
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.PropertyCards) {
+                window.PropertyCards.init();
+            }
+            if (window.PropertyFilters) {
+                window.PropertyFilters.init();
+            }
+        });
+    </script>
+</body>
+</html>
