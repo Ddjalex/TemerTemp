@@ -61,6 +61,32 @@ router.get('/new', (req, res) => {
   });
 });
 
+// View slide (read-only)
+router.get('/view/:id', async (req, res) => {
+  try {
+    const slide = await HeroSlide.findById(req.params.id);
+    if (!slide) {
+      return res.render('admin/error', {
+        title: 'Slide Not Found - Temer Properties Admin',
+        user: req.session.user,
+        error: 'Hero slide not found'
+      });
+    }
+    res.render('admin/hero/view', {
+      title: 'View Hero Slide - Temer Properties Admin',
+      user: req.session.user,
+      slide
+    });
+  } catch (error) {
+    console.error('View slide error:', error);
+    res.render('admin/error', {
+      title: 'Hero Error - Temer Properties Admin',
+      user: req.session.user,
+      error: 'Failed to load hero slide'
+    });
+  }
+});
+
 // Edit slide form
 router.get('/edit/:id', async (req, res) => {
   try {

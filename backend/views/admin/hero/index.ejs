@@ -63,9 +63,9 @@
             <% } else { %>
                 <% slides.forEach(function(slide) { %>
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <% if (slide.image) { %>
+                        <% if (slide.image && slide.image.url) { %>
                             <div class="aspect-w-16 aspect-h-9">
-                                <img src="<%= slide.image %>" alt="<%= slide.title || 'Hero Slide' %>" class="w-full h-48 object-cover">
+                                <img src="<%= slide.image.url %>" alt="<%= slide.image.alt || slide.title || 'Hero Slide' %>" class="w-full h-48 object-cover">
                             </div>
                         <% } else { %>
                             <div class="h-48 bg-gray-200 flex items-center justify-center">
@@ -110,10 +110,13 @@
                                 </div>
                                 
                                 <div class="flex items-center space-x-2">
-                                    <a href="/admin/hero/edit/<%= slide._id %>" class="text-blue-600 hover:text-blue-900">
+                                    <a href="/admin/hero/view/<%= slide._id %>" class="text-gray-600 hover:text-gray-900" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="/admin/hero/edit/<%= slide._id %>" class="text-blue-600 hover:text-blue-900" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button onclick="deleteSlide('<%= slide._id %>', '<%= slide.title || 'this slide' %>')" class="text-red-600 hover:text-red-900">
+                                    <button onclick="deleteSlide('<%= slide._id %>', '<%= slide.title || 'this slide' %>')" class="text-red-600 hover:text-red-900" title="Delete">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>

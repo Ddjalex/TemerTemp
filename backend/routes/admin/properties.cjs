@@ -63,6 +63,32 @@ router.get('/new', (req, res) => {
   });
 });
 
+// View property (read-only)
+router.get('/view/:id', async (req, res) => {
+  try {
+    const property = await Property.findById(req.params.id);
+    if (!property) {
+      return res.render('admin/error', {
+        title: 'Property Not Found - Temer Properties Admin',
+        user: req.session.user,
+        error: 'Property not found'
+      });
+    }
+    res.render('admin/properties/view', {
+      title: 'View Property - Temer Properties Admin',
+      user: req.session.user,
+      property
+    });
+  } catch (error) {
+    console.error('View property error:', error);
+    res.render('admin/error', {
+      title: 'Properties Error - Temer Properties Admin',
+      user: req.session.user,
+      error: 'Failed to load property'
+    });
+  }
+});
+
 // Edit property form
 router.get('/edit/:id', async (req, res) => {
   try {

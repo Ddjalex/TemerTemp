@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .temer-green { background-color: #7CB342; }
+        .bg-temer-green { background-color: #7CB342; }
+        .text-temer-green { color: #7CB342; }
+        .border-temer-green { border-color: #7CB342; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<nav class="bg-white shadow-lg border-b-2 border-temer-green">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center space-x-8">
+                <div class="flex-shrink-0 flex items-center">
+                    <i class="fas fa-building text-temer-green text-2xl mr-2"></i>
+                    <span class="text-xl font-bold text-gray-900">Temer Properties</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <a href="/admin/dashboard" class="text-gray-500 hover:text-gray-700">Dashboard</a>
+                    <span class="text-gray-500">/</span>
+                    <a href="/admin/hero" class="text-gray-500 hover:text-gray-700">Hero Slides</a>
+                    <span class="text-gray-500">/</span>
+                    <span class="text-gray-900 font-medium">View</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="w-8 h-8 bg-temer-green rounded-full flex items-center justify-center">
+                    <span class="text-white font-semibold text-sm"><%= user.fullName.split(' ').map(n => n[0]).join('') %></span>
+                </div>
+                <a href="/admin/logout" class="text-red-600 hover:text-red-800">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="py-6">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl font-bold text-gray-900"><%= slide.title || 'Hero Slide Details' %></h1>
+                <div class="flex space-x-3">
+                    <a href="/admin/hero/edit/<%= slide._id %>" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                        <i class="fas fa-edit mr-2"></i> Edit Slide
+                    </a>
+                    <a href="/admin/hero" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Hero Slides
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hero Image -->
+            <% if (slide.image && slide.image.url) { %>
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Hero Image</h3>
+                    <div class="relative">
+                        <img src="<%= slide.image.url %>" alt="<%= slide.image.alt || slide.title || 'Hero Slide' %>" class="w-full max-h-96 object-cover rounded-lg">
+                        <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center rounded-lg">
+                            <div class="text-center text-white">
+                                <% if (slide.title) { %><h2 class="text-3xl font-bold mb-2"><%= slide.title %></h2><% } %>
+                                <% if (slide.subtitle) { %><h3 class="text-xl mb-4"><%= slide.subtitle %></h3><% } %>
+                                <% if (slide.description) { %><p class="text-lg mb-4"><%= slide.description %></p><% } %>
+                                <% if (slide.ctaButton?.text && slide.ctaButton?.link) { %>
+                                    <span class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold">
+                                        <%= slide.ctaButton.text %>
+                                    </span>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- Slide Details -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Slide Information</h3>
+                    <div class="space-y-3">
+                        <div><strong>Title:</strong> <%= slide.title || 'Not set' %></div>
+                        <div><strong>Subtitle:</strong> <%= slide.subtitle || 'Not set' %></div>
+                        <div><strong>Display Order:</strong> <%= slide.order || slide.displayOrder || 0 %></div>
+                        <div><strong>Status:</strong> 
+                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full <%= slide.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %>">
+                                <%= slide.isActive ? 'Active' : 'Inactive' %>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Call to Action</h3>
+                    <div class="space-y-3">
+                        <div><strong>Button Text:</strong> <%= slide.ctaButton?.text || slide.buttonText || 'Not set' %></div>
+                        <div><strong>Button Link:</strong> <%= slide.ctaButton?.link || slide.buttonLink || 'Not set' %></div>
+                        <div><strong>External Link:</strong> <%= slide.ctaButton?.isExternal ? 'Yes' : 'No' %></div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Schedule</h3>
+                    <div class="space-y-2">
+                        <div><strong>Start Date:</strong> <%= slide.startDate ? new Date(slide.startDate).toLocaleDateString() : 'Not set' %></div>
+                        <div><strong>End Date:</strong> <%= slide.endDate ? new Date(slide.endDate).toLocaleDateString() : 'Not set' %></div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Timestamps</h3>
+                    <div class="space-y-2">
+                        <div><strong>Created:</strong> <%= slide.createdAt ? new Date(slide.createdAt).toLocaleDateString() : 'Unknown' %></div>
+                        <div><strong>Updated:</strong> <%= slide.updatedAt ? new Date(slide.updatedAt).toLocaleDateString() : 'Unknown' %></div>
+                    </div>
+                </div>
+            </div>
+
+            <% if (slide.description) { %>
+                <div class="mt-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Description</h3>
+                    <p class="text-gray-700 leading-relaxed"><%= slide.description %></p>
+                </div>
+            <% } %>
+
+            <% if (slide.image?.alt) { %>
+                <div class="mt-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Image Details</h3>
+                    <div><strong>Alt Text:</strong> <%= slide.image.alt %></div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>
