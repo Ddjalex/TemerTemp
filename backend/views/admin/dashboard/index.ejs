@@ -310,14 +310,17 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex items-center justify-end space-x-2">
-                                        <a href="/admin/<%= activity.type === 'blog' ? 'blog' : activity.type %>s/view/<%= activity._id %>" class="text-blue-600 hover:text-blue-900">
-                                            <i class="fas fa-eye"></i>
+                                        <a href="/admin/<%= activity.type === 'blog' ? 'blog' : activity.type %>s/view/<%= activity._id %>" class="inline-flex items-center px-2 py-1 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded transition-colors" title="View Details">
+                                            <i class="fas fa-eye mr-1"></i>
+                                            <span class="text-xs">View</span>
                                         </a>
-                                        <a href="/admin/<%= activity.type === 'blog' ? 'blog' : activity.type %>s/edit/<%= activity._id %>" class="text-green-600 hover:text-green-900">
-                                            <i class="fas fa-edit"></i>
+                                        <a href="/admin/<%= activity.type === 'blog' ? 'blog' : activity.type %>s/edit/<%= activity._id %>" class="inline-flex items-center px-2 py-1 text-green-600 hover:text-green-900 hover:bg-green-50 rounded transition-colors" title="Edit Item">
+                                            <i class="fas fa-edit mr-1"></i>
+                                            <span class="text-xs">Edit</span>
                                         </a>
-                                        <button onclick="confirmDelete('<%= activity.type %>', '<%= activity._id %>', '<%= activity.title %>')" class="text-red-600 hover:text-red-900">
-                                            <i class="fas fa-trash"></i>
+                                        <button onclick="confirmDelete('<%= activity.type %>', '<%= activity._id %>', '<%= activity.title %>')" class="inline-flex items-center px-2 py-1 text-red-600 hover:text-red-900 hover:bg-red-50 rounded transition-colors" title="Delete Item">
+                                            <i class="fas fa-trash mr-1"></i>
+                                            <span class="text-xs">Delete</span>
                                         </button>
                                     </div>
                                 </td>
