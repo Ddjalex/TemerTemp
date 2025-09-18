@@ -1,0 +1,65 @@
+Task: Convert the entire Node.js/Express backend from TypeScript to plain JavaScript (CommonJS) for cPanel. The current entrypoint is server/index.ts. You must fully convert this file and all others into JavaScript, so that the backend runs without TypeScript or ES modules, and the /admin login system works correctly.
+
+STRICT REQUIREMENTS
+1. No TypeScript left:
+   - Delete all type annotations, generics, interfaces, enums.
+   - Remove type-only imports/exports.
+   - Remove ts-node or tsconfig.json usage.
+   - Do NOT leave any .ts files.
+
+2. CommonJS only:
+   - Replace every `import ... from` with `const ... = require(...)`.
+   - Replace `export default` with `module.exports = ...`.
+   - Replace `export const foo = ...` with `module.exports.foo = ...`.
+
+3. Entrypoint:
+   - Rename `server/index.ts` to `app.js` (cPanel startup file).
+   - This must include:
+     • require('dotenv').config()
+     • Express app setup (helmet, cors, compression, morgan, body parsers).
+     • MongoDB connection using mongoose and process.env.MONGODB_URI.
+     • Session setup with express-session + connect-mongo (cookie for admin login).
+     • EJS view engine for /admin pages.
+     • Routes: /api/* (public JSON) and /admin/* (login + dashboard).
+     • GET /health route returning JSON `{ status: "OK", time: ... }`.
+     • Listen on process.env.PORT || 5000 and host 0.0.0.0.
+
+4. Admin login must remain functional:
+   - POST /admin/login checks email+password using bcrypt.compare.
+   - On success, write req.session.user = { id, role }.
+   - All /admin/* routes (except /admin/login) use requireLogin middleware to check session.
+   - POST /admin/logout destroys the session.
+   - Keep EJS templates for login and dashboard working.
+
+5. File outputs:
+   - Every file in server/ must be .js, not .ts.
+   - All requires between files must use relative paths with .js suffixes.
+   - All models in server/models/*.ts must be converted to CommonJS .js with mongoose schemas.
+
+6. Package.json:
+   - Must declare "type": "commonjs".
+   - "main": "app.js"
+   - "scripts": { "start": "node app.js" }
+   - Remove all TypeScript-related devDependencies (@types/*, typescript, ts-node).
+   - Keep only runtime deps (express, mongoose, bcrypt, multer, helmet, compression, cors, morgan, express-session, connect-mongo, ejs, dotenv, uuid, sanitize-html, csurf).
+
+7. Environment variables (.env):
+   - NODE_ENV=production
+   - PORT=5000
+   - MONGODB_URI=your MongoDB Atlas string
+   - SESSION_SECRET=longrandomsecret
+
+8. cPanel compatibility:
+   - Final entry file must be app.js in project root (no .ts).
+   - Must use require() everywhere.
+   - Must not depend on build steps (no transpile needed).
+   - Admin login and dashboard must render correctly on cPanel.
+
+Acceptance Criteria:
+- After conversion, no .ts files remain.
+- I can deploy by uploading to /public_html/api, then in cPanel "Setup Node.js App" set Startup file = app.js.
+- Visiting /health shows JSON OK.
+- Visiting /admin/login shows the login page. Login works with bcrypt-hashed admin password, sets session, and allows access to /admin dashboard.
+- /api/properties and other routes return JSON without errors.
+
+Important: Do not skip server/index.ts. Convert it fully into app.js with CommonJS, otherwise the app will not start in cPanel.
