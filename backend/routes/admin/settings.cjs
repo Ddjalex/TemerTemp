@@ -192,4 +192,83 @@ router.post('/', async (req, res) => {
   }
 });
 
+// URL validation function
+function validateURL(url) {
+  if (!url || url.trim() === '') return ''; // Allow empty URLs
+  
+  try {
+    const urlObj = new URL(url);
+    // Only allow http and https protocols
+    if (!['http:', 'https:'].includes(urlObj.protocol)) {
+      return null; // Invalid protocol
+    }
+    return urlObj.toString(); // Return normalized URL
+  } catch (error) {
+    return null; // Invalid URL format
+  }
+}
+
+// Update social media settings
+router.post('/social', async (req, res) => {
+  try {
+    const { facebook, twitter, instagram, linkedin, youtube } = req.body;
+    
+    // Validate and normalize URLs
+    const urls = {
+      facebook: validateURL(facebook),
+      twitter: validateURL(twitter),
+      instagram: validateURL(instagram),
+      linkedin: validateURL(linkedin),
+      youtube: validateURL(youtube)
+    };
+    
+    // Check for invalid URLs
+    const invalidUrls = [];
+    Object.entries(urls).forEach(([platform, url]) => {
+      if (url === null && req.body[platform] && req.body[platform].trim() !== '') {
+        invalidUrls.push(platform);
+      }
+    });
+    
+    if (invalidUrls.length > 0) {
+      return res.json({
+        success: false,
+        message: `Invalid URLs for: ${invalidUrls.join(', ')}. Please use valid http/https URLs.`
+      });
+    }
+    
+    // Update social media settings
+    const socialSettings = [
+      { key: 'social_facebook', value: urls.facebook, description: 'Facebook page URL' },
+      { key: 'social_twitter', value: urls.twitter, description: 'Twitter profile URL' },
+      { key: 'social_instagram', value: urls.instagram, description: 'Instagram profile URL' },
+      { key: 'social_linkedin', value: urls.linkedin, description: 'LinkedIn company URL' },
+      { key: 'social_youtube', value: urls.youtube, description: 'YouTube channel URL' }
+    ];
+
+    // Save each setting
+    for (const settingData of socialSettings) {
+      await Setting.setSetting(
+        settingData.key,
+        settingData.value,
+        'string',
+        settingData.description,
+        'social'
+      );
+    }
+
+    res.json({
+      success: true,
+      message: 'Social media links updated successfully'
+    });
+
+  } catch (error) {
+    console.error('Update social media settings error:', error);
+    res.json({
+      success: false,
+      message: 'Failed to update social media links'
+    });
+  }
+});
+
 module.exports = router;

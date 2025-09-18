@@ -3,17 +3,28 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Facebook, Twitter, Instagram, Linkedin, Youtube, Phone, Mail, MapPin } from "lucide-react";
 import { Link } from "wouter";
+import { useQuery } from '@tanstack/react-query';
+import { getPublicSettings } from '@/lib/api';
 import temerLogo from "@assets/images (2)_1755853378467-D-9Sw1o__1758104048014.jpg";
 
 export default function Footer() {
+  // Fetch admin settings for social media links
+  const { data: settingsData } = useQuery({
+    queryKey: ['admin-settings'],
+    queryFn: getPublicSettings
+  });
 
+  const adminSettings = settingsData?.data || {};
+  
+  // Create social links from admin settings (check both flat and grouped structure)
+  const socialSettings = adminSettings.social || adminSettings;
   const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
-    { icon: Youtube, href: "#", label: "YouTube" }
-  ];
+    { icon: Facebook, href: socialSettings.social_facebook || "", label: "Facebook" },
+    { icon: Twitter, href: socialSettings.social_twitter || "", label: "Twitter" },
+    { icon: Instagram, href: socialSettings.social_instagram || "", label: "Instagram" },
+    { icon: Linkedin, href: socialSettings.social_linkedin || "", label: "LinkedIn" },
+    { icon: Youtube, href: socialSettings.social_youtube || "", label: "YouTube" }
+  ].filter(link => link.href && link.href.trim()); // Only show links that have valid URLs
 
   const footerLinks = {
     "Properties": [

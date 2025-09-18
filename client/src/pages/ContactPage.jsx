@@ -9,26 +9,6 @@ export default function ContactPage() {
     alert('Thank you for your message! We will get back to you within 24 hours.');
   };
 
-  const officeLocations = [
-    {
-      name: "Main Office - Downtown Miami",
-      address: "123 Real Estate Blvd, Suite 100\nMiami, FL 33101",
-      phone: "+1 (555) 123-4567",
-      hours: "Mon-Fri: 8:00 AM - 7:00 PM\nSat: 9:00 AM - 5:00 PM\nSun: 11:00 AM - 4:00 PM"
-    },
-    {
-      name: "Coral Gables Branch",
-      address: "456 Miracle Mile\nCoral Gables, FL 33134",
-      phone: "+1 (555) 234-5678",
-      hours: "Mon-Fri: 9:00 AM - 6:00 PM\nSat: 10:00 AM - 4:00 PM\nSun: Closed"
-    },
-    {
-      name: "Miami Beach Office",
-      address: "789 Ocean Drive\nMiami Beach, FL 33139",
-      phone: "+1 (555) 345-6789",
-      hours: "Mon-Fri: 9:00 AM - 6:00 PM\nSat: 10:00 AM - 4:00 PM\nSun: 12:00 PM - 3:00 PM"
-    }
-  ];
 
   const whyChooseUs = [
     {
@@ -77,55 +57,6 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Office Locations */}
-      <section className="py-16 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="font-heading text-3xl lg:text-4xl font-bold mb-4">
-              Our Office Locations
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Visit us at any of our convenient locations throughout Miami-Dade County. Our doors are always open for consultations.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {officeLocations.map((location, index) => (
-              <Card key={index} className="hover-elevate">
-                <CardHeader>
-                  <CardTitle className="text-lg font-heading">{location.name}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <div className="flex items-start gap-2 mb-2">
-                      <MapPin className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                      <div className="text-sm">
-                        {location.address.split('\n').map((line, i) => (
-                          <div key={i}>{line}</div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="text-sm">
-                    <span className="font-medium">Phone: </span>
-                    <span className="text-primary">{location.phone}</span>
-                  </div>
-                  
-                  <div className="text-sm">
-                    <span className="font-medium">Hours:</span>
-                    <div className="mt-1 text-muted-foreground">
-                      {location.hours.split('\n').map((line, i) => (
-                        <div key={i}>{line}</div>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Why Choose Us */}
       <section className="py-16">
