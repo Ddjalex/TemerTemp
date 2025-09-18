@@ -4,7 +4,7 @@ import { createRequire } from "module";
 import path from "path";
 
 // Utility functions
-function log(message, source = "express") {
+function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
@@ -130,7 +130,7 @@ async function startServer() {
     const server = createServer(app);
 
     // Error handling middleware
-    app.use((err, _req, res, _next) => {
+    app.use((err: any, _req: any, res: any, _next: any) => {
       const status = err.status || err.statusCode || 500;
       const message = err.message || "Internal Server Error";
       res.status(status).json({ message });
