@@ -58,8 +58,6 @@ async function startServer() {
     const helmet = require("helmet");
     const compression = require("compression");
     const morgan = require("morgan");
-    const session = require("express-session");
-    const MongoStore = require('connect-mongo');
 
     // Configure middleware
     app.use(helmet({
@@ -82,43 +80,15 @@ async function startServer() {
     await connectDB();
     console.log('✅ MongoDB connected successfully');
 
-    // Session configuration with MongoDB store
-    app.use(session({
-      secret: process.env.SESSION_SECRET || 'temer-properties-secret-key',
-      resave: false,
-      saveUninitialized: false,
-      store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_URI
-      }),
-      cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
-      }
-    }));
 
-    // View engine setup
-    app.set('view engine', 'ejs');
-    app.set('views', path.join(__dirname, 'backend/views'));
 
-    // Static files
-    app.use('/public', express.static(path.join(__dirname, 'backend/public')));
 
-    // Create admin user if needed
-    try {
-      const { createAdminUser } = require('./backend/create-admin.cjs');
-      await createAdminUser();
-    } catch (error) {
-      console.error('Admin user creation:', error);
-    }
 
     // Load backend routes
-    const adminRoutes = require('./backend/routes/admin.cjs');
     const publicRoutes = require('./backend/routes/public.cjs');
 
     // Register routes
     app.use('/api', publicRoutes);
-    app.use('/admin', adminRoutes);
 
     // Health check endpoint
     app.get('/health', (req, res) => {
@@ -142,8 +112,8 @@ async function startServer() {
     const reactAppPath = path.join(__dirname, 'dist/public');
     app.use(express.static(reactAppPath));
     app.use("*", (req, res) => {
-      // Skip if it's an API or admin route (already handled above)
-      if (req.originalUrl.startsWith('/admin') || req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/health')) {
+      // Skip if it's an API route (already handled above)
+      if (req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/health')) {
         return res.status(404).json({ message: 'Route not found' });
       }
       // Serve the React app for all other routes (SPA routing)
