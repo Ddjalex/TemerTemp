@@ -1,0 +1,148 @@
+Title: Convert TS backend → JS (CommonJS) and integrate existing UI (no UI changes) for cPanel
+
+Objective
+I have a working UI in ui.zip (static HTML/CSS/JS). Keep that UI 100% unchanged.
+Convert my existing TypeScript backend to plain JavaScript (CommonJS). No ES modules, no TypeScript left. Preserve /admin session login and all API behavior. Make it cPanel-friendly.
+
+Hard Rules (do NOT violate)
+- Do NOT change anything in the UI (HTML structure, classes/IDs, CSS, JS behavior). UI must remain pixel-identical.
+- Do NOT change API routes, URL paths, request/response shapes, or status codes.
+- Do NOT leave any .ts files or ES module syntax after conversion.
+- Use CommonJS only (require/module.exports). No build step required for backend.
+
+Deliverables / Structure
+/
+├─ frontend/                         # use EXACT files from ui.zip
+│  ├─ src/                           # put ui.zip contents here (keep paths!)
+│  └─ dist/                          # final static output for /public_html
+└─ backend/
+   ├─ app.js                         # final CommonJS entrypoint (converted from server/index.ts)
+   ├─ routes/
+   │  ├─ public/                     # JSON API for UI
+   │  └─ admin/                      # EJS server-rendered admin
+   ├─ views/                         # EJS templates (admin)
+   ├─ models/                        # Mongoose models (CommonJS)
+   ├─ middleware/
+   ├─ lib/
+   │  ├─ db.js                       # mongoose connect()
+   │  └─ storage.js                  # disk upload helpers if used
+   ├─ uploads/                       # served at /uploads/*
+   ├─ public/                        # admin static (css/js)
+   ├─ package.json                   # CommonJS
+   └─ .env.example
+
+Backend Conversion (MANDATORY)
+1) Remove TypeScript entirely:
+   - Delete all type annotations, interfaces, enums, generics, tsconfig usage, ts-node, and @types deps.
+   - No .ts files remain in backend after conversion.
+
+2) CommonJS only:
+   - Replace ALL imports/exports with require()/module.exports.
+   - Ensure internal requires use relative paths with .js suffix (e.g., require('../models/User.js')).
+
+3) Entrypoint:
+   - Convert `server/index.ts` (or current TS entry) into backend/app.js.
+   - app.js must:
+     • require('dotenv').config()
+     • Create Express app; use helmet, compression, cors, morgan
+     • Body parsing: express.json({limit:'50mb'}), urlencoded
+     • Sessions: express-session + connect-mongo (cookie for /admin auth). Keep existing cookie name/options.
+     • View engine EJS; set views dir
+     • Static: app.use('/uploads', express.static(path.join(__dirname,'uploads')))
+     • Mount public API under /api (keep EXACT routes and behavior)
+     • Mount admin under /admin (login/logout/dashboard/CRUD). Keep session middleware & bcrypt.compare.
+     • Add GET /health → {status:'OK', timestamp:...}
+     • Listen on process.env.PORT || 5000, host '0.0.0.0'
+   - Preserve admin login flow and redirects exactly as before.
+
+4) Mongoose models:
+   - Convert every model to CommonJS .js. Keep schema fields, indexes, hooks the same.
+
+5) package.json (backend):
+   {
+     "name": "temer-backend-js",
+     "version": "1.0.0",
+     "type": "commonjs",
+     "main": "app.js",
+     "scripts": { "start": "node app.js" },
+     "dependencies": {
+       "express": "...",
+       "mongoose": "...",
+       "ejs": "...",
+       "cors": "...",
+       "helmet": "...",
+       "compression": "...",
+       "morgan": "...",
+       "express-session": "...",
+       "connect-mongo": "...",
+       "bcrypt": "...",
+       "multer": "...",
+       "dotenv": "...",
+       "uuid": "...",
+       "sanitize-html": "...",
+       "csurf": "..."
+     }
+   }
+   - Remove TypeScript dev deps (typescript, ts-node, @types/*).
+
+UI Integration (NO CHANGES to UI)
+- Take ui.zip and place its contents under frontend/src/ with the SAME folder/file names.
+- Do NOT modify HTML/CSS/JS in the UI; do NOT change class names, IDs, or markup.
+- If the UI makes XHR/fetch calls, keep the exact endpoints and params. It must continue to call the same /api routes.
+- If the UI needs to know API base, add a harmless meta tag in each HTML file WITHOUT altering layout:
+  <meta name="api-base" content="https://YOUR_DOMAIN/api">
+  Then create a tiny non-module script `frontend/src/assets/js/api.js` (IIFE) that reads this meta and exposes window.API_BASE for existing scripts. If UI already hardcodes URLs, DO NOT change them—leave as-is.
+
+Admin UI
+- Keep admin as server-rendered EJS under /admin. Do not mix admin assets into the public UI from ui.zip.
+- Keep login form and dashboard page names/locals unchanged so current logic still works.
+- Session middleware must guard /admin/* (except /admin/login and /admin/logout).
+
+Uploads (if used)
+- Serve disk files at /uploads/* from backend/uploads/.
+- Save relative URLs in DB so the unchanged UI can display them.
+
+Environment
+- Keep SAME env var names in backend (MONGODB_URI, SESSION_SECRET, NODE_ENV, PORT).
+- Backend must not crash if DB temporarily unavailable; still return /health.
+
+Deployment to cPanel (no subdomain)
+- BACKEND goes to: /home/<cpanel_user>/public_html/api
+  • cPanel → Setup Node.js App
+    - Application root: /home/<cpanel_user>/public_html/api
+    - Startup file: app.js
+    - Click Run NPM Install → Restart App
+  • Set env vars in cPanel UI:
+    NODE_ENV=production
+    PORT=5000
+    MONGODB_URI=<Atlas URI>
+    SESSION_SECRET=<long-random-secret>
+- FRONTEND: copy frontend/dist/* to /home/<cpanel_user>/public_html/
+- /public_html/.htaccess:
+  RewriteEngine On
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  # Let API/health go to backend (do not rewrite to index.html)
+  RewriteCond %{REQUEST_URI} ^/(api|health) [NC]
+  RewriteRule ^ - [L]
+  # Fallback for pretty URLs (optional)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+
+Acceptance Tests (must all pass)
+- No .ts files remain in backend, no ES module syntax remains anywhere.
+- Launching backend with `node app.js` works locally (port 5000 by default).
+- GET /health returns JSON OK.
+- /admin/login renders, bcrypt password check works, session cookie set, /admin protected routes accessible.
+- UI from ui.zip is pixel-identical; all network calls still hit the same /api endpoints and return the same shapes/status.
+- On cPanel:
+  • https://YOUR_DOMAIN/api/health → JSON OK
+  • https://YOUR_DOMAIN/ loads the unchanged UI
+  • Admin login works and data CRUD operates as before.
+
+Important
+- If any TypeScript-specific code had no runtime effect, remove it without changing logic.
+- Replace enums with: const Enum = Object.freeze({ ... }).
+- Replace path aliases with relative requires using .js extensions.
+- Do not refactor UI or API contracts—this is a 1:1 runtime conversion.
