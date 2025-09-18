@@ -4,7 +4,6 @@ const settingSchema = new mongoose.Schema({
   key: {
     type: String,
     required: true,
-    unique: true,
     trim: true
   },
   value: {

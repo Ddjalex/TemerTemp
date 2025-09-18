@@ -1,7 +1,8 @@
-import express from "express";
-import { createServer } from "http";
-import { createRequire } from "module";
-import path from "path";
+const express = require("express");
+const { createServer } = require("http");
+const path = require("path");
+const fs = require("fs");
+
 // Utility functions
 function log(message, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -14,7 +15,6 @@ function log(message, source = "express") {
 }
 
 const app = express();
-const require = createRequire(import.meta.url);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 // Logging middleware
 app.use((req, res, next) => {
   const start = Date.now();
-  const path = req.path;
+  const requestPath = req.path;
   let capturedJsonResponse = undefined;
 
   const originalResJson = res.json;
@@ -33,8 +33,8 @@ app.use((req, res, next) => {
 
   res.on("finish", () => {
     const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+    if (requestPath.startsWith("/api")) {
+      let logLine = `${req.method} ${requestPath} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
@@ -52,7 +52,7 @@ app.use((req, res, next) => {
 
 async function startServer() {
   try {
-    // Load CommonJS backend modules using createRequire
+    // Load CommonJS backend modules
     const helmet = require("helmet");
     const compression = require("compression");
     const morgan = require("morgan");
@@ -138,7 +138,7 @@ async function startServer() {
 
     // Setup Vite in development or serve static files in production
     if (process.env.NODE_ENV === "development") {
-      // Development: Setup Vite middleware
+      // Development: Setup Vite middleware using dynamic import
       const { createServer: createViteServer } = await import("vite");
       
       const vite = await createViteServer({
@@ -156,11 +156,11 @@ async function startServer() {
         const url = req.originalUrl;
         try {
           const clientTemplate = path.resolve(process.cwd(), "client", "index.html");
-          let template = await require("fs").promises.readFile(clientTemplate, "utf-8");
+          let template = await fs.promises.readFile(clientTemplate, "utf-8");
           const page = await vite.transformIndexHtml(url, template);
           res.status(200).set({ "Content-Type": "text/html" }).end(page);
         } catch (e) {
-          vite.ssrFixStacktrace(e as Error);
+          vite.ssrFixStacktrace(e);
           next(e);
         }
       });
