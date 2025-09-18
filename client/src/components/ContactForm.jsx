@@ -56,60 +56,9 @@ export default function ContactForm({ onSubmit }) {
   const isFormValid = formData.firstName && formData.lastName && formData.email && formData.message && formData.agreeToTerms;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      {/* Contact Information */}
-      <div className="lg:col-span-1 space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Phone className="w-5 h-5 text-primary" />
-              Get in Touch
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <h4 className="font-semibold mb-2">Office Hours</h4>
-              <div className="space-y-1 text-sm text-muted-foreground">
-                <p>Monday - Friday: 8:00 AM - 7:00 PM</p>
-                <p>Saturday: 9:00 AM - 5:00 PM</p>
-                <p>Sunday: 11:00 AM - 4:00 PM</p>
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-primary" />
-                <div>
-                  <p className="font-medium">Phone</p>
-                  <p className="text-sm text-muted-foreground">+1 (555) 123-4567</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-primary" />
-                <div>
-                  <p className="font-medium">Email</p>
-                  <p className="text-sm text-muted-foreground">info@temerproperties.com</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-primary" />
-                <div>
-                  <p className="font-medium">Address</p>
-                  <p className="text-sm text-muted-foreground">
-                    123 Real Estate Blvd<br />
-                    Miami, FL 33101
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
+    <div className="max-w-2xl mx-auto">
       {/* Contact Form */}
-      <div className="lg:col-span-2">
+      <div>
         <Card>
           <CardHeader>
             <CardTitle>Send us a Message</CardTitle>
