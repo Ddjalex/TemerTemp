@@ -1,11 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, Mail } from "lucide-react";
+import { Menu, X, Phone, Mail, Sun, Moon } from "lucide-react";
 import { Link } from "wouter";
 import temerLogo from "@assets/images (2)_1755853378467-D-9Sw1o__1758104048014.jpg";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Check for saved theme or default to light mode
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+    
+    setIsDarkMode(isDark);
+    document.documentElement.classList.toggle('dark', isDark);
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
+    document.documentElement.classList.toggle('dark', newDarkMode);
+    localStorage.setItem('theme', newDarkMode ? 'dark' : 'light');
+  };
 
   const navItems = [
     { href: "/", label: "Home" },
@@ -47,8 +65,17 @@ export default function Header() {
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden lg:block">
+          {/* Theme Toggle & CTA Button */}
+          <div className="hidden lg:flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleDarkMode}
+              className="text-white hover:bg-white/20"
+              data-testid="button-theme-toggle"
+            >
+              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </Button>
             <Button 
               variant="outline" 
               className="bg-white/10 border-white/20 text-white hover:bg-white/20"
@@ -58,16 +85,27 @@ export default function Header() {
             </Button>
           </div>
 
-          {/* Mobile menu button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden text-white hover:bg-white/20"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            data-testid="button-mobile-menu"
-          >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </Button>
+          {/* Mobile controls */}
+          <div className="lg:hidden flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleDarkMode}
+              className="text-white hover:bg-white/20"
+              data-testid="button-mobile-theme-toggle"
+            >
+              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-white hover:bg-white/20"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              data-testid="button-mobile-menu"
+            >
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </Button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}

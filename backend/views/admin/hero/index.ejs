@@ -95,18 +95,18 @@
                                 </p>
                             <% } %>
                             
-                            <% if (slide.buttonText && slide.buttonLink) { %>
+                            <% if ((slide.ctaButton && slide.ctaButton.text) || slide.buttonText) { %>
                                 <div class="mb-4">
                                     <span class="inline-flex items-center px-3 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
                                         <i class="fas fa-link mr-1"></i>
-                                        <%= slide.buttonText %>
+                                        <%= slide.ctaButton?.text || slide.buttonText %>
                                     </span>
                                 </div>
                             <% } %>
                             
                             <div class="flex items-center justify-between">
                                 <div class="text-xs text-gray-500">
-                                    Order: <%= slide.displayOrder || 0 %>
+                                    Order: <%= slide.order || slide.displayOrder || 0 %>
                                 </div>
                                 
                                 <div class="flex items-center space-x-2">
