@@ -43,9 +43,9 @@ export default function HomePage() {
     queryFn: getPublicSettings
   });
 
-  const featuredProperties = featuredData?.data || [];
-  const teamMembers = teamData?.data || [];
-  const blogPosts = blogData?.data?.posts || [];
+  const featuredProperties = Array.isArray(featuredData?.data) ? featuredData.data : [];
+  const teamMembers = Array.isArray(teamData?.data) ? teamData.data : [];
+  const blogPosts = Array.isArray(blogData?.data?.posts) ? blogData.data.posts : [];
 
   // Default stats with API data overlay
   const stats = [
@@ -78,7 +78,11 @@ export default function HomePage() {
   const adminSettings = settingsData?.data || {};
 
   // Property handlers
-  const handleViewDetails = (id) => console.log("View property:", id);
+  const handleViewDetails = (id) => {
+    console.log("View property:", id);
+    // Navigate to property details page
+    window.location.href = `/listings?property=${id}`;
+  };
   const handleFavorite = (id) => console.log("Favorite property:", id);
   const handleShare = (id) => console.log("Share property:", id);
   const handleCall = (id) => {
@@ -157,7 +161,7 @@ export default function HomePage() {
                   <div className="h-4 bg-muted rounded w-3/4"></div>
                 </div>
               ))
-            ) : (
+            ) : featuredProperties && featuredProperties.length > 0 ? (
               featuredProperties.map((property) => (
                 <PropertyCard
                   key={property._id}
@@ -178,6 +182,10 @@ export default function HomePage() {
                   onWhatsApp={handleWhatsApp}
                 />
               ))
+            ) : (
+              <div className="col-span-3 text-center py-8">
+                <p className="text-muted-foreground">Featured properties coming soon!</p>
+              </div>
             )}
           </div>
 
@@ -272,7 +280,7 @@ export default function HomePage() {
                   <div className="h-4 bg-muted rounded w-2/3"></div>
                 </div>
               ))
-            ) : (
+            ) : teamMembers && teamMembers.length > 0 ? (
               teamMembers.slice(0, 2).map((member) => (
                 <TeamMemberCard
                   key={member._id}
@@ -290,6 +298,10 @@ export default function HomePage() {
                   onMessage={handleMessage}
                 />
               ))
+            ) : (
+              <div className="col-span-2 text-center py-8">
+                <p className="text-muted-foreground">Team members coming soon!</p>
+              </div>
             )}
           </div>
 
