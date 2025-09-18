@@ -9,11 +9,6 @@ const blogRoutes = require('./blog.cjs');
 const contactRoutes = require('./contact.cjs');
 const settingsRoutes = require('./settings.cjs');
 
-// Import middleware
-const { rateLimiter } = require('../../middleware/auth.cjs');
-
-// Apply rate limiting to all public API routes
-router.use(rateLimiter(15 * 60 * 1000, 100)); // 100 requests per 15 minutes
 
 // Mount routes
 router.use('/properties', propertyRoutes);

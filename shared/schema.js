@@ -1,19 +1,6 @@
 import { pgTable, serial, varchar, text, integer, boolean, timestamp, decimal, jsonb } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-// Users table (for admin authentication)
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  password: varchar("password", { length: 255 }).notNull(),
-  firstName: varchar("first_name", { length: 100 }),
-  lastName: varchar("last_name", { length: 100 }),
-  role: varchar("role", { length: 50 }).default("admin"),
-  isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
 // Properties table
 export const properties = pgTable("properties", {
   id: serial("id").primaryKey(),
@@ -48,7 +35,6 @@ export const properties = pgTable("properties", {
   images: jsonb("images"),
   
   // Meta fields
-  agentId: integer("agent_id"),
   isActive: boolean("is_active").default(true),
   isFeatured: boolean("is_featured").default(false),
   views: integer("views").default(0),
@@ -82,7 +68,6 @@ export const blogPosts = pgTable("blog_posts", {
   excerpt: text("excerpt"),
   content: text("content"),
   featuredImage: varchar("featured_image", { length: 500 }),
-  authorId: integer("author_id"),
   tags: jsonb("tags"),
   isPublished: boolean("is_published").default(false),
   publishedAt: timestamp("published_at"),
@@ -117,22 +102,4 @@ export const settings = pgTable("settings", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Relations
-export const usersRelations = relations(users, ({ many }) => ({
-  properties: many(properties),
-  blogPosts: many(blogPosts),
-}));
-
-export const propertiesRelations = relations(properties, ({ one }) => ({
-  agent: one(users, {
-    fields: [properties.agentId],
-    references: [users.id],
-  }),
-}));
-
-export const blogPostsRelations = relations(blogPosts, ({ one }) => ({
-  author: one(users, {
-    fields: [blogPosts.authorId],
-    references: [users.id],
-  }),
-}));
+// Relations - No user relations needed since admin system is removed

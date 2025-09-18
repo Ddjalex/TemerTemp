@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { isValidEmail, isValidPhone, sendError, sendSuccess } = require('../../lib/utils.cjs');
-const { rateLimiter } = require('../../middleware/auth.cjs');
 
-// Apply stricter rate limiting for contact forms
-router.use(rateLimiter(15 * 60 * 1000, 5)); // 5 requests per 15 minutes
 
 // Contact form submission
 router.post('/submit', async (req, res) => {
