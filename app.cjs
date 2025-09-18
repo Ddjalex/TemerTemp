@@ -59,7 +59,7 @@ async function startServer() {
     const compression = require("compression");
     const morgan = require("morgan");
     const session = require("express-session");
-    const MongoStore = require('connect-mongo');
+    // No need for MongoStore - using PostgreSQL session store
 
     // Configure middleware
     app.use(helmet({
@@ -78,12 +78,13 @@ async function startServer() {
     app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
     // Session configuration with MongoDB store
+    const MongoStore = require('connect-mongo');
     app.use(session({
       secret: process.env.SESSION_SECRET || 'temer-properties-secret-key',
       resave: false,
       saveUninitialized: false,
       store: MongoStore.create({
-        mongoUrl: 'mongodb+srv://wondimualmeseged_db_user:A1l2m3e4s5@cluster0.dtusgpq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+        mongoUrl: process.env.MONGODB_URI || 'mongodb+srv://wondimualmeseged_db_user:A1l2m3e4s5@cluster0.dtusgpq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
       }),
       cookie: {
         secure: process.env.NODE_ENV === 'production',

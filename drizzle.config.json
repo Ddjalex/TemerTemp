@@ -2,8 +2,7 @@
   "schema": "./shared/schema.ts",
   "dialect": "postgresql",
   "dbCredentials": {
-    "url": "env:DATABASE_URL",
-    "ssl": "require"
+    "url": "env:DATABASE_URL"
   },
   "out": "./drizzle"
 }
