@@ -29,9 +29,11 @@ In cPanel, you MUST set these environment variables:
 ```bash
 NODE_ENV=production
 PORT=5000
-MONGODB_URI=mongodb+srv://wondimualmeseged_db_user:A1l2m3e4s5@cluster0.dtusgpq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-SESSION_SECRET=your-super-secret-session-key-here
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority
+SESSION_SECRET=your-super-secret-session-key-here-minimum-32-characters
 ```
+
+**SECURITY NOTE**: Replace the MongoDB URI with your actual database credentials. Never commit real database credentials to code repositories.
 
 **IMPORTANT**: Use a strong, unique SESSION_SECRET in production!
 

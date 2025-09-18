@@ -2,11 +2,11 @@
   "name": "temer-properties",
   "version": "1.0.0",
   "description": "Temer Properties - Real Estate Website",
-  "main": "app.js",
+  "main": "app.cjs",
   "license": "MIT",
   "scripts": {
-    "start": "NODE_ENV=production node app.js",
-    "dev": "NODE_ENV=development node app.js"
+    "start": "NODE_ENV=production node app.cjs",
+    "dev": "NODE_ENV=development node app.cjs"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
