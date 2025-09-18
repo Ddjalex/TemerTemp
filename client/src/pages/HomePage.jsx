@@ -367,36 +367,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 bg-primary text-primary-foreground">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="font-heading text-3xl lg:text-4xl font-bold mb-4">
-            Ready to Find Your Dream Home?
-          </h2>
-          <p className="text-xl mb-8 text-primary-foreground/90">
-            Let our expert team help you navigate the real estate market and find the perfect property for your needs.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              asChild
-              size="lg"
-              variant="secondary"
-              data-testid="button-cta-browse"
-            >
-              <Link href="/listings">Browse Properties</Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-              data-testid="button-cta-contact"
-            >
-              <Link href="/contact">Contact an Agent</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
