@@ -6,45 +6,59 @@
 (function() {
     'use strict';
 
-    // Sample property data (matches the React version)
-    const SAMPLE_PROPERTIES = [
-        {
-            id: "1",
-            title: "Luxury Villa with Ocean View",
-            price: "$2,850,000",
-            location: "Miami Beach, FL",
-            beds: 5,
-            baths: 4,
-            sqft: "4,200",
-            image: "./assets/images/Luxury_villa_hero_image_3dfce514.png",
-            status: "sale",
-            featured: true
-        },
-        {
-            id: "2", 
-            title: "Modern Family Home",
-            price: "$875,000",
-            location: "Coral Gables, FL",
-            beds: 4,
-            baths: 3,
-            sqft: "3,100",
-            image: "./assets/images/Modern_family_home_600a02bb.png",
-            status: "sale",
-            featured: true
-        },
-        {
-            id: "3",
-            title: "Downtown Luxury Condominium", 
-            price: "$1,250,000",
-            location: "Downtown Miami, FL",
-            beds: 3,
-            baths: 2,
-            sqft: "2,400",
-            image: "./assets/images/Downtown_luxury_condo_15b7acf1.png",
-            status: "sale",
-            featured: true
+    // Properties will be fetched from API
+    let PROPERTIES = [];
+    let ADMIN_SETTINGS = {};
+
+    // Fetch properties from API
+    async function fetchProperties() {
+        try {
+            const response = await fetch('/api/properties/featured/list');
+            const result = await response.json();
+            
+            if (result.success && result.data.length > 0) {
+                PROPERTIES = result.data.map(property => ({
+                    id: property._id,
+                    title: property.title,
+                    price: `$${property.price.toLocaleString()}`,
+                    location: `${property.address.city}, ${property.address.state}`,
+                    beds: property.features.bedrooms,
+                    baths: property.features.bathrooms,
+                    sqft: property.features.sqft.toLocaleString(),
+                    image: property.images.find(img => img.isPrimary)?.url || property.images[0]?.url,
+                    status: property.status === 'for-sale' ? 'sale' : property.status,
+                    featured: property.isFeatured
+                }));
+            } else {
+                // Fallback to empty array when no properties available
+                PROPERTIES = [];
+            }
+            
+            return PROPERTIES;
+        } catch (error) {
+            console.error('Failed to fetch properties:', error);
+            PROPERTIES = [];
+            return PROPERTIES;
         }
-    ];
+    }
+
+    // Fetch admin contact settings
+    async function fetchAdminSettings() {
+        try {
+            const response = await fetch('/api/settings/public');
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                ADMIN_SETTINGS = result.data;
+            }
+            
+            return ADMIN_SETTINGS;
+        } catch (error) {
+            console.error('Failed to fetch admin settings:', error);
+            ADMIN_SETTINGS = {};
+            return ADMIN_SETTINGS;
+        }
+    }
 
     // Sample team data
     const SAMPLE_AGENTS = [
@@ -345,11 +359,18 @@
         },
 
         // Load featured properties
-        loadFeaturedProperties: function() {
+        loadFeaturedProperties: async function() {
             const container = document.getElementById('featuredProperties');
             if (container) {
-                const html = SAMPLE_PROPERTIES.map(property => createPropertyCard(property)).join('');
-                container.innerHTML = html;
+                await fetchProperties();
+                await fetchAdminSettings();
+                
+                if (PROPERTIES.length > 0) {
+                    const html = PROPERTIES.map(property => createPropertyCard(property)).join('');
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-muted-foreground">No properties available at the moment. Check back soon!</p></div>';
+                }
                 
                 // Re-initialize lucide icons
                 if (window.lucide) {
@@ -421,21 +442,33 @@
             }
         },
 
-        handleCall: function(phoneOrId) {
-            console.log('Call clicked for property:', phoneOrId);
-            const phone = phoneOrId.startsWith('+') ? phoneOrId : '+1 (555) 123-4567';
-            const cleanPhone = window.TemerUtils ? window.TemerUtils.formatPhoneForCall(phone) : phone;
+        handleCall: function(propertyId) {
+            console.log('Call clicked for property:', propertyId);
+            const adminPhone = ADMIN_SETTINGS?.contact?.contact_phone || '+1 (555) 123-4567';
+            const cleanPhone = adminPhone.replace(/[^\d+]/g, '');
             window.location.href = `tel:${cleanPhone}`;
+            
+            if (window.TemerUtils) {
+                window.TemerUtils.showToast('Calling Temer Properties...', 'info');
+            }
         },
 
-        handleWhatsApp: function(phoneOrId) {
-            console.log('WhatsApp clicked for property:', phoneOrId);
-            const phone = phoneOrId.startsWith('+') ? phoneOrId : '+1 (555) 123-4567';
-            const message = 'Hi! I\'m interested in learning more about this property from Temer Properties.';
-            const whatsappUrl = window.TemerUtils ? 
-                window.TemerUtils.generateWhatsAppUrl(phone, message) :
-                `https://wa.me/${phone.replace(/[^\d]/g, '')}?text=${encodeURIComponent(message)}`;
+        handleWhatsApp: function(propertyId) {
+            console.log('WhatsApp clicked for property:', propertyId);
+            const adminWhatsApp = ADMIN_SETTINGS?.contact?.contact_whatsapp || '+1 (555) 123-4567';
+            const property = PROPERTIES.find(p => p.id === propertyId);
+            const propertyTitle = property ? property.title : 'this property';
+            const propertyUrl = `${window.location.origin}/property/${propertyId}`;
+            
+            const message = `Hi! I'm interested in ${propertyTitle} from Temer Properties. Could you provide more information? Property link: ${propertyUrl}`;
+            const phone = adminWhatsApp.replace(/[^\d]/g, '');
+            const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+            
             window.open(whatsappUrl, '_blank');
+            
+            if (window.TemerUtils) {
+                window.TemerUtils.showToast('Opening WhatsApp...', 'info');
+            }
         },
 
         handleEmail: function(email) {
