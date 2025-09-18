@@ -242,4 +242,35 @@ router.get('/debug/all', async (req, res) => {
   }
 });
 
+// Debug endpoint to update property featured status
+router.post('/debug/update-featured/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { featured } = req.body;
+    
+    const updatedProperty = await Property.findByIdAndUpdate(
+      id,
+      { isFeatured: featured },
+      { new: true }
+    );
+    
+    if (!updatedProperty) {
+      return sendError(res, 'Property not found', 404);
+    }
+    
+    sendSuccess(res, {
+      message: `Property ${featured ? 'featured' : 'unfeatured'} successfully`,
+      property: {
+        _id: updatedProperty._id,
+        title: updatedProperty.title,
+        isActive: updatedProperty.isActive,
+        isFeatured: updatedProperty.isFeatured
+      }
+    });
+  } catch (error) {
+    console.error('Update property featured error:', error);
+    sendError(res, 'Failed to update property', 500);
+  }
+});
+
 module.exports = router;
