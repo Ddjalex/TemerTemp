@@ -35,11 +35,11 @@ export default function ListingsPage() {
     id: property._id,
     title: property.title,
     price: formatCurrency(property.price),
-    location: `${property.address.city}, ${property.address.state}`,
-    beds: property.features.bedrooms,
-    baths: property.features.bathrooms,
-    sqft: property.features.sqft.toLocaleString(),
-    image: property.images.find(img => img.isPrimary)?.url || property.images[0]?.url,
+    location: `${property.address?.city || 'N/A'}, ${property.address?.state || 'N/A'}`,
+    beds: property.features?.bedrooms || 0,
+    baths: property.features?.bathrooms || 0,
+    sqft: (property.features?.sqft || 0).toLocaleString(),
+    image: property.images?.find(img => img.isPrimary)?.url || property.images?.[0]?.url || modernInterior,
     status: property.status === 'for-sale' ? 'sale' : property.status,
     featured: property.isFeatured
   }));

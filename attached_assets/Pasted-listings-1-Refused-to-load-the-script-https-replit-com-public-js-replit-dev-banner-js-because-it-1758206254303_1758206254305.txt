@@ -1,0 +1,98 @@
+listings:1 Refused to load the script 'https://replit.com/public/js/replit-dev-banner.js' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+index-BpqWGUN1.js:40 TypeError: ((intermediate value)(intermediate value)(intermediate value) || []).map is not a function
+    at hk (index-BpqWGUN1.js:285:29717)
+    at Ku (index-BpqWGUN1.js:38:16998)
+    at Sc (index-BpqWGUN1.js:40:3139)
+    at fg (index-BpqWGUN1.js:40:44737)
+    at cg (index-BpqWGUN1.js:40:39727)
+    at i1 (index-BpqWGUN1.js:40:39655)
+    at cl (index-BpqWGUN1.js:40:39508)
+    at Mc (index-BpqWGUN1.js:40:35875)
+    at Yf (index-BpqWGUN1.js:40:36678)
+    at Zn (index-BpqWGUN1.js:38:3274)
+wc @ index-BpqWGUN1.js:40
+Hm.n.callback @ index-BpqWGUN1.js:40
+_f @ index-BpqWGUN1.js:38
+Qf @ index-BpqWGUN1.js:40
+sg @ index-BpqWGUN1.js:40
+r1 @ index-BpqWGUN1.js:40
+a1 @ index-BpqWGUN1.js:40
+rr @ index-BpqWGUN1.js:40
+Yf @ index-BpqWGUN1.js:40
+Zn @ index-BpqWGUN1.js:38
+(anonymous) @ index-BpqWGUN1.js:40
+setTimeout
+o @ index-BpqWGUN1.js:48
+i @ index-BpqWGUN1.js:48
+batch @ index-BpqWGUN1.js:48
+Jt @ index-BpqWGUN1.js:48
+setData @ index-BpqWGUN1.js:48
+onSuccess @ index-BpqWGUN1.js:48
+d @ index-BpqWGUN1.js:48
+Promise.then
+S @ index-BpqWGUN1.js:48
+start @ index-BpqWGUN1.js:48
+fetch @ index-BpqWGUN1.js:48
+Zo @ index-BpqWGUN1.js:48
+onSubscribe @ index-BpqWGUN1.js:48
+subscribe @ index-BpqWGUN1.js:48
+(anonymous) @ index-BpqWGUN1.js:48
+Pm @ index-BpqWGUN1.js:38
+Rl @ index-BpqWGUN1.js:40
+qr @ index-BpqWGUN1.js:40
+Yf @ index-BpqWGUN1.js:40
+Zn @ index-BpqWGUN1.js:38
+a1 @ index-BpqWGUN1.js:40
+rr @ index-BpqWGUN1.js:40
+ig @ index-BpqWGUN1.js:40
+C @ index-BpqWGUN1.js:25
+A @ index-BpqWGUN1.js:25
+index-BpqWGUN1.js:285 Uncaught TypeError: ((intermediate value)(intermediate value)(intermediate value) || []).map is not a function
+    at hk (index-BpqWGUN1.js:285:29717)
+    at Ku (index-BpqWGUN1.js:38:16998)
+    at Sc (index-BpqWGUN1.js:40:3139)
+    at fg (index-BpqWGUN1.js:40:44737)
+    at cg (index-BpqWGUN1.js:40:39727)
+    at i1 (index-BpqWGUN1.js:40:39655)
+    at cl (index-BpqWGUN1.js:40:39508)
+    at Mc (index-BpqWGUN1.js:40:35875)
+    at Yf (index-BpqWGUN1.js:40:36678)
+    at Zn (index-BpqWGUN1.js:38:3274)
+hk @ index-BpqWGUN1.js:285
+Ku @ index-BpqWGUN1.js:38
+Sc @ index-BpqWGUN1.js:40
+fg @ index-BpqWGUN1.js:40
+cg @ index-BpqWGUN1.js:40
+i1 @ index-BpqWGUN1.js:40
+cl @ index-BpqWGUN1.js:40
+Mc @ index-BpqWGUN1.js:40
+Yf @ index-BpqWGUN1.js:40
+Zn @ index-BpqWGUN1.js:38
+(anonymous) @ index-BpqWGUN1.js:40
+setTimeout
+o @ index-BpqWGUN1.js:48
+i @ index-BpqWGUN1.js:48
+batch @ index-BpqWGUN1.js:48
+Jt @ index-BpqWGUN1.js:48
+setData @ index-BpqWGUN1.js:48
+onSuccess @ index-BpqWGUN1.js:48
+d @ index-BpqWGUN1.js:48
+Promise.then
+S @ index-BpqWGUN1.js:48
+start @ index-BpqWGUN1.js:48
+fetch @ index-BpqWGUN1.js:48
+Zo @ index-BpqWGUN1.js:48
+onSubscribe @ index-BpqWGUN1.js:48
+subscribe @ index-BpqWGUN1.js:48
+(anonymous) @ index-BpqWGUN1.js:48
+Pm @ index-BpqWGUN1.js:38
+Rl @ index-BpqWGUN1.js:40
+qr @ index-BpqWGUN1.js:40
+Yf @ index-BpqWGUN1.js:40
+Zn @ index-BpqWGUN1.js:38
+a1 @ index-BpqWGUN1.js:40
+rr @ index-BpqWGUN1.js:40
+ig @ index-BpqWGUN1.js:40
+C @ index-BpqWGUN1.js:25
+A @ index-BpqWGUN1.js:25
