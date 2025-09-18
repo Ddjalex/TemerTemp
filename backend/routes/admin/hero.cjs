@@ -91,17 +91,30 @@ router.get('/edit/:id', async (req, res) => {
 // Create slide
 router.post('/new', upload.single('image'), async (req, res) => {
   try {
-    const { title, subtitle, description, buttonText, buttonLink, displayOrder, isActive } = req.body;
+    const { title, subtitle, description, buttonText, buttonLink, displayOrder, isActive, imageAlt } = req.body;
+    
+    // Validate required fields
+    if (!req.file) {
+      throw new Error('Hero image is required');
+    }
+    if (!imageAlt || !imageAlt.trim()) {
+      throw new Error('Image alt text is required');
+    }
     
     const slideData = {
       title,
       subtitle,
       description,
-      buttonText,
-      buttonLink,
-      displayOrder: displayOrder ? parseInt(displayOrder) : 0,
+      ctaButton: {
+        text: buttonText || 'Learn More',
+        link: buttonLink || '/listings'
+      },
+      order: displayOrder ? parseInt(displayOrder) : 0,
       isActive: isActive === 'true',
-      image: req.file ? `/uploads/hero/${req.file.filename}` : null
+      image: {
+        url: `/uploads/hero/${req.file.filename}`,
+        alt: imageAlt.trim()
+      }
     };
     
     const slide = new HeroSlide(slideData);
@@ -113,7 +126,7 @@ router.post('/new', upload.single('image'), async (req, res) => {
       title: 'New Hero Slide - Temer Properties Admin',
       user: req.session.user,
       slide: req.body,
-      errors: error.errors || { general: 'Failed to create slide' }
+      errors: error.errors || { general: error.message || 'Failed to create slide' }
     });
   }
 });
@@ -126,18 +139,30 @@ router.post('/edit/:id', upload.single('image'), async (req, res) => {
       return res.status(404).json({ success: false, message: 'Slide not found' });
     }
     
-    const { title, subtitle, description, buttonText, buttonLink, displayOrder, isActive } = req.body;
+    const { title, subtitle, description, buttonText, buttonLink, displayOrder, isActive, imageAlt } = req.body;
     
     slide.title = title;
     slide.subtitle = subtitle;
     slide.description = description;
-    slide.buttonText = buttonText;
-    slide.buttonLink = buttonLink;
-    slide.displayOrder = displayOrder ? parseInt(displayOrder) : 0;
+    slide.ctaButton = {
+      text: buttonText || 'Learn More',
+      link: buttonLink || '/listings'
+    };
+    slide.order = displayOrder ? parseInt(displayOrder) : 0;
     slide.isActive = isActive === 'true';
     
+    // Handle image update
     if (req.file) {
-      slide.image = `/uploads/hero/${req.file.filename}`;
+      if (!imageAlt || !imageAlt.trim()) {
+        throw new Error('Image alt text is required when uploading a new image');
+      }
+      slide.image = {
+        url: `/uploads/hero/${req.file.filename}`,
+        alt: imageAlt.trim()
+      };
+    } else if (imageAlt && imageAlt.trim() && slide.image && slide.image.url) {
+      // Update only alt text if no new image uploaded
+      slide.image.alt = imageAlt.trim();
     }
     
     await slide.save();
@@ -148,7 +173,7 @@ router.post('/edit/:id', upload.single('image'), async (req, res) => {
       title: 'Edit Hero Slide - Temer Properties Admin',
       user: req.session.user,
       slide: req.body,
-      errors: error.errors || { general: 'Failed to update slide' }
+      errors: error.errors || { general: error.message || 'Failed to update slide' }
     });
   }
 });
