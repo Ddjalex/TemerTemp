@@ -8,24 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Phone, Mail, MapPin, Send } from "lucide-react";
 
-interface ContactFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  inquiryType: string;
-  propertyInterest: string;
-  message: string;
-  agreeToTerms: boolean;
-  subscribeNewsletter: boolean;
-}
-
-interface ContactFormProps {
-  onSubmit: (data: ContactFormData) => void;
-}
-
-export default function ContactForm({ onSubmit }: ContactFormProps) {
-  const [formData, setFormData] = useState<ContactFormData>({
+export default function ContactForm({ onSubmit }) {
+  const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
@@ -39,11 +23,11 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInputChange = (field: keyof ContactFormData, value: string | boolean) => {
+  const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
@@ -244,7 +228,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
                   <Checkbox
                     id="agreeToTerms"
                     checked={formData.agreeToTerms}
-                    onCheckedChange={(checked) => handleInputChange('agreeToTerms', checked as boolean)}
+                    onCheckedChange={(checked) => handleInputChange('agreeToTerms', checked)}
                     data-testid="checkbox-agree-terms"
                   />
                   <Label htmlFor="agreeToTerms" className="text-sm">
@@ -256,7 +240,7 @@ export default function ContactForm({ onSubmit }: ContactFormProps) {
                   <Checkbox
                     id="subscribeNewsletter"
                     checked={formData.subscribeNewsletter}
-                    onCheckedChange={(checked) => handleInputChange('subscribeNewsletter', checked as boolean)}
+                    onCheckedChange={(checked) => handleInputChange('subscribeNewsletter', checked)}
                     data-testid="checkbox-newsletter"
                   />
                   <Label htmlFor="subscribeNewsletter" className="text-sm">

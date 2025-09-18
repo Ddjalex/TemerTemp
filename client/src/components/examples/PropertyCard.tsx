@@ -3,11 +3,11 @@ import luxuryVilla from "@assets/generated_images/Luxury_villa_hero_image_3dfce5
 
 export default function PropertyCardExample() {
   //todo: remove mock functionality
-  const handleViewDetails = (id: string) => console.log('View details:', id);
-  const handleFavorite = (id: string) => console.log('Favorite:', id);
-  const handleShare = (id: string) => console.log('Share:', id);
-  const handleCall = (id: string) => console.log('Call:', id);
-  const handleWhatsApp = (id: string) => console.log('WhatsApp:', id);
+  const handleViewDetails = (id) => console.log('View details:', id);
+  const handleFavorite = (id) => console.log('Favorite:', id);
+  const handleShare = (id) => console.log('Share:', id);
+  const handleCall = (id) => console.log('Call:', id);
+  const handleWhatsApp = (id) => console.log('WhatsApp:', id);
 
   return (
     <div className="p-6 max-w-sm">

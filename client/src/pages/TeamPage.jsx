@@ -85,9 +85,9 @@ export default function TeamPage() {
     { icon: TrendingUp, label: "Sales Volume", value: "$250M+", description: "Lifetime sales" }
   ];
 
-  const handleCall = (phone: string) => console.log("Call:", phone);
-  const handleEmail = (email: string) => console.log("Email:", email);
-  const handleMessage = (id: string) => console.log("Message agent:", id);
+  const handleCall = (phone) => console.log("Call:", phone);
+  const handleEmail = (email) => console.log("Email:", email);
+  const handleMessage = (id) => console.log("Message agent:", id);
 
   return (
     <div className="min-h-screen bg-background">

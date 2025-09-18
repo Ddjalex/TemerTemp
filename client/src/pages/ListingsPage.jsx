@@ -13,7 +13,7 @@ import luxuryCondo from "@assets/generated_images/Downtown_luxury_condo_15b7acf1
 import modernInterior from "@assets/generated_images/Modern_apartment_interior_61087e44.png";
 
 export default function ListingsPage() {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -28,7 +28,7 @@ export default function ListingsPage() {
       baths: 4,
       sqft: "4,200",
       image: luxuryVilla,
-      status: "sale" as const,
+      status: "sale",
       featured: true
     },
     {
@@ -40,7 +40,7 @@ export default function ListingsPage() {
       baths: 3,
       sqft: "3,100",
       image: modernHome,
-      status: "sale" as const,
+      status: "sale",
       featured: false
     },
     {
@@ -52,7 +52,7 @@ export default function ListingsPage() {
       baths: 2,
       sqft: "2,400",
       image: luxuryCondo,
-      status: "rent" as const,
+      status: "rent",
       featured: true
     },
     {
@@ -64,7 +64,7 @@ export default function ListingsPage() {
       baths: 2,
       sqft: "1,800",
       image: modernInterior,
-      status: "rent" as const,
+      status: "rent",
       featured: false
     },
     {
@@ -76,7 +76,7 @@ export default function ListingsPage() {
       baths: 5,
       sqft: "5,500",
       image: luxuryVilla,
-      status: "sale" as const,
+      status: "sale",
       featured: true
     },
     {
@@ -88,7 +88,7 @@ export default function ListingsPage() {
       baths: 3,
       sqft: "2,100",
       image: modernHome,
-      status: "sale" as const,
+      status: "sale",
       featured: false
     }
   ];
@@ -98,7 +98,7 @@ export default function ListingsPage() {
   const endIndex = startIndex + 6;
   const currentProperties = properties.slice(startIndex, endIndex);
 
-  const handleFilterChange = (filters: any) => {
+  const handleFilterChange = (filters) => {
     console.log('Filters applied:', filters);
     // In real app, this would filter the properties
   };
@@ -108,18 +108,18 @@ export default function ListingsPage() {
     // In real app, this would reset all filters
   };
 
-  const handleViewDetails = (id: string) => console.log("View property:", id);
-  const handleFavorite = (id: string) => console.log("Favorite property:", id);
-  const handleShare = (id: string) => console.log("Share property:", id);
-  const handleCall = (id: string) => console.log("Call property:", id);
-  const handleWhatsApp = (id: string) => console.log("WhatsApp property:", id);
+  const handleViewDetails = (id) => console.log("View property:", id);
+  const handleFavorite = (id) => console.log("Favorite property:", id);
+  const handleShare = (id) => console.log("Share property:", id);
+  const handleCall = (id) => console.log("Call property:", id);
+  const handleWhatsApp = (id) => console.log("WhatsApp property:", id);
 
-  const handleSortChange = (value: string) => {
+  const handleSortChange = (value) => {
     setSortBy(value);
     console.log('Sort by:', value);
   };
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

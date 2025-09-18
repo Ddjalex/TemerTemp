@@ -4,21 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Phone, Mail, MessageCircle, Star } from "lucide-react";
 
-interface TeamMemberCardProps {
-  id: string;
-  name: string;
-  role: string;
-  photo: string;
-  phone: string;
-  email: string;
-  specialties: string[];
-  rating: number;
-  salesCount: number;
-  onCall: (phone: string) => void;
-  onEmail: (email: string) => void;
-  onMessage: (id: string) => void;
-}
-
 export default function TeamMemberCard({
   id,
   name,
@@ -32,7 +17,7 @@ export default function TeamMemberCard({
   onCall,
   onEmail,
   onMessage
-}: TeamMemberCardProps) {
+}) {
 
   const handleCall = () => {
     console.log('Call clicked for:', name);
@@ -49,7 +34,7 @@ export default function TeamMemberCard({
     onMessage(id);
   };
 
-  const getInitials = (name: string) => {
+  const getInitials = (name) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 

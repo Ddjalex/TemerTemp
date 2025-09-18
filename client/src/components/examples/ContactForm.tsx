@@ -2,7 +2,7 @@ import ContactForm from '../ContactForm';
 
 export default function ContactFormExample() {
   //todo: remove mock functionality
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data) => {
     console.log('Contact form submitted:', data);
     alert('Thank you for your message! We will get back to you soon.');
   };

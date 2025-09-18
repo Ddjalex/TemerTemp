@@ -4,7 +4,7 @@ import agentPhoto from "@assets/generated_images/Real_estate_agent_portrait_fda2
 
 export default function BlogCardExample() {
   //todo: remove mock functionality
-  const handleReadMore = (id: string) => console.log('Read more:', id);
+  const handleReadMore = (id) => console.log('Read more:', id);
 
   return (
     <div className="p-6 max-w-sm">

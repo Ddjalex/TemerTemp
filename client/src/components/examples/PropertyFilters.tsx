@@ -2,7 +2,7 @@ import PropertyFilters from '../PropertyFilters';
 
 export default function PropertyFiltersExample() {
   //todo: remove mock functionality
-  const handleFilterChange = (filters: any) => console.log('Filters changed:', filters);
+  const handleFilterChange = (filters) => console.log('Filters changed:', filters);
   const handleReset = () => console.log('Filters reset');
 
   return (

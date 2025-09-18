@@ -8,23 +8,8 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Search, X, Filter } from "lucide-react";
 
-interface FilterState {
-  location: string;
-  propertyType: string;
-  status: string;
-  priceRange: [number, number];
-  bedrooms: string;
-  bathrooms: string;
-  sqftRange: [number, number];
-}
-
-interface PropertyFiltersProps {
-  onFilterChange: (filters: FilterState) => void;
-  onReset: () => void;
-}
-
-export default function PropertyFilters({ onFilterChange, onReset }: PropertyFiltersProps) {
-  const [filters, setFilters] = useState<FilterState>({
+export default function PropertyFilters({ onFilterChange, onReset }) {
+  const [filters, setFilters] = useState({
     location: '',
     propertyType: '',
     status: '',
@@ -36,7 +21,7 @@ export default function PropertyFilters({ onFilterChange, onReset }: PropertyFil
 
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const updateFilter = (key: keyof FilterState, value: any) => {
+  const updateFilter = (key, value) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
     onFilterChange(newFilters);
@@ -48,10 +33,10 @@ export default function PropertyFilters({ onFilterChange, onReset }: PropertyFil
       location: '',
       propertyType: '',
       status: '',
-      priceRange: [0, 5000000] as [number, number],
+      priceRange: [0, 5000000],
       bedrooms: '',
       bathrooms: '',
-      sqftRange: [0, 10000] as [number, number]
+      sqftRange: [0, 10000]
     };
     setFilters(resetFilters);
     onReset();
@@ -70,7 +55,7 @@ export default function PropertyFilters({ onFilterChange, onReset }: PropertyFil
     return count;
   };
 
-  const formatPrice = (price: number) => {
+  const formatPrice = (price) => {
     if (price >= 1000000) {
       return `$${(price / 1000000).toFixed(1)}M`;
     }
@@ -80,7 +65,7 @@ export default function PropertyFilters({ onFilterChange, onReset }: PropertyFil
     return `$${price}`;
   };
 
-  const formatSqft = (sqft: number) => {
+  const formatSqft = (sqft) => {
     if (sqft >= 1000) {
       return `${(sqft / 1000).toFixed(1)}K`;
     }
@@ -180,7 +165,7 @@ export default function PropertyFilters({ onFilterChange, onReset }: PropertyFil
           <div className="px-2">
             <Slider
               value={filters.priceRange}
-              onValueChange={(value) => updateFilter('priceRange', value as [number, number])}
+              onValueChange={(value) => updateFilter('priceRange', value)}
               max={5000000}
               min={0}
               step={50000}
@@ -233,7 +218,7 @@ export default function PropertyFilters({ onFilterChange, onReset }: PropertyFil
           <div className="px-2">
             <Slider
               value={filters.sqftRange}
-              onValueChange={(value) => updateFilter('sqftRange', value as [number, number])}
+              onValueChange={(value) => updateFilter('sqftRange', value)}
               max={10000}
               min={0}
               step={100}

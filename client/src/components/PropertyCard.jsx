@@ -3,24 +3,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Bed, Bath, Square, Heart, Share2, Phone, MessageCircle } from "lucide-react";
 
-interface PropertyCardProps {
-  id: string;
-  title: string;
-  price: string;
-  location: string;
-  beds: number;
-  baths: number;
-  sqft: string;
-  image: string;
-  status: 'sale' | 'rent' | 'sold';
-  featured?: boolean;
-  onViewDetails: (id: string) => void;
-  onFavorite: (id: string) => void;
-  onShare: (id: string) => void;
-  onCall: (id: string) => void;
-  onWhatsApp: (id: string) => void;
-}
-
 export default function PropertyCard({
   id,
   title,
@@ -37,7 +19,7 @@ export default function PropertyCard({
   onShare,
   onCall,
   onWhatsApp
-}: PropertyCardProps) {
+}) {
   
   const handleViewDetails = () => {
     console.log('View details clicked for property:', id);
@@ -64,7 +46,7 @@ export default function PropertyCard({
     onWhatsApp(id);
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'sale': return 'bg-primary text-primary-foreground';
       case 'rent': return 'bg-blue-600 text-white';
@@ -73,7 +55,7 @@ export default function PropertyCard({
     }
   };
 
-  const getStatusText = (status: string) => {
+  const getStatusText = (status) => {
     switch (status) {
       case 'sale': return 'For Sale';
       case 'rent': return 'For Rent';

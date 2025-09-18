@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Clock, Award, Users } from "lucide-react";
 
 export default function ContactPage() {
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = (data) => {
     console.log('Contact form submitted:', data);
     alert('Thank you for your message! We will get back to you within 24 hours.');
   };

@@ -4,21 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 
-interface BlogCardProps {
-  id: string;
-  title: string;
-  excerpt: string;
-  coverImage: string;
-  author: {
-    name: string;
-    avatar: string;
-  };
-  publishDate: string;
-  readTime: string;
-  category: string;
-  onReadMore: (id: string) => void;
-}
-
 export default function BlogCard({
   id,
   title,
@@ -29,14 +14,14 @@ export default function BlogCard({
   readTime,
   category,
   onReadMore
-}: BlogCardProps) {
+}) {
 
   const handleReadMore = () => {
     console.log('Read more clicked for post:', id);
     onReadMore(id);
   };
 
-  const getInitials = (name: string) => {
+  const getInitials = (name) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 

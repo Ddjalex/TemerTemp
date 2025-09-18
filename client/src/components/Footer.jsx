@@ -6,12 +6,12 @@ import { Link } from "wouter";
 import temerLogo from "@assets/images (2)_1755853378467-D-9Sw1o__1758104048014.jpg";
 
 export default function Footer() {
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const email = formData.get('email') as string;
+    const formData = new FormData(e.target);
+    const email = formData.get('email');
     console.log('Newsletter signup:', email);
-    (e.target as HTMLFormElement).reset();
+    e.target.reset();
   };
 
   const socialLinks = [
