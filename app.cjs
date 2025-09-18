@@ -83,7 +83,7 @@ async function startServer() {
       resave: false,
       saveUninitialized: false,
       store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_URI
+        mongoUrl: 'mongodb+srv://wondimualmeseged_db_user:A1l2m3e4s5@cluster0.dtusgpq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
       }),
       cookie: {
         secure: process.env.NODE_ENV === 'production',

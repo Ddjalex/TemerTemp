@@ -1,0 +1,9 @@
+{
+  "schema": "./shared/schema.ts",
+  "dialect": "postgresql",
+  "dbCredentials": {
+    "url": "env:DATABASE_URL",
+    "ssl": "require"
+  },
+  "out": "./drizzle"
+}

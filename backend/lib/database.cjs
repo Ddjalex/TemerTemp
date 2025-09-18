@@ -2,13 +2,9 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    let mongoURI = process.env.MONGODB_URI;
+    let mongoURI = process.env.MONGODB_URI || 'mongodb+srv://wondimualmeseged_db_user:A1l2m3e4s5@cluster0.dtusgpq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
     
-    // Fallback to default if no environment variable is set
-    if (!mongoURI) {
-      mongoURI = 'mongodb://localhost:27017/temer-properties';
-      console.warn('⚠️ MONGODB_URI not set, using local MongoDB. Please set MONGODB_URI in your environment variables.');
-    }
+    console.log('🔗 Connecting to MongoDB Atlas...');
     
     const options = {
       maxPoolSize: 10, // Maintain up to 10 socket connections
