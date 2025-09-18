@@ -22,7 +22,7 @@ export default function HomePage() {
     {
       id: "1",
       title: "Luxury Villa with Ocean View",
-      price: "$2,850,000",
+      price: "ETB 142,500,000",
       location: "Miami Beach, FL",
       beds: 5,
       baths: 4,
@@ -34,7 +34,7 @@ export default function HomePage() {
     {
       id: "2", 
       title: "Modern Family Home",
-      price: "$875,000",
+      price: "ETB 43,750,000",
       location: "Coral Gables, FL",
       beds: 4,
       baths: 3,
@@ -46,7 +46,7 @@ export default function HomePage() {
     {
       id: "3",
       title: "Downtown Luxury Condominium", 
-      price: "$1,250,000",
+      price: "ETB 62,500,000",
       location: "Downtown Miami, FL",
       beds: 3,
       baths: 2,

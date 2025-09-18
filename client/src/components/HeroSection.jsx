@@ -13,7 +13,7 @@ const slides = [
     image: luxuryVilla,
     title: "Luxury Villa with Ocean View",
     subtitle: "Experience the finest in coastal living",
-    price: "$2,850,000",
+    price: "ETB 142,500,000",
     location: "Miami Beach, FL",
     beds: 5,
     baths: 4,
@@ -24,7 +24,7 @@ const slides = [
     image: modernHome,
     title: "Modern Family Home",
     subtitle: "Perfect for growing families",
-    price: "$875,000",
+    price: "ETB 43,750,000",
     location: "Coral Gables, FL", 
     beds: 4,
     baths: 3,
@@ -35,7 +35,7 @@ const slides = [
     image: luxuryCondo,
     title: "Downtown Luxury Condominium",
     subtitle: "Urban sophistication at its finest",
-    price: "$1,250,000",
+    price: "ETB 62,500,000",
     location: "Downtown Miami, FL",
     beds: 3,
     baths: 2,
@@ -208,10 +208,10 @@ export default function HeroSection() {
                     <SelectValue placeholder="Any price" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="0-500k">Under $500K</SelectItem>
-                    <SelectItem value="500k-1m">$500K - $1M</SelectItem>
-                    <SelectItem value="1m-2m">$1M - $2M</SelectItem>
-                    <SelectItem value="2m+">$2M+</SelectItem>
+                    <SelectItem value="0-25m">Under ETB 25M</SelectItem>
+                    <SelectItem value="25m-50m">ETB 25M - 50M</SelectItem>
+                    <SelectItem value="50m-100m">ETB 50M - 100M</SelectItem>
+                    <SelectItem value="100m+">ETB 100M+</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

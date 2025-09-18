@@ -82,7 +82,7 @@ export default function TeamPage() {
     { icon: Users, label: "Team Members", value: "12+", description: "Experienced professionals" },
     { icon: Star, label: "Average Rating", value: "4.8", description: "Client satisfaction" },
     { icon: Award, label: "Years Combined", value: "85+", description: "Industry experience" },
-    { icon: TrendingUp, label: "Sales Volume", value: "$250M+", description: "Lifetime sales" }
+    { icon: TrendingUp, label: "Sales Volume", value: "ETB 12.5B+", description: "Lifetime sales" }
   ];
 
   const handleCall = (phone) => console.log("Call:", phone);

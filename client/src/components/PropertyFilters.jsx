@@ -13,7 +13,7 @@ export default function PropertyFilters({ onFilterChange, onReset }) {
     location: '',
     propertyType: '',
     status: '',
-    priceRange: [0, 5000000],
+    priceRange: [0, 250000000],
     bedrooms: '',
     bathrooms: '',
     sqftRange: [0, 10000]
@@ -33,7 +33,7 @@ export default function PropertyFilters({ onFilterChange, onReset }) {
       location: '',
       propertyType: '',
       status: '',
-      priceRange: [0, 5000000],
+      priceRange: [0, 250000000],
       bedrooms: '',
       bathrooms: '',
       sqftRange: [0, 10000]
@@ -50,19 +50,19 @@ export default function PropertyFilters({ onFilterChange, onReset }) {
     if (filters.status) count++;
     if (filters.bedrooms) count++;
     if (filters.bathrooms) count++;
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 5000000) count++;
+    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 250000000) count++;
     if (filters.sqftRange[0] > 0 || filters.sqftRange[1] < 10000) count++;
     return count;
   };
 
   const formatPrice = (price) => {
     if (price >= 1000000) {
-      return `$${(price / 1000000).toFixed(1)}M`;
+      return `ETB ${(price / 1000000).toFixed(1)}M`;
     }
     if (price >= 1000) {
-      return `$${(price / 1000).toFixed(0)}K`;
+      return `ETB ${(price / 1000).toFixed(0)}K`;
     }
-    return `$${price}`;
+    return `ETB ${price}`;
   };
 
   const formatSqft = (sqft) => {
@@ -166,9 +166,9 @@ export default function PropertyFilters({ onFilterChange, onReset }) {
             <Slider
               value={filters.priceRange}
               onValueChange={(value) => updateFilter('priceRange', value)}
-              max={5000000}
+              max={250000000}
               min={0}
-              step={50000}
+              step={2500000}
               className="w-full"
               data-testid="slider-price-range"
             />
