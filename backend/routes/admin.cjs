@@ -23,6 +23,25 @@ router.use('/blog', blogRoutes);
 router.use('/hero', heroRoutes);
 router.use('/team', teamRoutes);
 
+// Logout routes (GET and POST for flexibility)
+router.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Logout error:', err);
+    }
+    res.redirect('/admin/login');
+  });
+});
+
+router.post('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Logout error:', err);
+    }
+    res.redirect('/admin/login');
+  });
+});
+
 // Default admin route redirects to dashboard
 router.get('/', (req, res) => {
   res.redirect('/admin/dashboard');
