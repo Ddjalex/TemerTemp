@@ -1,82 +1,52 @@
+import { useState, useEffect } from "react";
 import TeamMemberCard from "@/components/TeamMemberCard";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Award, Users, Star, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Award, Users, Star, TrendingUp, Phone, Mail, MessageCircle } from "lucide-react";
 
-// Import generated images
+// Import generated images as fallbacks
 import agentPhoto1 from "@assets/generated_images/Real_estate_agent_portrait_fda206b8.png";
 import agentPhoto2 from "@assets/generated_images/Male_agent_portrait_8ad97304.png";
 
 export default function TeamPage() {
-  //todo: remove mock functionality
-  const teamMembers = [
-    {
-      id: "1",
-      name: "Sarah Johnson",
-      role: "Senior Real Estate Agent & Team Lead",
-      photo: agentPhoto1,
-      phone: "+1 (555) 123-4567",
-      email: "sarah.johnson@temerproperties.com",
-      specialties: ["Luxury Homes", "Waterfront Properties", "Investment Properties"],
-      rating: 4.8,
-      salesCount: 127
-    },
-    {
-      id: "2",
-      name: "Michael Chen",
-      role: "Real Estate Specialist",
-      photo: agentPhoto2,
-      phone: "+1 (555) 234-5678",
-      email: "michael.chen@temerproperties.com",
-      specialties: ["First-Time Buyers", "Condominiums", "Commercial Properties"],
-      rating: 4.9,
-      salesCount: 98
-    },
-    {
-      id: "3",
-      name: "Emily Rodriguez",
-      role: "Property Consultant",
-      photo: agentPhoto1,
-      phone: "+1 (555) 345-6789",
-      email: "emily.rodriguez@temerproperties.com",
-      specialties: ["Rental Properties", "Property Management", "Relocation Services"],
-      rating: 4.7,
-      salesCount: 156
-    },
-    {
-      id: "4",
-      name: "David Thompson",
-      role: "Investment Advisor",
-      photo: agentPhoto2,
-      phone: "+1 (555) 456-7890",
-      email: "david.thompson@temerproperties.com",
-      specialties: ["Investment Analysis", "Commercial Real Estate", "Portfolio Management"],
-      rating: 4.9,
-      salesCount: 89
-    },
-    {
-      id: "5",
-      name: "Maria Gonzalez",
-      role: "Luxury Home Specialist",
-      photo: agentPhoto1,
-      phone: "+1 (555) 567-8901",
-      email: "maria.gonzalez@temerproperties.com",
-      specialties: ["Luxury Estates", "High-End Condos", "Exclusive Listings"],
-      rating: 4.8,
-      salesCount: 103
-    },
-    {
-      id: "6",
-      name: "Robert Kim",
-      role: "Commercial Real Estate Agent",
-      photo: agentPhoto2,
-      phone: "+1 (555) 678-9012",
-      email: "robert.kim@temerproperties.com",
-      specialties: ["Office Buildings", "Retail Spaces", "Industrial Properties"],
-      rating: 4.6,
-      salesCount: 67
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchTeamMembers();
+  }, []);
+
+  const fetchTeamMembers = async () => {
+    try {
+      const response = await fetch('/api/team');
+      if (!response.ok) throw new Error('Failed to fetch team members');
+      
+      const data = await response.json();
+      setTeamMembers(data.data || []);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching team members:', err);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  // Normalize API data to match UI expectations
+  const normalizeTeamMember = (member) => ({
+    id: member._id,
+    name: member.name,
+    role: member.role || member.position || "Real Estate Agent",
+    photo: member.image?.url || member.photo || agentPhoto1, // Use fallback images for missing photos
+    phone: member.phone || member.contact?.phone,
+    email: member.email || member.contact?.email,
+    specialties: member.specialties || member.skills || [],
+    rating: member.rating || 5.0,
+    salesCount: member.salesCount || member.propertiesSold || 0
+  });
+
+  const normalizedTeamMembers = teamMembers.map(normalizeTeamMember);
 
   const teamStats = [
     { icon: Users, label: "Team Members", value: "12+", description: "Experienced professionals" },
@@ -85,9 +55,47 @@ export default function TeamPage() {
     { icon: TrendingUp, label: "Sales Volume", value: "ETB 12.5B+", description: "Lifetime sales" }
   ];
 
-  const handleCall = (phone) => console.log("Call:", phone);
-  const handleEmail = (email) => console.log("Email:", email);
-  const handleMessage = (id) => console.log("Message agent:", id);
+  const handleCall = (phone) => {
+    const cleanPhone = phone.replace(/[^\d+]/g, '');
+    window.location.href = `tel:${cleanPhone}`;
+  };
+
+  const handleEmail = (email) => {
+    window.location.href = `mailto:${email}`;
+  };
+
+  const handleMessage = (id) => {
+    console.log("Message agent:", id);
+    // In a real app, this would open a contact form or messaging system
+  };
+
+
+  if (loading) {
+    return (
+      <div className="min-h-screen py-16 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading our team...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen py-16 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-foreground mb-4">Our Team</h1>
+            <p className="text-red-600 mb-4">Error loading team members: {error}</p>
+            <Button onClick={fetchTeamMembers}>Try Again</Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -135,17 +143,39 @@ export default function TeamPage() {
       {/* Team Members Grid */}
       <section className="pb-16">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {teamMembers.map((member) => (
-              <TeamMemberCard
-                key={member.id}
-                {...member}
-                onCall={handleCall}
-                onEmail={handleEmail}
-                onMessage={handleMessage}
-              />
-            ))}
-          </div>
+          {normalizedTeamMembers.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {normalizedTeamMembers.map((member) => (
+                <TeamMemberCard
+                  key={member.id}
+                  {...member}
+                  onCall={handleCall}
+                  onEmail={handleEmail}
+                  onMessage={handleMessage}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+                <Users className="w-12 h-12 text-muted-foreground" />
+              </div>
+              <h3 className="text-2xl font-semibold text-foreground mb-4">
+                No Team Members Yet
+              </h3>
+              <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+                Our team section is being updated. Please check back soon to meet our amazing real estate professionals, or contact us directly for assistance.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button asChild>
+                  <a href="/contact">Contact Us</a>
+                </Button>
+                <Button variant="outline" asChild>
+                  <a href="/listings">View Properties</a>
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
