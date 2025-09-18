@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .temer-green { background-color: #7CB342; }
+        .bg-temer-green { background-color: #7CB342; }
+        .text-temer-green { color: #7CB342; }
+        .border-temer-green { border-color: #7CB342; }
+        
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: #7CB342;
+            background-color: #f0f8e6;
+        }
+        .image-preview {
+            position: relative;
+            display: inline-block;
+            margin: 10px;
+        }
+        .image-preview img {
+            width: 150px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .image-preview .remove-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- Admin Navigation -->
+<nav class="bg-white shadow-lg border-b-2 border-temer-green">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center space-x-8">
+                <div class="flex-shrink-0 flex items-center">
+                    <i class="fas fa-building text-temer-green text-2xl mr-2"></i>
+                    <span class="text-xl font-bold text-gray-900">Temer Properties</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <a href="/admin/dashboard" class="text-gray-500 hover:text-gray-700">Dashboard</a>
+                    <span class="text-gray-500">/</span>
+                    <a href="/admin/properties" class="text-gray-500 hover:text-gray-700">Properties</a>
+                    <span class="text-gray-500">/</span>
+                    <span class="text-gray-900 font-medium"><%= property ? 'Edit' : 'New' %></span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="w-8 h-8 bg-temer-green rounded-full flex items-center justify-center">
+                    <span class="text-white font-semibold text-sm"><%= user.fullName.split(' ').map(n => n[0]).join('') %></span>
+                </div>
+                <a href="/admin/logout" class="text-red-600 hover:text-red-800">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="py-6">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-900"><%= property ? 'Edit' : 'Add New' %> Property</h1>
+            <a href="/admin/properties" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Properties
+            </a>
+        </div>
+
+        <form id="propertyForm" action="<%= property ? '/admin/properties/edit/' + property._id : '/admin/properties/new' %>" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <!-- Basic Information -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">Basic Information</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Property Title</label>
+                        <input type="text" name="title" id="title" value="<%= property ? property.title || '' : '' %>"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Beautiful 3BR Home in Downtown">
+                    </div>
+                    
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-gray-700 mb-2">Price ($)</label>
+                        <input type="number" name="price" id="price" value="<%= property ? property.price || '' : '' %>"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="450000">
+                    </div>
+                    
+                    <div>
+                        <label for="propertyType" class="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
+                        <select name="propertyType" id="propertyType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="house" <%= property && property.propertyType === 'house' ? 'selected' : '' %>>House</option>
+                            <option value="apartment" <%= property && property.propertyType === 'apartment' ? 'selected' : '' %>>Apartment</option>
+                            <option value="condo" <%= property && property.propertyType === 'condo' ? 'selected' : '' %>>Condo</option>
+                            <option value="townhouse" <%= property && property.propertyType === 'townhouse' ? 'selected' : '' %>>Townhouse</option>
+                            <option value="villa" <%= property && property.propertyType === 'villa' ? 'selected' : '' %>>Villa</option>
+                            <option value="land" <%= property && property.propertyType === 'land' ? 'selected' : '' %>>Land</option>
+                            <option value="commercial" <%= property && property.propertyType === 'commercial' ? 'selected' : '' %>>Commercial</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <select name="status" id="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="for-sale" <%= !property || property.status === 'for-sale' ? 'selected' : '' %>>For Sale</option>
+                            <option value="for-rent" <%= property && property.status === 'for-rent' ? 'selected' : '' %>>For Rent</option>
+                            <option value="sold" <%= property && property.status === 'sold' ? 'selected' : '' %>>Sold</option>
+                            <option value="rented" <%= property && property.status === 'rented' ? 'selected' : '' %>>Rented</option>
+                            <option value="pending" <%= property && property.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea name="description" id="description" rows="4" 
+                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Describe the property features, location, and amenities..."><%= property ? property.description || '' : '' %></textarea>
+                </div>
+                
+                <div class="mt-6 flex items-center space-x-6">
+                    <label class="flex items-center">
+                        <input type="checkbox" name="isActive" value="true" <%= !property || property.isActive !== false ? 'checked' : '' %>
+                               class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200">
+                        <span class="ml-2 text-sm text-gray-700">Active (visible on website)</span>
+                    </label>
+                    
+                    <label class="flex items-center">
+                        <input type="checkbox" name="isFeatured" value="true" <%= property && property.isFeatured ? 'checked' : '' %>
+                               class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200">
+                        <span class="ml-2 text-sm text-gray-700">Featured Property</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Property Features -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">Property Features</h2>
+                
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div>
+                        <label for="bedrooms" class="block text-sm font-medium text-gray-700 mb-2">Bedrooms</label>
+                        <input type="number" name="bedrooms" id="bedrooms" value="<%= property && property.features ? property.features.bedrooms || '' : '' %>"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label for="bathrooms" class="block text-sm font-medium text-gray-700 mb-2">Bathrooms</label>
+                        <input type="number" step="0.5" name="bathrooms" id="bathrooms" value="<%= property && property.features ? property.features.bathrooms || '' : '' %>"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label for="sqft" class="block text-sm font-medium text-gray-700 mb-2">Square Feet</label>
+                        <input type="number" name="sqft" id="sqft" value="<%= property && property.features ? property.features.sqft || '' : '' %>"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label for="yearBuilt" class="block text-sm font-medium text-gray-700 mb-2">Year Built</label>
+                        <input type="number" name="yearBuilt" id="yearBuilt" value="<%= property && property.features ? property.features.yearBuilt || '' : '' %>"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">Address</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="lg:col-span-2">
+                        <label for="street" class="block text-sm font-medium text-gray-700 mb-2">Street Address</label>
+                        <input type="text" name="street" id="street" value="<%= property && property.address ? property.address.street || '' : '' %>"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="123 Main Street">
+                    </div>
+                    
+                    <div>
+                        <label for="city" class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                        <input type="text" name="city" id="city" value="<%= property && property.address ? property.address.city || '' : '' %>"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Addis Ababa">
+                    </div>
+                    
+                    <div>
+                        <label for="state" class="block text-sm font-medium text-gray-700 mb-2">State/Region</label>
+                        <input type="text" name="state" id="state" value="<%= property && property.address ? property.address.state || '' : '' %>"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Addis Ababa">
+                    </div>
+                    
+                    <div>
+                        <label for="zipCode" class="block text-sm font-medium text-gray-700 mb-2">ZIP/Postal Code</label>
+                        <input type="text" name="zipCode" id="zipCode" value="<%= property && property.address ? property.address.zipCode || '' : '' %>"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="1000">
+                    </div>
+                    
+                    <div>
+                        <label for="country" class="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                        <input type="text" name="country" id="country" value="<%= property && property.address ? property.address.country || 'Ethiopia' : 'Ethiopia' %>"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Images -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">Property Images</h2>
+                
+                <div class="drop-zone" id="dropZone">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-lg text-gray-600 mb-2">Drag & drop images here</p>
+                    <p class="text-sm text-gray-500 mb-4">or click to select files</p>
+                    <input type="file" id="imageInput" name="images" multiple accept="image/*" class="hidden">
+                    <button type="button" onclick="document.getElementById('imageInput').click()" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                        Select Images
+                    </button>
+                </div>
+                
+                <div id="imagePreview" class="mt-6">
+                    <% if (property && property.images && property.images.length > 0) { %>
+                        <% property.images.forEach(function(image, index) { %>
+                            <div class="image-preview" data-index="<%= index %>">
+                                <img src="<%= image.url %>" alt="Property Image">
+                                <button type="button" class="remove-btn" onclick="removeExistingImage(<%= index %>)">×</button>
+                                <input type="hidden" name="existingImages[<%= index %>][url]" value="<%= image.url %>">
+                                <input type="hidden" name="existingImages[<%= index %>][alt]" value="<%= image.alt || '' %>">
+                            </div>
+                        <% }); %>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex justify-end space-x-4">
+                <a href="/admin/properties" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium">
+                    Cancel
+                </a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
+                    <i class="fas fa-save mr-2"></i>
+                    <%= property ? 'Update' : 'Create' %> Property
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+// Image upload functionality
+const dropZone = document.getElementById('dropZone');
+const imageInput = document.getElementById('imageInput');
+const imagePreview = document.getElementById('imagePreview');
+let selectedFiles = [];
+
+// Drag and drop functionality
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+});
+
+dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+    handleFiles(files);
+});
+
+dropZone.addEventListener('click', () => {
+    imageInput.click();
+});
+
+imageInput.addEventListener('change', (e) => {
+    const files = Array.from(e.target.files);
+    handleFiles(files);
+});
+
+function handleFiles(files) {
+    files.forEach(file => {
+        if (file.type.startsWith('image/')) {
+            selectedFiles.push(file);
+            displayImagePreview(file);
+        }
+    });
+}
+
+function displayImagePreview(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const div = document.createElement('div');
+        div.className = 'image-preview';
+        div.innerHTML = `
+            <img src="${e.target.result}" alt="Preview">
+            <button type="button" class="remove-btn" onclick="removeImagePreview(this)">×</button>
+        `;
+        imagePreview.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeImagePreview(button) {
+    const preview = button.parentNode;
+    const index = Array.from(imagePreview.children).indexOf(preview);
+    selectedFiles.splice(index, 1);
+    preview.remove();
+}
+
+function removeExistingImage(index) {
+    const preview = document.querySelector(`[data-index="${index}"]`);
+    preview.remove();
+}
+
+// Form submission with validation
+document.getElementById('propertyForm').addEventListener('submit', function(e) {
+    // Basic validation
+    const title = document.getElementById('title').value.trim();
+    if (!title) {
+        alert('Please enter a property title.');
+        e.preventDefault();
+        return;
+    }
+    
+    // Create a new FormData object to handle file uploads
+    const formData = new FormData(this);
+    
+    // Add selected files
+    selectedFiles.forEach((file, index) => {
+        formData.append('newImages', file);
+    });
+    
+    // Submit via fetch for better error handling
+    e.preventDefault();
+    
+    fetch(this.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '/admin/properties';
+        } else {
+            alert(data.message || 'Failed to save property');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while saving the property');
+    });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .temer-green { background-color: #7CB342; }
+        .bg-temer-green { background-color: #7CB342; }
+        .text-temer-green { color: #7CB342; }
+        .border-temer-green { border-color: #7CB342; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- Admin Navigation -->
+<nav class="bg-white shadow-lg border-b-2 border-temer-green">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center space-x-8">
+                <div class="flex-shrink-0 flex items-center">
+                    <i class="fas fa-building text-temer-green text-2xl mr-2"></i>
+                    <span class="text-xl font-bold text-gray-900">Temer Properties</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <a href="/admin/dashboard" class="text-gray-500 hover:text-gray-700">Dashboard</a>
+                    <span class="text-gray-500">/</span>
+                    <span class="text-gray-900 font-medium">Team Members</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="w-8 h-8 bg-temer-green rounded-full flex items-center justify-center">
+                    <span class="text-white font-semibold text-sm"><%= user.fullName.split(' ').map(n => n[0]).join('') %></span>
+                </div>
+                <a href="/admin/logout" class="text-red-600 hover:text-red-800">
+                    <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-900">Team Members</h1>
+            <a href="/admin/team/new" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-plus mr-2"></i> Add Member
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% if (members.length === 0) { %>
+                <div class="col-span-full">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+                        <i class="fas fa-users text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-500 mb-4">No team members found.</p>
+                        <a href="/admin/team/new" class="text-blue-600 hover:underline">Add your first team member</a>.
+                    </div>
+                </div>
+            <% } else { %>
+                <% members.forEach(function(member) { %>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="p-6 text-center">
+                            <% if (member.image) { %>
+                                <img src="<%= member.image %>" alt="<%= member.firstName %> <%= member.lastName %>" class="w-24 h-24 rounded-full mx-auto mb-4 object-cover">
+                            <% } else { %>
+                                <div class="w-24 h-24 rounded-full mx-auto mb-4 bg-gray-200 flex items-center justify-center">
+                                    <i class="fas fa-user text-gray-400 text-2xl"></i>
+                                </div>
+                            <% } %>
+                            
+                            <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                                <%= member.firstName %> <%= member.lastName %>
+                            </h3>
+                            
+                            <% if (member.position) { %>
+                                <p class="text-sm text-gray-600 mb-3"><%= member.position %></p>
+                            <% } %>
+                            
+                            <% if (member.bio) { %>
+                                <p class="text-sm text-gray-500 mb-4">
+                                    <%= member.bio.length > 100 ? member.bio.substring(0, 100) + '...' : member.bio %>
+                                </p>
+                            <% } %>
+                            
+                            <!-- Contact Info -->
+                            <div class="space-y-2 mb-4 text-left">
+                                <% if (member.email) { %>
+                                    <div class="flex items-center text-sm text-gray-600">
+                                        <i class="fas fa-envelope w-4 mr-2"></i>
+                                        <span><%= member.email %></span>
+                                    </div>
+                                <% } %>
+                                
+                                <% if (member.phone) { %>
+                                    <div class="flex items-center text-sm text-gray-600">
+                                        <i class="fas fa-phone w-4 mr-2"></i>
+                                        <span><%= member.phone %></span>
+                                    </div>
+                                <% } %>
+                            </div>
+                            
+                            <!-- Specialties -->
+                            <% if (member.specialties && member.specialties.length > 0) { %>
+                                <div class="mb-4">
+                                    <div class="flex flex-wrap gap-1 justify-center">
+                                        <% member.specialties.slice(0, 3).forEach(function(specialty) { %>
+                                            <span class="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                                                <%= specialty %>
+                                            </span>
+                                        <% }); %>
+                                        <% if (member.specialties.length > 3) { %>
+                                            <span class="inline-flex px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full">
+                                                +<%= member.specialties.length - 3 %> more
+                                            </span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            <% } %>
+                            
+                            <!-- Status and Actions -->
+                            <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+                                <div class="flex items-center space-x-2">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full <%= member.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %>">
+                                        <%= member.isActive ? 'Active' : 'Inactive' %>
+                                    </span>
+                                    <span class="text-xs text-gray-500">
+                                        Order: <%= member.displayOrder || 0 %>
+                                    </span>
+                                </div>
+                                
+                                <div class="flex items-center space-x-2">
+                                    <a href="/admin/team/edit/<%= member._id %>" class="text-blue-600 hover:text-blue-900">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button onclick="deleteMember('<%= member._id %>', '<%= member.firstName %> <%= member.lastName %>')" class="text-red-600 hover:text-red-900">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+    </div>
+</main>
+
+<script>
+function deleteMember(id, name) {
+    if (confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
+        fetch(`/admin/team/delete/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'Failed to delete team member');
+            }
+        })
+        .catch(error => {
+            console.error('Delete error:', error);
+            alert('Failed to delete team member');
+        });
+    }
+}
+</script>
+
+</body>
+</html>

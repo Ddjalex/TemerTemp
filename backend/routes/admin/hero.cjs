@@ -1,6 +1,36 @@
 const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const router = express.Router();
 const HeroSlide = require('../../models/HeroSlide.cjs');
+
+// Configure multer for image uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, '../../uploads/hero');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  }
+});
 
 // Hero slides list
 router.get('/', async (req, res) => {
@@ -31,10 +61,50 @@ router.get('/new', (req, res) => {
   });
 });
 
-// Create slide
-router.post('/new', async (req, res) => {
+// Edit slide form
+router.get('/edit/:id', async (req, res) => {
   try {
-    const slide = new HeroSlide(req.body);
+    const slide = await HeroSlide.findById(req.params.id);
+    if (!slide) {
+      return res.render('admin/error', {
+        title: 'Slide Not Found - Temer Properties Admin',
+        user: req.session.user,
+        error: 'Hero slide not found'
+      });
+    }
+    res.render('admin/hero/form', {
+      title: 'Edit Hero Slide - Temer Properties Admin',
+      user: req.session.user,
+      slide,
+      errors: {}
+    });
+  } catch (error) {
+    console.error('Edit slide error:', error);
+    res.render('admin/error', {
+      title: 'Hero Error - Temer Properties Admin',
+      user: req.session.user,
+      error: 'Failed to load hero slide'
+    });
+  }
+});
+
+// Create slide
+router.post('/new', upload.single('image'), async (req, res) => {
+  try {
+    const { title, subtitle, description, buttonText, buttonLink, displayOrder, isActive } = req.body;
+    
+    const slideData = {
+      title,
+      subtitle,
+      description,
+      buttonText,
+      buttonLink,
+      displayOrder: displayOrder ? parseInt(displayOrder) : 0,
+      isActive: isActive === 'true',
+      image: req.file ? `/uploads/hero/${req.file.filename}` : null
+    };
+    
+    const slide = new HeroSlide(slideData);
     await slide.save();
     res.redirect('/admin/hero');
   } catch (error) {
@@ -45,6 +115,65 @@ router.post('/new', async (req, res) => {
       slide: req.body,
       errors: error.errors || { general: 'Failed to create slide' }
     });
+  }
+});
+
+// Update slide
+router.post('/edit/:id', upload.single('image'), async (req, res) => {
+  try {
+    const slide = await HeroSlide.findById(req.params.id);
+    if (!slide) {
+      return res.status(404).json({ success: false, message: 'Slide not found' });
+    }
+    
+    const { title, subtitle, description, buttonText, buttonLink, displayOrder, isActive } = req.body;
+    
+    slide.title = title;
+    slide.subtitle = subtitle;
+    slide.description = description;
+    slide.buttonText = buttonText;
+    slide.buttonLink = buttonLink;
+    slide.displayOrder = displayOrder ? parseInt(displayOrder) : 0;
+    slide.isActive = isActive === 'true';
+    
+    if (req.file) {
+      slide.image = `/uploads/hero/${req.file.filename}`;
+    }
+    
+    await slide.save();
+    res.redirect('/admin/hero');
+  } catch (error) {
+    console.error('Update slide error:', error);
+    res.render('admin/hero/form', {
+      title: 'Edit Hero Slide - Temer Properties Admin',
+      user: req.session.user,
+      slide: req.body,
+      errors: error.errors || { general: 'Failed to update slide' }
+    });
+  }
+});
+
+// Delete slide
+router.delete('/delete/:id', async (req, res) => {
+  try {
+    const slide = await HeroSlide.findById(req.params.id);
+    if (!slide) {
+      return res.status(404).json({ success: false, message: 'Slide not found' });
+    }
+    
+    // Delete image file if exists
+    if (slide.image && slide.image.startsWith('/uploads/')) {
+      const imagePath = path.join(__dirname, '../..', slide.image);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
+    }
+    
+    await HeroSlide.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Slide deleted successfully' });
+  } catch (error) {
+    console.error('Delete slide error:', error);
+    res.status(500).json({ success: false, message: 'Failed to delete slide' });
   }
 });
 

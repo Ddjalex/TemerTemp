@@ -117,6 +117,9 @@ async function startServer() {
     const adminRoutes = require('./backend/routes/admin.cjs');
     const publicRoutes = require('./backend/routes/public.cjs');
 
+    // Serve uploaded files
+    app.use('/uploads', express.static(path.join(__dirname, 'backend/uploads')));
+
     // Register routes
     app.use('/api', publicRoutes);
     app.use('/admin', adminRoutes);
