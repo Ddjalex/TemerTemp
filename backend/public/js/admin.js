@@ -237,8 +237,8 @@ function performSearch(query) {
 // Utility functions
 const AdminUtils = {
   // Format currency
-  formatCurrency: function(amount, currency = 'USD') {
-    return new Intl.NumberFormat('en-US', {
+  formatCurrency: function(amount, currency = 'ETB') {
+    return new Intl.NumberFormat('en-ET', {
       style: 'currency',
       currency: currency,
       minimumFractionDigits: 0,

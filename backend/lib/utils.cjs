@@ -40,8 +40,8 @@ const generateSlug = (text) => {
 };
 
 // Format currency
-const formatCurrency = (amount, currency = 'USD') => {
-  return new Intl.NumberFormat('en-US', {
+const formatCurrency = (amount, currency = 'ETB') => {
+  return new Intl.NumberFormat('en-ET', {
     style: 'currency',
     currency: currency,
     minimumFractionDigits: 0,

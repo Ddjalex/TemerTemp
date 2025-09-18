@@ -1,7 +1,7 @@
-const express = require("express");
-const { createServer } = require("http");
-const path = require("path");
-const fs = require("fs");
+import express from "express";
+import { createServer } from "http";
+import { createRequire } from "module";
+import path from "path";
 
 // Utility functions
 function log(message, source = "express") {
@@ -15,6 +15,7 @@ function log(message, source = "express") {
 }
 
 const app = express();
+const require = createRequire(import.meta.url);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -156,11 +157,11 @@ async function startServer() {
         const url = req.originalUrl;
         try {
           const clientTemplate = path.resolve(process.cwd(), "client", "index.html");
-          let template = await fs.promises.readFile(clientTemplate, "utf-8");
+          let template = await require("fs").promises.readFile(clientTemplate, "utf-8");
           const page = await vite.transformIndexHtml(url, template);
           res.status(200).set({ "Content-Type": "text/html" }).end(page);
         } catch (e) {
-          vite.ssrFixStacktrace(e);
+          vite.ssrFixStacktrace(e as Error);
           next(e);
         }
       });
