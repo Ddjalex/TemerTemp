@@ -200,4 +200,46 @@ router.get('/stats/overview', async (req, res) => {
   }
 });
 
+// Debug endpoint to check what's in the database
+router.get('/debug/all', async (req, res) => {
+  try {
+    const allProperties = await Property.find().lean();
+    const activeProperties = await Property.find({ isActive: true }).lean();
+    const featuredProperties = await Property.find({ isActive: true, isFeatured: true }).lean();
+    
+    sendSuccess(res, {
+      total: allProperties.length,
+      totalActive: activeProperties.length,
+      totalFeatured: featuredProperties.length,
+      allProperties: allProperties.map(p => ({
+        _id: p._id,
+        title: p.title,
+        isActive: p.isActive,
+        isFeatured: p.isFeatured,
+        status: p.status,
+        price: p.price
+      })),
+      activeProperties: activeProperties.map(p => ({
+        _id: p._id,
+        title: p.title,
+        isActive: p.isActive,
+        isFeatured: p.isFeatured,
+        status: p.status,
+        price: p.price
+      })),
+      featuredProperties: featuredProperties.map(p => ({
+        _id: p._id,
+        title: p.title,
+        isActive: p.isActive,
+        isFeatured: p.isFeatured,
+        status: p.status,
+        price: p.price
+      }))
+    });
+  } catch (error) {
+    console.error('Debug properties error:', error);
+    sendError(res, 'Failed to debug properties', 500);
+  }
+});
+
 module.exports = router;
