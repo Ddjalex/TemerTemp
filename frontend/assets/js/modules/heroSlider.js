@@ -6,41 +6,53 @@
 (function() {
     'use strict';
 
-    const HERO_SLIDES = [
-        {
-            id: 1,
-            image: "./assets/images/Luxury_villa_hero_image_3dfce514.png",
-            title: "Luxury Villa with Ocean View",
-            subtitle: "Experience the finest in coastal living",
-            price: "$2,850,000",
-            location: "Miami Beach, FL",
-            beds: 5,
-            baths: 4,
-            sqft: "4,200"
-        },
-        {
-            id: 2,
-            image: "./assets/images/Modern_family_home_600a02bb.png",
-            title: "Modern Family Home",
-            subtitle: "Perfect for growing families",
-            price: "$875,000",
-            location: "Coral Gables, FL", 
-            beds: 4,
-            baths: 3,
-            sqft: "3,100"
-        },
-        {
-            id: 3,
-            image: "./assets/images/Downtown_luxury_condo_15b7acf1.png",
-            title: "Downtown Luxury Condominium",
-            subtitle: "Urban sophistication at its finest",
-            price: "$1,250,000",
-            location: "Downtown Miami, FL",
-            beds: 3,
-            baths: 2,
-            sqft: "2,400"
+    let HERO_SLIDES = [];
+
+    // Fetch hero slides from API
+    async function fetchHeroSlides() {
+        try {
+            const response = await fetch('/api/hero');
+            const result = await response.json();
+            
+            if (result.success && result.data.length > 0) {
+                HERO_SLIDES = result.data.map(slide => ({
+                    id: slide._id,
+                    image: slide.image.url,
+                    title: slide.title,
+                    subtitle: slide.subtitle,
+                    description: slide.description,
+                    buttonText: slide.ctaButton?.text || 'Learn More',
+                    buttonLink: slide.ctaButton?.link || '/listings'
+                }));
+            } else {
+                // Fallback to default message when no slides available
+                HERO_SLIDES = [{
+                    id: 'default',
+                    image: './assets/images/temer-logo.jpg',
+                    title: 'Welcome to Temer Properties',
+                    subtitle: 'Your Premier Real Estate Partner',
+                    description: 'Discover exceptional properties that match your lifestyle and budget.',
+                    buttonText: 'View Properties',
+                    buttonLink: '/listings'
+                }];
+            }
+            
+            return HERO_SLIDES;
+        } catch (error) {
+            console.error('Failed to fetch hero slides:', error);
+            // Fallback content on API error
+            HERO_SLIDES = [{
+                id: 'fallback',
+                image: './assets/images/temer-logo.jpg',
+                title: 'Welcome to Temer Properties',
+                subtitle: 'Your Premier Real Estate Partner',
+                description: 'Discover exceptional properties that match your lifestyle and budget.',
+                buttonText: 'View Properties',
+                buttonLink: '/listings'
+            }];
+            return HERO_SLIDES;
         }
-    ];
+    }
 
     let currentSlideIndex = 0;
     let slideTimer = null;
@@ -51,21 +63,21 @@
             bg: document.getElementById('heroBg'),
             title: document.getElementById('heroTitle'),
             subtitle: document.getElementById('heroSubtitle'),
-            price: document.getElementById('heroPrice'),
-            location: document.getElementById('heroLocation'),
-            beds: document.getElementById('heroBeds'),
-            baths: document.getElementById('heroBaths'),
-            sqft: document.getElementById('heroSqft')
+            description: document.getElementById('heroDescription'),
+            button: document.getElementById('heroButton')
         };
 
-        if (elements.bg) elements.bg.src = slide.image;
+        if (elements.bg) {
+            elements.bg.src = slide.image;
+            elements.bg.alt = slide.title;
+        }
         if (elements.title) elements.title.textContent = slide.title;
         if (elements.subtitle) elements.subtitle.textContent = slide.subtitle;
-        if (elements.price) elements.price.textContent = slide.price;
-        if (elements.location) elements.location.textContent = slide.location;
-        if (elements.beds) elements.beds.textContent = slide.beds;
-        if (elements.baths) elements.baths.textContent = slide.baths;
-        if (elements.sqft) elements.sqft.textContent = slide.sqft;
+        if (elements.description) elements.description.textContent = slide.description;
+        if (elements.button) {
+            elements.button.textContent = slide.buttonText;
+            elements.button.href = slide.buttonLink;
+        }
     }
 
     function transitionToSlide(index) {
@@ -290,11 +302,16 @@
             }
         },
 
-        initializeSlider: function() {
+        initializeSlider: async function() {
+            // Fetch slides from API first
+            await fetchHeroSlides();
+            
             // Set initial slide
             if (HERO_SLIDES.length > 0) {
                 updateHeroContent(HERO_SLIDES[0]);
-                startAutoSlide();
+                if (HERO_SLIDES.length > 1) {
+                    startAutoSlide();
+                }
             }
         },
 
