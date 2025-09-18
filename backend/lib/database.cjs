@@ -2,18 +2,17 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    let mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/temer-properties';
+    let mongoURI = process.env.MONGODB_URI;
     
-    // Fix MongoDB Atlas URI by adding the proper prefix if missing
-    if (mongoURI.includes('cluster0') && !mongoURI.startsWith('mongodb')) {
-      mongoURI = `mongodb+srv://${mongoURI}`;
+    // Fallback to default if no environment variable is set
+    if (!mongoURI) {
+      mongoURI = 'mongodb://localhost:27017/temer-properties';
+      console.warn('⚠️ MONGODB_URI not set, using local MongoDB. Please set MONGODB_URI in your environment variables.');
     }
     
     const options = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       maxPoolSize: 10, // Maintain up to 10 socket connections
-      serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+      serverSelectionTimeoutMS: 10000, // Keep trying to send operations for 10 seconds
       socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
       family: 4, // Use IPv4, skip trying IPv6
       retryWrites: true,
