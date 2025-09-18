@@ -3,36 +3,31 @@ const mongoose = require('mongoose');
 const propertySchema = new mongoose.Schema({
   title: {
     type: String,
-    required: true,
     trim: true,
     maxlength: 200
   },
   description: {
     type: String,
-    required: true,
     maxlength: 2000
   },
   price: {
     type: Number,
-    required: true,
     min: 0
   },
   propertyType: {
     type: String,
-    required: true,
     enum: ['house', 'apartment', 'condo', 'townhouse', 'villa', 'land', 'commercial']
   },
   status: {
     type: String,
-    required: true,
     enum: ['for-sale', 'for-rent', 'sold', 'rented', 'pending'],
     default: 'for-sale'
   },
   address: {
-    street: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    zipCode: { type: String, required: true },
+    street: { type: String },
+    city: { type: String },
+    state: { type: String },
+    zipCode: { type: String },
     country: { type: String, default: 'USA' }
   },
   coordinates: {
@@ -40,9 +35,9 @@ const propertySchema = new mongoose.Schema({
     longitude: { type: Number }
   },
   features: {
-    bedrooms: { type: Number, required: true, min: 0 },
-    bathrooms: { type: Number, required: true, min: 0 },
-    sqft: { type: Number, required: true, min: 0 },
+    bedrooms: { type: Number, min: 0 },
+    bathrooms: { type: Number, min: 0 },
+    sqft: { type: Number, min: 0 },
     lotSize: { type: Number },
     yearBuilt: { type: Number },
     garage: { type: Number, default: 0 },
@@ -53,14 +48,13 @@ const propertySchema = new mongoose.Schema({
     trim: true
   }],
   images: [{
-    url: { type: String, required: true },
+    url: { type: String },
     alt: { type: String },
     isPrimary: { type: Boolean, default: false }
   }],
   agent: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    ref: 'User'
   },
   isActive: {
     type: Boolean,
