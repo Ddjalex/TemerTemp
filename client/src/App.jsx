@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { loadCurrencySettings } from "@/lib/currency";
 
 // Import components
 import Header from "@/components/Header";
@@ -29,6 +30,11 @@ function Router() {
 }
 
 function App() {
+  // Load currency settings on app startup
+  useEffect(() => {
+    loadCurrencySettings().catch(console.error);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

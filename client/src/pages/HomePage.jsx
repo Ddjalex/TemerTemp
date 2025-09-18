@@ -40,7 +40,7 @@ export default function HomePage() {
 
   const featuredProperties = featuredData?.data || [];
   const teamMembers = teamData?.data || [];
-  const blogPosts = blogData?.data || [];
+  const blogPosts = blogData?.data?.posts || [];
 
   // Default stats with API data overlay
   const stats = [

@@ -24,18 +24,24 @@ export default function HeroSection() {
 
   // Auto-advance slides
   useEffect(() => {
+    if (slides.length < 2) return; // Don't auto-advance if less than 2 slides
+    
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
+    if (slides.length > 1) {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    if (slides.length > 1) {
+      setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+    }
   };
 
   const handleSearch = () => {
@@ -66,13 +72,12 @@ export default function HeroSection() {
         features: { bedrooms: 4, bathrooms: 3, sqft: 3500 }
       }
     };
-    setCurrentSlide(0);
-    return renderHeroSlide(defaultSlide);
+    return renderHeroSlide(defaultSlide, false); // Don't show navigation for fallback
   }
 
   const current = slides[currentSlide];
 
-  function renderHeroSlide(slide) {
+  function renderHeroSlide(slide, showNavigation = slides.length > 1) {
     const property = slide.property || {};
     const features = property.features || {};
     const address = property.address || {};
@@ -149,25 +154,29 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Navigation Arrows */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:bg-white/20 backdrop-blur-sm"
-        onClick={prevSlide}
-        data-testid="button-prev-slide"
-      >
-        <ChevronLeft className="w-6 h-6" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:bg-white/20 backdrop-blur-sm"
-        onClick={nextSlide}
-        data-testid="button-next-slide"
-      >
-        <ChevronRight className="w-6 h-6" />
-      </Button>
+      {/* Navigation Arrows - Only show when there are multiple slides */}
+      {showNavigation && (
+        <>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:bg-white/20 backdrop-blur-sm"
+            onClick={prevSlide}
+            data-testid="button-prev-slide"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:bg-white/20 backdrop-blur-sm"
+            onClick={nextSlide}
+            data-testid="button-next-slide"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </Button>
+        </>
+      )}
 
       {/* Slide Indicators */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-2">
