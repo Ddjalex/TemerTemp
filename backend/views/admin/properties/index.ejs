@@ -1,5 +1,16 @@
 <% 
 const pageTitle = 'Properties';
+
+// Security helper function
+const escapeHtml = (text) => {
+  if (!text) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+};
 %>
 
 <%- include('../layout', { 
@@ -220,28 +231,28 @@ const pageTitle = 'Properties';
             <div class="card-body p-4">
               <div class="d-flex align-items-start mb-3">
                 ${property.images && property.images.length > 0 ? 
-                  `<img src="${property.images[0].url}" alt="${property.title}" class="property-image me-3">` : 
+                  `<img src="${escapeHtml(property.images[0].url)}" alt="${escapeHtml(property.title)}" class="property-image me-3">` : 
                   '<div class="property-placeholder me-3"><i class="fas fa-home"></i></div>'
                 }
                 <div class="flex-grow-1">
-                  <h5 class="mb-1 fw-bold">${property.title}</h5>
+                  <h5 class="mb-1 fw-bold">${escapeHtml(property.title)}</h5>
                   <p class="text-muted mb-2 small">
                     <i class="fas fa-map-marker-alt me-1"></i>
-                    ${property.address.street}, ${property.address.city}
+                    ${escapeHtml(property.address.street)}, ${escapeHtml(property.address.city)}
                   </p>
                   <div class="d-flex align-items-center gap-2 mb-2">
-                    <span class="type-badge">${property.propertyType}</span>
-                    <span class="status-badge bg-${property.status}">${property.status.replace('-', ' ')}</span>
+                    <span class="type-badge">${escapeHtml(property.propertyType)}</span>
+                    <span class="status-badge bg-${escapeHtml(property.status)}">${escapeHtml(property.status.replace('-', ' '))}</span>
                   </div>
                 </div>
               </div>
               
               <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
-                  <div class="h4 mb-0 fw-bold text-success">$${property.price.toLocaleString()}</div>
+                  <div class="h4 mb-0 fw-bold text-success">$${Number(property.price || 0).toLocaleString()}</div>
                   <small class="text-muted">
                     <i class="fas fa-user me-1"></i>
-                    ${property.agent ? property.agent.firstName + ' ' + property.agent.lastName : 'No agent'}
+                    ${property.agent ? escapeHtml(property.agent.firstName) + ' ' + escapeHtml(property.agent.lastName) : 'No agent'}
                   </small>
                 </div>
                 <div class="text-end">
@@ -283,18 +294,61 @@ const pageTitle = 'Properties';
       `}
     </div>
 
-    <!-- Enhanced Pagination -->
+    <!-- Enhanced Professional Pagination -->
     ${pagination && pagination.totalPages > 1 ? `
-      <div class="d-flex justify-content-center mt-5">
+      <div class="d-flex justify-content-between align-items-center mt-5">
+        <div class="text-muted">
+          Showing ${((pagination.currentPage - 1) * pagination.perPage) + 1} to ${Math.min(pagination.currentPage * pagination.perPage, pagination.totalItems)} of ${pagination.totalItems} properties
+        </div>
         <nav>
-          <ul class="pagination pagination-lg">
+          <ul class="pagination pagination-lg mb-0">
             ${pagination.hasPrev ? `
               <li class="page-item">
-                <a class="page-link rounded-pill me-2" href="?page=${pagination.prevPage}&${new URLSearchParams(filters).toString()}">
-                  <i class="fas fa-chevron-left me-1"></i> Previous
+                <a class="page-link" href="?page=1&${new URLSearchParams(filters).toString()}">
+                  <i class="fas fa-angle-double-left"></i>
+                </a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page=${pagination.prevPage}&${new URLSearchParams(filters).toString()}">
+                  <i class="fas fa-chevron-left"></i> Previous
                 </a>
               </li>
             ` : ''}
+            
+            ${Array.from({length: Math.min(5, pagination.totalPages)}, (_, i) => {
+              let pageNum;
+              if (pagination.totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (pagination.currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (pagination.currentPage >= pagination.totalPages - 2) {
+                pageNum = pagination.totalPages - 4 + i;
+              } else {
+                pageNum = pagination.currentPage - 2 + i;
+              }
+              return `
+                <li class="page-item ${pageNum === pagination.currentPage ? 'active' : ''}">
+                  <a class="page-link" href="?page=${pageNum}&${new URLSearchParams(filters).toString()}">${pageNum}</a>
+                </li>
+              `;
+            }).join('')}
+            
+            ${pagination.hasNext ? `
+              <li class="page-item">
+                <a class="page-link" href="?page=${pagination.nextPage}&${new URLSearchParams(filters).toString()}">
+                  Next <i class="fas fa-chevron-right"></i>
+                </a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page=${pagination.totalPages}&${new URLSearchParams(filters).toString()}">
+                  <i class="fas fa-angle-double-right"></i>
+                </a>
+              </li>
+            ` : ''}
+          </ul>
+        </nav>
+      </div>
+    ` : ''}
                 
                 ${Array.from({length: pagination.totalPages}, (_, i) => i + 1).map(page => `
                   <li class="page-item ${page === pagination.currentPage ? 'active' : ''}">

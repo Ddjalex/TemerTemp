@@ -1,5 +1,16 @@
 <% 
 const pageTitle = isEdit ? 'Edit Property' : 'Add New Property';
+
+// Security helper function
+const escapeHtml = (text) => {
+  if (!text) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+};
 %>
 
 <%- include('../layout', { 
@@ -206,7 +217,7 @@ const pageTitle = isEdit ? 'Edit Property' : 'Add New Property';
       
       <!-- Main Form Content -->
       <div class="col-lg-9">
-        <form method="POST" action="${isEdit ? '/admin/properties/' + property._id + '?_method=PUT' : '/admin/properties'}" enctype="multipart/form-data" class="professional-property-form">
+        <form method="POST" action="${isEdit ? '/admin/properties/' + escapeHtml(property._id) + '?_method=PUT' : '/admin/properties'}" enctype="multipart/form-data" class="professional-property-form" id="propertyForm" novalidate>
           
           <!-- Basic Information Section -->
           <div class="professional-form-card mb-4">
@@ -226,7 +237,8 @@ const pageTitle = isEdit ? 'Edit Property' : 'Add New Property';
                     <label for="title">Property Title *</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="fas fa-home"></i></span>
-                      <input type="text" class="form-control" id="title" name="title" value="${property ? property.title : ''}" placeholder="e.g., Luxury 3BR Apartment in Downtown" required>
+                      <input type="text" class="form-control" id="title" name="title" value="${property ? escapeHtml(property.title) : ''}" placeholder="e.g., Luxury 3BR Apartment in Downtown" required maxlength="200">
+                      <div class="invalid-feedback">Please provide a valid property title (max 200 characters).</div>
                     </div>
                   </div>
                 </div>
@@ -234,7 +246,8 @@ const pageTitle = isEdit ? 'Edit Property' : 'Add New Property';
                 <div class="col-12">
                   <div class="enhanced-input-group">
                     <label for="description">Property Description *</label>
-                    <textarea class="form-control" id="description" name="description" rows="5" placeholder="Describe the property features, amenities, and unique selling points..." required>${property ? property.description : ''}</textarea>
+                    <textarea class="form-control" id="description" name="description" rows="5" placeholder="Describe the property features, amenities, and unique selling points..." required maxlength="2000">${property ? escapeHtml(property.description) : ''}</textarea>
+                      <div class="invalid-feedback">Please provide a property description (max 2000 characters).</div>
                   </div>
                 </div>
                 
@@ -243,7 +256,8 @@ const pageTitle = isEdit ? 'Edit Property' : 'Add New Property';
                     <label for="price">Price (USD) *</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                      <input type="number" class="form-control" id="price" name="price" value="${property ? property.price : ''}" placeholder="500000" required>
+                      <input type="number" class="form-control" id="price" name="price" value="${property ? property.price : ''}" placeholder="500000" required min="1" max="100000000" step="1">
+                      <div class="invalid-feedback">Please provide a valid price between $1 and $100,000,000.</div>
                     </div>
                   </div>
                 </div>
@@ -323,7 +337,8 @@ const pageTitle = isEdit ? 'Edit Property' : 'Add New Property';
                     <label for="street">Street Address *</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="fas fa-road"></i></span>
-                      <input type="text" class="form-control" id="street" name="street" value="${property ? property.address.street : ''}" placeholder="123 Main Street" required>
+                      <input type="text" class="form-control" id="street" name="street" value="${property ? escapeHtml(property.address.street) : ''}" placeholder="123 Main Street" required maxlength="200">
+                      <div class="invalid-feedback">Please provide a valid street address.</div>
                     </div>
                   </div>
                 </div>
@@ -333,7 +348,8 @@ const pageTitle = isEdit ? 'Edit Property' : 'Add New Property';
                     <label for="city">City *</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="fas fa-city"></i></span>
-                      <input type="text" class="form-control" id="city" name="city" value="${property ? property.address.city : ''}" placeholder="New York" required>
+                      <input type="text" class="form-control" id="city" name="city" value="${property ? escapeHtml(property.address.city) : ''}" placeholder="New York" required maxlength="100">
+                      <div class="invalid-feedback">Please provide a valid city name.</div>
                     </div>
                   </div>
                 </div>
@@ -343,7 +359,8 @@ const pageTitle = isEdit ? 'Edit Property' : 'Add New Property';
                     <label for="state">State *</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="fas fa-flag"></i></span>
-                      <input type="text" class="form-control" id="state" name="state" value="${property ? property.address.state : ''}" placeholder="NY" required>
+                      <input type="text" class="form-control" id="state" name="state" value="${property ? escapeHtml(property.address.state) : ''}" placeholder="NY" required maxlength="50">
+                      <div class="invalid-feedback">Please provide a valid state.</div>
                     </div>
                   </div>
                 </div>
@@ -353,7 +370,8 @@ const pageTitle = isEdit ? 'Edit Property' : 'Add New Property';
                     <label for="zipCode">ZIP Code *</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="fas fa-mail-bulk"></i></span>
-                      <input type="text" class="form-control" id="zipCode" name="zipCode" value="${property ? property.address.zipCode : ''}" placeholder="10001" required>
+                      <input type="text" class="form-control" id="zipCode" name="zipCode" value="${property ? escapeHtml(property.address.zipCode) : ''}" placeholder="10001" required pattern="[0-9]{5}(-[0-9]{4})?" maxlength="10">
+                      <div class="invalid-feedback">Please provide a valid ZIP code (e.g., 12345 or 12345-6789).</div>
                     </div>
                   </div>
                 </div>

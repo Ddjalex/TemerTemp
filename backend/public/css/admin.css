@@ -396,23 +396,39 @@ body.admin-body {
 
 /* Pagination */
 .page-link {
-  color: var(--temer-green);
+  color: var(--temer-success);
+  border-radius: 8px;
+  margin: 0 4px;
+  border: 2px solid transparent;
+  transition: var(--transition);
 }
 
 .page-link:hover {
-  color: var(--temer-green-dark);
+  color: var(--temer-success);
+  background: rgba(56, 161, 105, 0.1);
+  border-color: var(--temer-success);
 }
 
 .page-item.active .page-link {
-  background-color: var(--temer-green);
-  border-color: var(--temer-green);
+  background: linear-gradient(135deg, var(--temer-success) 0%, #48bb78 100%);
+  border-color: var(--temer-success);
+  color: white;
+  box-shadow: 0 4px 15px rgba(56, 161, 105, 0.3);
+}
+
+/* Enhanced Pagination */
+.pagination-lg .page-link {
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 12px;
 }
 
 /* Alerts */
 .alert-success {
-  background-color: var(--temer-green-light);
-  border-color: var(--temer-green);
-  color: var(--temer-green-dark);
+  background: linear-gradient(135deg, rgba(56, 161, 105, 0.1) 0%, rgba(56, 161, 105, 0.05) 100%);
+  border: 2px solid var(--temer-success);
+  color: var(--temer-primary);
+  border-radius: 12px;
 }
 
 /* Image Upload Previews */
@@ -552,10 +568,46 @@ body.admin-body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--temer-green);
+  background: linear-gradient(135deg, var(--temer-success) 0%, #48bb78 100%);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--temer-green-dark);
+  background: linear-gradient(135deg, #2f855a 0%, var(--temer-success) 100%);
+}
+
+/* Active Navigation State */
+.nav-link[data-active="true"],
+.professional-nav-link[data-active="true"] {
+  color: white !important;
+  background: linear-gradient(135deg, var(--temer-success) 0%, #48bb78 100%) !important;
+  box-shadow: 0 4px 15px rgba(56, 161, 105, 0.3);
+  transform: translateX(8px);
+}
+
+/* Form Validation Styles */
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: var(--temer-danger);
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}
+
+.form-control.is-valid,
+.form-select.is-valid {
+  border-color: var(--temer-success);
+  box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.1);
+}
+
+.invalid-feedback {
+  color: var(--temer-danger);
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 6px;
+}
+
+.valid-feedback {
+  color: var(--temer-success);
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 6px;
 }
