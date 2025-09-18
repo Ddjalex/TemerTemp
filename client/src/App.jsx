@@ -14,6 +14,8 @@ import Footer from "@/components/Footer";
 import HomePage from "@/pages/HomePage";
 import ListingsPage from "@/pages/ListingsPage";
 import TeamPage from "@/pages/TeamPage";
+import BlogPage from "@/pages/BlogPage";
+import AboutPage from "@/pages/AboutPage";
 import ContactPage from "@/pages/ContactPage";
 import NotFound from "@/pages/NotFound";
 
@@ -23,6 +25,8 @@ function Router() {
       <Route path="/" component={HomePage} />
       <Route path="/listings" component={ListingsPage} />
       <Route path="/team" component={TeamPage} />
+      <Route path="/blog" component={BlogPage} />
+      <Route path="/about" component={AboutPage} />
       <Route path="/contact" component={ContactPage} />
       <Route component={NotFound} />
     </Switch>
