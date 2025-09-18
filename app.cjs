@@ -68,7 +68,7 @@ async function startServer() {
           defaultSrc: ["'self'"],
           styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
           scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net"],
-          fontSrc: ["'self'", "https://fonts.gstatic.com"],
+          fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
           imgSrc: ["'self'", "data:", "https:"]
         }
       }
