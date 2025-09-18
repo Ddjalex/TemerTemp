@@ -66,26 +66,6 @@ export default function Footer() {
                 </div>
               </Link>
               
-              <p className="text-muted-foreground mb-6 max-w-sm">
-                Your trusted partner in real estate. We help you find the perfect property and make your real estate dreams a reality.
-              </p>
-              
-              {/* Contact Info */}
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center gap-3 text-sm">
-                  <Phone className="w-4 h-4 text-primary" />
-                  <span>+1 (555) 123-4567</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <Mail className="w-4 h-4 text-primary" />
-                  <span>info@temerproperties.com</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <MapPin className="w-4 h-4 text-primary" />
-                  <span>123 Real Estate Blvd, Miami, FL 33101</span>
-                </div>
-              </div>
-              
               {/* Social Links */}
               <div className="flex gap-3">
                 {socialLinks.map((social, index) => (
