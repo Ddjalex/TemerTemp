@@ -1,18 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Facebook, Twitter, Instagram, Linkedin, Youtube, Phone, Mail, MapPin, Send } from "lucide-react";
+import { Facebook, Twitter, Instagram, Linkedin, Youtube, Phone, Mail, MapPin } from "lucide-react";
 import { Link } from "wouter";
 import temerLogo from "@assets/images (2)_1755853378467-D-9Sw1o__1758104048014.jpg";
 
 export default function Footer() {
-  const handleNewsletterSubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const email = formData.get('email');
-    console.log('Newsletter signup:', email);
-    e.target.reset();
-  };
 
   const socialLinks = [
     { icon: Facebook, href: "#", label: "Facebook" },
@@ -55,38 +48,6 @@ export default function Footer() {
 
   return (
     <footer className="bg-card text-card-foreground border-t">
-      {/* Newsletter Section */}
-      <div className="bg-primary text-primary-foreground py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div>
-              <h3 className="font-heading text-2xl font-bold mb-2">
-                Stay Updated with Market Trends
-              </h3>
-              <p className="text-primary-foreground/90">
-                Get the latest property listings, market insights, and exclusive deals delivered to your inbox.
-              </p>
-            </div>
-            <form onSubmit={handleNewsletterSubmit} className="flex gap-2">
-              <Input
-                type="email"
-                name="email"
-                placeholder="Enter your email address"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/70 flex-1"
-                required
-                data-testid="input-newsletter-email"
-              />
-              <Button 
-                type="submit" 
-                variant="secondary"
-                data-testid="button-newsletter-submit"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
-            </form>
-          </div>
-        </div>
-      </div>
 
       {/* Main Footer Content */}
       <div className="py-12">
