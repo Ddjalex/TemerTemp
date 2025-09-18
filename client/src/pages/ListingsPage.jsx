@@ -31,7 +31,7 @@ export default function ListingsPage() {
     queryFn: getPublicSettings
   });
 
-  const properties = (propertiesData?.data || []).map(property => ({
+  const properties = Array.isArray(propertiesData?.data) ? propertiesData.data.map(property => ({
     id: property._id,
     title: property.title,
     price: formatCurrency(property.price),
@@ -42,7 +42,7 @@ export default function ListingsPage() {
     image: property.images?.find(img => img.isPrimary)?.url || property.images?.[0]?.url || modernInterior,
     status: property.status === 'for-sale' ? 'sale' : property.status,
     featured: property.isFeatured
-  }));
+  })) : [];
   
   const adminSettings = settingsData?.data || {};
 
