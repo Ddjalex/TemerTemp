@@ -14,7 +14,7 @@ export default function PropertyCardExample() {
       <PropertyCard
         id="1"
         title="Luxury Villa with Ocean View"
-        price="$2,850,000"
+        price="ETB 142,500,000"
         location="Miami Beach, FL"
         beds={5}
         baths={4}

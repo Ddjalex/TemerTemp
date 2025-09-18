@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import HeroSection from "@/components/HeroSection";
 import PropertyCard from "@/components/PropertyCard";
 import TeamMemberCard from "@/components/TeamMemberCard";
@@ -7,115 +8,66 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Award, Users, Home, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
+import { getFeaturedProperties, getTeamMembers, getBlogPosts, getPropertyStats } from "@/lib/api";
+import { formatCurrency } from "@/lib/currency";
 
-// Import generated images
-import luxuryVilla from "@assets/generated_images/Luxury_villa_hero_image_3dfce514.png";
-import modernHome from "@assets/generated_images/Modern_family_home_600a02bb.png";
-import luxuryCondo from "@assets/generated_images/Downtown_luxury_condo_15b7acf1.png";
+// Fallback images
 import modernInterior from "@assets/generated_images/Modern_apartment_interior_61087e44.png";
 import agentPhoto1 from "@assets/generated_images/Real_estate_agent_portrait_fda206b8.png";
 import agentPhoto2 from "@assets/generated_images/Male_agent_portrait_8ad97304.png";
 
 export default function HomePage() {
-  //todo: remove mock functionality
-  const featuredProperties = [
-    {
-      id: "1",
-      title: "Luxury Villa with Ocean View",
-      price: "ETB 142,500,000",
-      location: "Miami Beach, FL",
-      beds: 5,
-      baths: 4,
-      sqft: "4,200",
-      image: luxuryVilla,
-      status: "sale",
-      featured: true
-    },
-    {
-      id: "2", 
-      title: "Modern Family Home",
-      price: "ETB 43,750,000",
-      location: "Coral Gables, FL",
-      beds: 4,
-      baths: 3,
-      sqft: "3,100",
-      image: modernHome,
-      status: "sale",
-      featured: true
-    },
-    {
-      id: "3",
-      title: "Downtown Luxury Condominium", 
-      price: "ETB 62,500,000",
-      location: "Downtown Miami, FL",
-      beds: 3,
-      baths: 2,
-      sqft: "2,400",
-      image: luxuryCondo,
-      status: "sale",
-      featured: true
-    }
-  ];
+  // Fetch data from API
+  const { data: featuredData, isLoading: isLoadingProperties } = useQuery({
+    queryKey: ['featured-properties'],
+    queryFn: () => getFeaturedProperties(3)
+  });
 
-  const topAgents = [
-    {
-      id: "1",
-      name: "Sarah Johnson",
-      role: "Senior Real Estate Agent", 
-      photo: agentPhoto1,
-      phone: "+1 (555) 123-4567",
-      email: "sarah.johnson@temerproperties.com",
-      specialties: ["Luxury Homes", "Waterfront", "Investment"],
-      rating: 4.8,
-      salesCount: 127
-    },
-    {
-      id: "2",
-      name: "Michael Chen",
-      role: "Real Estate Specialist",
-      photo: agentPhoto2, 
-      phone: "+1 (555) 234-5678",
-      email: "michael.chen@temerproperties.com",
-      specialties: ["First-Time Buyers", "Condos", "Commercial"],
-      rating: 4.9,
-      salesCount: 98
-    }
-  ];
+  const { data: teamData, isLoading: isLoadingTeam } = useQuery({
+    queryKey: ['team-members'],
+    queryFn: getTeamMembers
+  });
 
-  const blogPosts = [
-    {
-      id: "1",
-      title: "2024 Real Estate Market Trends: What Buyers Need to Know",
-      excerpt: "Discover the latest trends shaping the real estate market this year, from pricing fluctuations to emerging neighborhoods and investment opportunities.",
-      coverImage: modernInterior,
-      author: {
-        name: "Sarah Johnson",
-        avatar: agentPhoto1
-      },
-      publishDate: "Mar 15, 2024",
-      readTime: "5 min read", 
-      category: "Market Insights"
-    },
-    {
-      id: "2",
-      title: "First-Time Home Buyer's Complete Guide",
-      excerpt: "Everything you need to know about purchasing your first home, from mortgage pre-approval to closing day.",
-      coverImage: modernHome,
-      author: {
-        name: "Michael Chen", 
-        avatar: agentPhoto2
-      },
-      publishDate: "Mar 12, 2024",
-      readTime: "7 min read",
-      category: "Buying Guide"
-    }
-  ];
+  const { data: blogData, isLoading: isLoadingBlog } = useQuery({
+    queryKey: ['blog-posts'],
+    queryFn: () => getBlogPosts(2)
+  });
 
+  const { data: statsData } = useQuery({
+    queryKey: ['property-stats'],
+    queryFn: getPropertyStats
+  });
+
+  const featuredProperties = featuredData?.data || [];
+  const teamMembers = teamData?.data || [];
+  const blogPosts = blogData?.data || [];
+
+  // Default stats with API data overlay
   const stats = [
-    { icon: Home, label: "Properties Sold", value: "1,200+", description: "This year" },
-    { icon: Users, label: "Happy Clients", value: "850+", description: "Satisfied customers" },
-    { icon: Award, label: "Years Experience", value: "15+", description: "In real estate" },
-    { icon: TrendingUp, label: "Market Growth", value: "18%", description: "Year over year" }
+    { 
+      icon: Home, 
+      label: "Properties Sold", 
+      value: statsData?.data?.sold ? `${statsData.data.sold}+` : "1,200+", 
+      description: "This year" 
+    },
+    { 
+      icon: Users, 
+      label: "Happy Clients", 
+      value: "850+", 
+      description: "Satisfied customers" 
+    },
+    { 
+      icon: Award, 
+      label: "Years Experience", 
+      value: "15+", 
+      description: "In real estate" 
+    },
+    { 
+      icon: TrendingUp, 
+      label: "Properties Available", 
+      value: statsData?.data?.totalProperties ? `${statsData.data.totalProperties}+` : "150+", 
+      description: "Active listings" 
+    }
   ];
 
   // Mock handlers
@@ -174,17 +126,37 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {featuredProperties.map((property) => (
-              <PropertyCard
-                key={property.id}
-                {...property}
-                onViewDetails={handleViewDetails}
-                onFavorite={handleFavorite}
-                onShare={handleShare}
-                onCall={handleCall}
-                onWhatsApp={handleWhatsApp}
-              />
-            ))}
+            {isLoadingProperties ? (
+              // Loading skeletons
+              Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="bg-muted rounded-lg h-64 mb-4"></div>
+                  <div className="h-4 bg-muted rounded mb-2"></div>
+                  <div className="h-4 bg-muted rounded w-3/4"></div>
+                </div>
+              ))
+            ) : (
+              featuredProperties.map((property) => (
+                <PropertyCard
+                  key={property._id}
+                  id={property._id}
+                  title={property.title}
+                  price={formatCurrency(property.price)}
+                  location={`${property.address.city}, ${property.address.state}`}
+                  beds={property.features.bedrooms}
+                  baths={property.features.bathrooms}
+                  sqft={property.features.sqft}
+                  image={property.images?.[0]?.url || modernInterior}
+                  status={property.status}
+                  featured={property.isFeatured}
+                  onViewDetails={handleViewDetails}
+                  onFavorite={handleFavorite}
+                  onShare={handleShare}
+                  onCall={handleCall}
+                  onWhatsApp={handleWhatsApp}
+                />
+              ))
+            )}
           </div>
 
           <div className="text-center">
@@ -269,15 +241,34 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
-            {topAgents.map((agent) => (
-              <TeamMemberCard
-                key={agent.id}
-                {...agent}
-                onCall={handleAgentCall}
-                onEmail={handleEmail}
-                onMessage={handleMessage}
-              />
-            ))}
+            {isLoadingTeam ? (
+              // Loading skeletons
+              Array.from({ length: 2 }).map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="bg-muted rounded-lg h-80 mb-4"></div>
+                  <div className="h-4 bg-muted rounded mb-2"></div>
+                  <div className="h-4 bg-muted rounded w-2/3"></div>
+                </div>
+              ))
+            ) : (
+              teamMembers.slice(0, 2).map((member) => (
+                <TeamMemberCard
+                  key={member._id}
+                  id={member._id}
+                  name={`${member.firstName} ${member.lastName}`}
+                  role={member.position}
+                  photo={member.photo?.url || (member.firstName === 'Sarah' ? agentPhoto1 : agentPhoto2)}
+                  phone={member.contact?.phone || '+1 (555) 123-4567'}
+                  email={member.contact?.email || `${member.firstName.toLowerCase()}@temerproperties.com`}
+                  specialties={member.specialties || ['Real Estate', 'Sales']}
+                  rating={member.rating || 4.8}
+                  salesCount={member.propertyCount || 0}
+                  onCall={handleAgentCall}
+                  onEmail={handleEmail}
+                  onMessage={handleMessage}
+                />
+              ))
+            )}
           </div>
 
           <div className="text-center">
@@ -307,13 +298,40 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
-            {blogPosts.map((post) => (
-              <BlogCard
-                key={post.id}
-                {...post}
-                onReadMore={handleReadMore}
-              />
-            ))}
+            {isLoadingBlog ? (
+              // Loading skeletons
+              Array.from({ length: 2 }).map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="bg-muted rounded-lg h-48 mb-4"></div>
+                  <div className="h-4 bg-muted rounded mb-2"></div>
+                  <div className="h-4 bg-muted rounded mb-2"></div>
+                  <div className="h-4 bg-muted rounded w-1/2"></div>
+                </div>
+              ))
+            ) : blogPosts.length > 0 ? (
+              blogPosts.map((post) => (
+                <BlogCard
+                  key={post._id}
+                  id={post._id}
+                  title={post.title}
+                  excerpt={post.excerpt || post.content?.substring(0, 150) + '...'}
+                  coverImage={post.featuredImage?.url || modernInterior}
+                  author={{
+                    name: post.author?.firstName ? `${post.author.firstName} ${post.author.lastName}` : 'Team Writer',
+                    avatar: agentPhoto1
+                  }}
+                  publishDate={new Date(post.publishedAt || post.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                  readTime={`${Math.ceil((post.content?.length || 500) / 200)} min read`}
+                  category={post.category || 'Real Estate'}
+                  onReadMore={handleReadMore}
+                />
+              ))
+            ) : (
+              // Fallback content when no blog posts
+              <div className="col-span-2 text-center py-8">
+                <p className="text-muted-foreground">Blog posts coming soon!</p>
+              </div>
+            )}
           </div>
 
           <div className="text-center">

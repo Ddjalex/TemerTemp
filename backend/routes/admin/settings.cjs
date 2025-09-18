@@ -250,7 +250,7 @@ router.post('/seed', async (req, res) => {
       { key: 'social_linkedin', value: 'https://linkedin.com/company/temerproperties', type: 'string', category: 'social', description: 'LinkedIn company URL' },
       
       // General settings
-      { key: 'site_currency', value: 'USD', type: 'string', category: 'general', description: 'Default currency' },
+      { key: 'site_currency', value: 'ETB', type: 'string', category: 'general', description: 'Default currency' },
       { key: 'properties_per_page', value: 12, type: 'number', category: 'general', description: 'Properties per page' },
       { key: 'blog_posts_per_page', value: 10, type: 'number', category: 'general', description: 'Blog posts per page' }
     ];

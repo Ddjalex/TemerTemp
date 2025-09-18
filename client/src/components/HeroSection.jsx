@@ -1,53 +1,26 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from "@/components/ui/button";
 import { Search, ChevronLeft, ChevronRight, MapPin, Bed, Bath, Square } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { getHeroSlides } from "@/lib/api";
+import { formatCurrency } from "@/lib/currency";
 import luxuryVilla from "@assets/generated_images/Luxury_villa_hero_image_3dfce514.png";
-import modernHome from "@assets/generated_images/Modern_family_home_600a02bb.png";
-import luxuryCondo from "@assets/generated_images/Downtown_luxury_condo_15b7acf1.png";
-
-const slides = [
-  {
-    id: 1,
-    image: luxuryVilla,
-    title: "Luxury Villa with Ocean View",
-    subtitle: "Experience the finest in coastal living",
-    price: "ETB 142,500,000",
-    location: "Miami Beach, FL",
-    beds: 5,
-    baths: 4,
-    sqft: "4,200"
-  },
-  {
-    id: 2,
-    image: modernHome,
-    title: "Modern Family Home",
-    subtitle: "Perfect for growing families",
-    price: "ETB 43,750,000",
-    location: "Coral Gables, FL", 
-    beds: 4,
-    baths: 3,
-    sqft: "3,100"
-  },
-  {
-    id: 3,
-    image: luxuryCondo,
-    title: "Downtown Luxury Condominium",
-    subtitle: "Urban sophistication at its finest",
-    price: "ETB 62,500,000",
-    location: "Downtown Miami, FL",
-    beds: 3,
-    baths: 2,
-    sqft: "2,400"
-  }
-];
 
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [searchLocation, setSearchLocation] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [priceRange, setPriceRange] = useState("");
+
+  // Fetch hero slides from API
+  const { data: heroData, isLoading, error } = useQuery({
+    queryKey: ['hero-slides'],
+    queryFn: getHeroSlides
+  });
+
+  const slides = heroData?.data || [];
 
   // Auto-advance slides
   useEffect(() => {
@@ -69,54 +42,91 @@ export default function HeroSection() {
     console.log('Search triggered:', { searchLocation, propertyType, priceRange });
   };
 
+  if (isLoading) {
+    return (
+      <section className="relative h-[600px] lg:h-[700px] overflow-hidden bg-muted flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p>Loading hero slides...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (error || !slides.length) {
+    // Fallback to default slide
+    const defaultSlide = {
+      _id: 'default',
+      title: 'Luxury Properties Available',
+      subtitle: 'Find your perfect home today',
+      image: { url: luxuryVilla, alt: 'Luxury Villa' },
+      property: {
+        price: 50000000,
+        address: { city: 'Addis Ababa', state: 'Ethiopia' },
+        features: { bedrooms: 4, bathrooms: 3, sqft: 3500 }
+      }
+    };
+    setCurrentSlide(0);
+    return renderHeroSlide(defaultSlide);
+  }
+
   const current = slides[currentSlide];
 
-  return (
-    <section className="relative h-[600px] lg:h-[700px] overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <img
-          src={current.image}
-          alt={current.title}
-          className="w-full h-full object-cover"
-        />
-        {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
-      </div>
+  function renderHeroSlide(slide) {
+    const property = slide.property || {};
+    const features = property.features || {};
+    const address = property.address || {};
+    
+    return (
+      <section className="relative h-[600px] lg:h-[700px] overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img
+            src={slide.image?.url || luxuryVilla}
+            alt={slide.image?.alt || slide.title}
+            className="w-full h-full object-cover"
+          />
+          {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
+        </div>
 
-      {/* Content */}
-      <div className="relative z-10 h-full flex items-center">
-        <div className="max-w-7xl mx-auto px-4 w-full">
-          <div className="max-w-2xl text-white">
-            <h1 className="font-heading text-4xl lg:text-6xl font-bold mb-4 leading-tight">
-              {current.title}
-            </h1>
-            <p className="text-xl lg:text-2xl mb-2 font-light">
-              {current.subtitle}
-            </p>
-            
-            {/* Property Details */}
-            <div className="flex flex-wrap items-center gap-6 mb-8 text-lg">
-              <span className="font-bold text-2xl text-primary">{current.price}</span>
-              <div className="flex items-center gap-2">
-                <MapPin className="w-5 h-5" />
-                <span>{current.location}</span>
+        {/* Content */}
+        <div className="relative z-10 h-full flex items-center">
+          <div className="max-w-7xl mx-auto px-4 w-full">
+            <div className="max-w-2xl text-white">
+              <h1 className="font-heading text-4xl lg:text-6xl font-bold mb-4 leading-tight">
+                {slide.title}
+              </h1>
+              <p className="text-xl lg:text-2xl mb-2 font-light">
+                {slide.subtitle}
+              </p>
+              
+              {/* Property Details */}
+              <div className="flex flex-wrap items-center gap-6 mb-8 text-lg">
+                <span className="font-bold text-2xl text-primary">
+                  {property.price ? formatCurrency(property.price) : 'Price Available'}
+                </span>
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5" />
+                  <span>{address.city ? `${address.city}, ${address.state}` : 'Location Available'}</span>
+                </div>
+                {features.bedrooms && (
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1">
+                      <Bed className="w-5 h-5" />
+                      <span>{features.bedrooms}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Bath className="w-5 h-5" />
+                      <span>{features.bathrooms}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Square className="w-5 h-5" />
+                      <span>{features.sqft} sq ft</span>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  <Bed className="w-5 h-5" />
-                  <span>{current.beds}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Bath className="w-5 h-5" />
-                  <span>{current.baths}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Square className="w-5 h-5" />
-                  <span>{current.sqft} sq ft</span>
-                </div>
-              </div>
-            </div>
 
             <div className="flex gap-4">
               <Button 
@@ -208,10 +218,10 @@ export default function HeroSection() {
                     <SelectValue placeholder="Any price" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="0-25m">Under ETB 25M</SelectItem>
-                    <SelectItem value="25m-50m">ETB 25M - 50M</SelectItem>
-                    <SelectItem value="50m-100m">ETB 50M - 100M</SelectItem>
-                    <SelectItem value="100m+">ETB 100M+</SelectItem>
+                    <SelectItem value="0-25000000">Under ETB 25M</SelectItem>
+                    <SelectItem value="25000000-50000000">ETB 25M - 50M</SelectItem>
+                    <SelectItem value="50000000-100000000">ETB 50M - 100M</SelectItem>
+                    <SelectItem value="100000000+">ETB 100M+</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -228,7 +238,10 @@ export default function HeroSection() {
             </div>
           </div>
         </div>
-      </div>
-    </section>
-  );
+        </div>
+      </section>
+    );
+  }
+
+  return renderHeroSlide(current);
 }
