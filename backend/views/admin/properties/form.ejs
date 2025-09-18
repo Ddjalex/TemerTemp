@@ -5,98 +5,357 @@ const pageTitle = isEdit ? 'Edit Property' : 'Add New Property';
 <%- include('../layout', { 
   title: pageTitle + ' - Temer Properties Admin', 
   pageTitle,
+  extraHead: `
+    <style>
+      .form-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 40px;
+        color: white;
+        margin-bottom: 30px;
+        box-shadow: 0 15px 45px rgba(0,0,0,0.1);
+      }
+      .professional-form-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+      .professional-form-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+      }
+      .form-section-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        padding: 25px 30px;
+        border-bottom: 2px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .form-section-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--temer-success) 0%, #48bb78 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+      }
+      .form-section-title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--temer-primary);
+      }
+      .form-section-subtitle {
+        margin: 0;
+        font-size: 14px;
+        color: #718096;
+      }
+      .enhanced-input-group {
+        position: relative;
+        margin-bottom: 25px;
+      }
+      .enhanced-input-group .form-floating {
+        margin-bottom: 0;
+      }
+      .enhanced-input-group .form-control,
+      .enhanced-input-group .form-select {
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        padding: 15px 20px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.8);
+      }
+      .enhanced-input-group .form-control:focus,
+      .enhanced-input-group .form-select:focus {
+        border-color: var(--temer-success);
+        box-shadow: 0 0 0 4px rgba(56, 161, 105, 0.1);
+        background: white;
+        transform: translateY(-2px);
+      }
+      .enhanced-input-group label {
+        font-weight: 600;
+        color: var(--temer-primary);
+        margin-bottom: 8px;
+        font-size: 14px;
+        display: block;
+      }
+      .form-actions {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        margin-top: 30px;
+      }
+      .image-upload-area {
+        border: 3px dashed #cbd5e0;
+        border-radius: 15px;
+        padding: 40px;
+        text-align: center;
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      .image-upload-area:hover {
+        border-color: var(--temer-success);
+        background: linear-gradient(135deg, rgba(56, 161, 105, 0.05) 0%, rgba(56, 161, 105, 0.1) 100%);
+      }
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+      }
+      .progress-sidebar {
+        position: sticky;
+        top: 20px;
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+      }
+      .progress-step {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      .progress-step.active {
+        background: linear-gradient(135deg, var(--temer-success) 0%, #48bb78 100%);
+        color: white;
+        transform: translateX(5px);
+      }
+      .progress-step.completed {
+        background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
+        color: var(--temer-primary);
+      }
+      .step-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        font-size: 14px;
+      }
+    </style>
+  `,
   body: `
+    <!-- Professional Form Header -->
+    <div class="form-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="mb-2 fw-bold">${isEdit ? 'Edit Property' : 'Add New Property'}</h1>
+          <p class="mb-0 opacity-75">${isEdit ? 'Update property information and details' : 'Create a new property listing with comprehensive details'}</p>
+        </div>
+        <div class="text-end">
+          <a href="/admin/properties" class="btn btn-light btn-lg">
+            <i class="fas fa-arrow-left me-2"></i> Back to Properties
+          </a>
+        </div>
+      </div>
+    </div>
+    
     <div class="row">
-      <div class="col-lg-8">
-        <form method="POST" action="${isEdit ? '/admin/properties/' + property._id + '?_method=PUT' : '/admin/properties'}" enctype="multipart/form-data">
-          
-          <!-- Basic Information -->
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0"><i class="bi bi-info-circle"></i> Basic Information</h5>
+      <!-- Progress Sidebar -->
+      <div class="col-lg-3">
+        <div class="progress-sidebar">
+          <h6 class="mb-3 fw-bold text-uppercase">Form Progress</h6>
+          <div class="progress-step active">
+            <div class="step-icon"><i class="fas fa-info"></i></div>
+            <div>
+              <div class="fw-semibold">Basic Info</div>
+              <small class="opacity-75">Title, description, price</small>
             </div>
-            <div class="card-body">
+          </div>
+          <div class="progress-step">
+            <div class="step-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div>
+              <div class="fw-semibold">Location</div>
+              <small class="opacity-75">Address details</small>
+            </div>
+          </div>
+          <div class="progress-step">
+            <div class="step-icon"><i class="fas fa-home"></i></div>
+            <div>
+              <div class="fw-semibold">Features</div>
+              <small class="opacity-75">Rooms, amenities</small>
+            </div>
+          </div>
+          <div class="progress-step">
+            <div class="step-icon"><i class="fas fa-images"></i></div>
+            <div>
+              <div class="fw-semibold">Media</div>
+              <small class="opacity-75">Photos & virtual tour</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main Form Content -->
+      <div class="col-lg-9">
+        <form method="POST" action="${isEdit ? '/admin/properties/' + property._id + '?_method=PUT' : '/admin/properties'}" enctype="multipart/form-data" class="professional-property-form">
+          
+          <!-- Basic Information Section -->
+          <div class="professional-form-card mb-4">
+            <div class="form-section-header">
+              <div class="form-section-icon">
+                <i class="fas fa-info-circle"></i>
+              </div>
+              <div>
+                <h3 class="form-section-title">Basic Information</h3>
+                <p class="form-section-subtitle">Essential property details and pricing</p>
+              </div>
+            </div>
+            <div class="card-body p-4">
               <div class="row">
-                <div class="col-md-12 mb-3">
-                  <label for="title" class="form-label">Property Title</label>
-                  <input type="text" class="form-control" id="title" name="title" value="${property ? property.title : ''}">
+                <div class="col-12">
+                  <div class="enhanced-input-group">
+                    <label for="title">Property Title *</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-home"></i></span>
+                      <input type="text" class="form-control" id="title" name="title" value="${property ? property.title : ''}" placeholder="e.g., Luxury 3BR Apartment in Downtown" required>
+                    </div>
+                  </div>
                 </div>
                 
-                <div class="col-md-12 mb-3">
-                  <label for="description" class="form-label">Description</label>
-                  <textarea class="form-control" id="description" name="description" rows="4">${property ? property.description : ''}</textarea>
+                <div class="col-12">
+                  <div class="enhanced-input-group">
+                    <label for="description">Property Description *</label>
+                    <textarea class="form-control" id="description" name="description" rows="5" placeholder="Describe the property features, amenities, and unique selling points..." required>${property ? property.description : ''}</textarea>
+                  </div>
                 </div>
                 
-                <div class="col-md-6 mb-3">
-                  <label for="price" class="form-label">Price ($)</label>
-                  <input type="number" class="form-control" id="price" name="price" value="${property ? property.price : ''}">
+                <div class="col-md-4">
+                  <div class="enhanced-input-group">
+                    <label for="price">Price (USD) *</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                      <input type="number" class="form-control" id="price" name="price" value="${property ? property.price : ''}" placeholder="500000" required>
+                    </div>
+                  </div>
                 </div>
                 
-                <div class="col-md-6 mb-3">
-                  <label for="propertyType" class="form-label">Property Type</label>
-                  <select class="form-select" id="propertyType" name="propertyType">
-                    <option value="">Select Type</option>
-                    <option value="house" ${property && property.propertyType === 'house' ? 'selected' : ''}>House</option>
-                    <option value="apartment" ${property && property.propertyType === 'apartment' ? 'selected' : ''}>Apartment</option>
-                    <option value="condo" ${property && property.propertyType === 'condo' ? 'selected' : ''}>Condo</option>
-                    <option value="townhouse" ${property && property.propertyType === 'townhouse' ? 'selected' : ''}>Townhouse</option>
-                    <option value="villa" ${property && property.propertyType === 'villa' ? 'selected' : ''}>Villa</option>
-                    <option value="land" ${property && property.propertyType === 'land' ? 'selected' : ''}>Land</option>
-                    <option value="commercial" ${property && property.propertyType === 'commercial' ? 'selected' : ''}>Commercial</option>
-                  </select>
+                <div class="col-md-4">
+                  <div class="enhanced-input-group">
+                    <label for="propertyType">Property Type *</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-building"></i></span>
+                      <select class="form-select" id="propertyType" name="propertyType" required>
+                        <option value="">Select Type</option>
+                        <option value="house" ${property && property.propertyType === 'house' ? 'selected' : ''}>🏠 House</option>
+                        <option value="apartment" ${property && property.propertyType === 'apartment' ? 'selected' : ''}>🏢 Apartment</option>
+                        <option value="condo" ${property && property.propertyType === 'condo' ? 'selected' : ''}>🏘️ Condo</option>
+                        <option value="townhouse" ${property && property.propertyType === 'townhouse' ? 'selected' : ''}>🏚️ Townhouse</option>
+                        <option value="villa" ${property && property.propertyType === 'villa' ? 'selected' : ''}>🏖️ Villa</option>
+                        <option value="land" ${property && property.propertyType === 'land' ? 'selected' : ''}>🌿 Land</option>
+                        <option value="commercial" ${property && property.propertyType === 'commercial' ? 'selected' : ''}>🏬 Commercial</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
                 
-                <div class="col-md-6 mb-3">
-                  <label for="status" class="form-label">Status</label>
-                  <select class="form-select" id="status" name="status">
-                    <option value="for-sale" ${property && property.status === 'for-sale' ? 'selected' : ''}>For Sale</option>
-                    <option value="for-rent" ${property && property.status === 'for-rent' ? 'selected' : ''}>For Rent</option>
-                    <option value="sold" ${property && property.status === 'sold' ? 'selected' : ''}>Sold</option>
-                    <option value="rented" ${property && property.status === 'rented' ? 'selected' : ''}>Rented</option>
-                    <option value="pending" ${property && property.status === 'pending' ? 'selected' : ''}>Pending</option>
-                  </select>
+                <div class="col-md-4">
+                  <div class="enhanced-input-group">
+                    <label for="status">Status *</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                      <select class="form-select" id="status" name="status" required>
+                        <option value="for-sale" ${property && property.status === 'for-sale' ? 'selected' : ''}>🏷️ For Sale</option>
+                        <option value="for-rent" ${property && property.status === 'for-rent' ? 'selected' : ''}>📋 For Rent</option>
+                        <option value="sold" ${property && property.status === 'sold' ? 'selected' : ''}>✅ Sold</option>
+                        <option value="rented" ${property && property.status === 'rented' ? 'selected' : ''}>🔑 Rented</option>
+                        <option value="pending" ${property && property.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
                 
-                <div class="col-md-6 mb-3">
-                  <label for="agent" class="form-label">Agent</label>
-                  <select class="form-select" id="agent" name="agent">
-                    <option value="">Select Agent</option>
-                    ${agents.map(agent => `
-                      <option value="${agent._id}" ${property && property.agent && property.agent._id === agent._id ? 'selected' : ''}>
-                        ${agent.firstName} ${agent.lastName}
-                      </option>
-                    `).join('')}
-                  </select>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="enhanced-input-group">
+                    <label for="agent">Assigned Agent</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
+                      <select class="form-select" id="agent" name="agent">
+                        <option value="">Select Agent</option>
+                        ${agents.map(agent => `
+                          <option value="${agent._id}" ${property && property.agent && property.agent._id === agent._id ? 'selected' : ''}>
+                            👤 ${agent.firstName} ${agent.lastName}
+                          </option>
+                        `).join('')}
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Address -->
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Address</h5>
+          <!-- Location Information -->
+          <div class="professional-form-card mb-4">
+            <div class="form-section-header">
+              <div class="form-section-icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div>
+                <h3 class="form-section-title">Location Details</h3>
+                <p class="form-section-subtitle">Property address and geographic coordinates</p>
+              </div>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
               <div class="row">
-                <div class="col-md-12 mb-3">
-                  <label for="street" class="form-label">Street Address</label>
-                  <input type="text" class="form-control" id="street" name="street" value="${property ? property.address.street : ''}">
+                <div class="col-12">
+                  <div class="enhanced-input-group">
+                    <label for="street">Street Address *</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-road"></i></span>
+                      <input type="text" class="form-control" id="street" name="street" value="${property ? property.address.street : ''}" placeholder="123 Main Street" required>
+                    </div>
+                  </div>
                 </div>
                 
-                <div class="col-md-6 mb-3">
-                  <label for="city" class="form-label">City</label>
-                  <input type="text" class="form-control" id="city" name="city" value="${property ? property.address.city : ''}">
+                <div class="col-md-6">
+                  <div class="enhanced-input-group">
+                    <label for="city">City *</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-city"></i></span>
+                      <input type="text" class="form-control" id="city" name="city" value="${property ? property.address.city : ''}" placeholder="New York" required>
+                    </div>
+                  </div>
                 </div>
                 
-                <div class="col-md-3 mb-3">
-                  <label for="state" class="form-label">State</label>
-                  <input type="text" class="form-control" id="state" name="state" value="${property ? property.address.state : ''}">
+                <div class="col-md-3">
+                  <div class="enhanced-input-group">
+                    <label for="state">State *</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-flag"></i></span>
+                      <input type="text" class="form-control" id="state" name="state" value="${property ? property.address.state : ''}" placeholder="NY" required>
+                    </div>
+                  </div>
                 </div>
                 
-                <div class="col-md-3 mb-3">
-                  <label for="zipCode" class="form-label">ZIP Code</label>
-                  <input type="text" class="form-control" id="zipCode" name="zipCode" value="${property ? property.address.zipCode : ''}">
+                <div class="col-md-3">
+                  <div class="enhanced-input-group">
+                    <label for="zipCode">ZIP Code *</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-mail-bulk"></i></span>
+                      <input type="text" class="form-control" id="zipCode" name="zipCode" value="${property ? property.address.zipCode : ''}" placeholder="10001" required>
+                    </div>
+                  </div>
                 </div>
                 
                 <div class="col-md-6 mb-3">
@@ -112,16 +371,25 @@ const pageTitle = isEdit ? 'Edit Property' : 'Add New Property';
             </div>
           </div>
 
-          <!-- Features -->
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0"><i class="bi bi-house"></i> Property Features</h5>
+          <!-- Property Features -->
+          <div class="professional-form-card mb-4">
+            <div class="form-section-header">
+              <div class="form-section-icon">
+                <i class="fas fa-home"></i>
+              </div>
+              <div>
+                <h3 class="form-section-title">Property Features</h3>
+                <p class="form-section-subtitle">Rooms, amenities and special features</p>
+              </div>
             </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <label for="bedrooms" class="form-label">Bedrooms</label>
-                  <input type="number" class="form-control" id="bedrooms" name="bedrooms" value="${property ? property.features.bedrooms : ''}">
+            <div class="card-body p-4">
+              <div class="feature-grid">
+                <div class="enhanced-input-group">
+                  <label for="bedrooms">Bedrooms</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-bed"></i></span>
+                    <input type="number" class="form-control" id="bedrooms" name="bedrooms" value="${property ? property.features.bedrooms : ''}" min="0" placeholder="3">
+                  </div>
                 </div>
                 
                 <div class="col-md-4 mb-3">

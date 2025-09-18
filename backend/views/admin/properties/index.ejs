@@ -5,124 +5,296 @@ const pageTitle = 'Properties';
 <%- include('../layout', { 
   title: 'Properties - Temer Properties Admin', 
   pageTitle,
+  extraHead: `
+    <style>
+      .properties-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 16px;
+        padding: 30px;
+        color: white;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      }
+      .filter-card {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        backdrop-filter: blur(10px);
+        background: rgba(255,255,255,0.95);
+      }
+      .property-card {
+        border-radius: 16px;
+        border: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+      }
+      .property-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      }
+      .property-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
+        object-fit: cover;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      }
+      .property-placeholder {
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #a0aec0;
+        font-size: 24px;
+      }
+      .status-badge {
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: none;
+      }
+      .type-badge {
+        background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
+        color: #4a5568;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid;
+        transition: all 0.2s ease;
+        font-size: 14px;
+      }
+      .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+      .stats-overview {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 30px;
+      }
+      .stat-item {
+        text-align: center;
+        padding: 15px;
+      }
+      .stat-number {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--temer-primary);
+      }
+      .stat-label {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #718096;
+        font-weight: 600;
+      }
+    </style>
+  `,
   body: `
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <div>
-        <h4 class="mb-0">Property Management</h4>
-        <p class="text-muted mb-0">Manage your property listings</p>
+    <!-- Professional Header -->
+    <div class="properties-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h2 class="mb-2 fw-bold">Property Management</h2>
+          <p class="mb-0 opacity-75">Manage and organize your property listings with advanced tools</p>
+        </div>
+        <a href="/admin/properties/new" class="btn btn-light btn-lg">
+          <i class="fas fa-plus me-2"></i> Add New Property
+        </a>
       </div>
-      <a href="/admin/properties/new" class="btn btn-primary">
-        <i class="bi bi-plus-lg"></i> Add New Property
-      </a>
+    </div>
+    
+    <!-- Stats Overview -->
+    <div class="stats-overview">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="stat-item">
+            <div class="stat-number">${properties.length}</div>
+            <div class="stat-label">Total Properties</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-item">
+            <div class="stat-number">${properties.filter(p => p.status === 'for-sale').length}</div>
+            <div class="stat-label">For Sale</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-item">
+            <div class="stat-number">${properties.filter(p => p.status === 'for-rent').length}</div>
+            <div class="stat-label">For Rent</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-item">
+            <div class="stat-number">${properties.filter(p => p.status === 'sold').length}</div>
+            <div class="stat-label">Sold</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Filters -->
-    <div class="card mb-4">
-      <div class="card-body">
+    <!-- Advanced Filters -->
+    <div class="filter-card mb-4">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center mb-3">
+          <i class="fas fa-filter text-primary me-2"></i>
+          <h6 class="mb-0 fw-bold">Advanced Filters</h6>
+        </div>
         <form method="GET" class="row g-3">
+          <div class="col-md-4">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="search" name="search" placeholder="Search properties..." value="${filters.search || ''}">
+              <label for="search"><i class="fas fa-search me-2"></i>Search Properties</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-floating">
+              <select class="form-select" id="status" name="status">
+                <option value="">All Status</option>
+                <option value="for-sale" ${filters.status === 'for-sale' ? 'selected' : ''}>For Sale</option>
+                <option value="for-rent" ${filters.status === 'for-rent' ? 'selected' : ''}>For Rent</option>
+                <option value="sold" ${filters.status === 'sold' ? 'selected' : ''}>Sold</option>
+                <option value="rented" ${filters.status === 'rented' ? 'selected' : ''}>Rented</option>
+              </select>
+              <label for="status"><i class="fas fa-tag me-2"></i>Status</label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-floating">
+              <select class="form-select" id="type" name="type">
+                <option value="">All Types</option>
+                <option value="house" ${filters.type === 'house' ? 'selected' : ''}>House</option>
+                <option value="apartment" ${filters.type === 'apartment' ? 'selected' : ''}>Apartment</option>
+                <option value="condo" ${filters.type === 'condo' ? 'selected' : ''}>Condo</option>
+                <option value="villa" ${filters.type === 'villa' ? 'selected' : ''}>Villa</option>
+              </select>
+              <label for="type"><i class="fas fa-home me-2"></i>Type</label>
+            </div>
+          </div>
           <div class="col-md-3">
-            <input type="text" class="form-control" name="search" placeholder="Search properties..." value="${filters.search || ''}">
+            <div class="form-floating">
+              <select class="form-select" id="agent" name="agent">
+                <option value="">All Agents</option>
+                ${agents.map(agent => `
+                  <option value="${agent._id}" ${filters.agent === agent._id ? 'selected' : ''}>
+                    ${agent.firstName} ${agent.lastName}
+                  </option>
+                `).join('')}
+              </select>
+              <label for="agent"><i class="fas fa-user me-2"></i>Agent</label>
+            </div>
           </div>
-          <div class="col-md-2">
-            <select class="form-select" name="status">
-              <option value="">All Status</option>
-              <option value="for-sale" ${filters.status === 'for-sale' ? 'selected' : ''}>For Sale</option>
-              <option value="for-rent" ${filters.status === 'for-rent' ? 'selected' : ''}>For Rent</option>
-              <option value="sold" ${filters.status === 'sold' ? 'selected' : ''}>Sold</option>
-              <option value="rented" ${filters.status === 'rented' ? 'selected' : ''}>Rented</option>
-            </select>
-          </div>
-          <div class="col-md-2">
-            <select class="form-select" name="type">
-              <option value="">All Types</option>
-              <option value="house" ${filters.type === 'house' ? 'selected' : ''}>House</option>
-              <option value="apartment" ${filters.type === 'apartment' ? 'selected' : ''}>Apartment</option>
-              <option value="condo" ${filters.type === 'condo' ? 'selected' : ''}>Condo</option>
-              <option value="villa" ${filters.type === 'villa' ? 'selected' : ''}>Villa</option>
-            </select>
-          </div>
-          <div class="col-md-3">
-            <select class="form-select" name="agent">
-              <option value="">All Agents</option>
-              ${agents.map(agent => `
-                <option value="${agent._id}" ${filters.agent === agent._id ? 'selected' : ''}>
-                  ${agent.firstName} ${agent.lastName}
-                </option>
-              `).join('')}
-            </select>
-          </div>
-          <div class="col-md-2">
-            <button type="submit" class="btn btn-outline-primary w-100">Filter</button>
+          <div class="col-md-1">
+            <button type="submit" class="btn btn-primary h-100 w-100">
+              <i class="fas fa-search"></i>
+            </button>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- Properties List -->
-    <div class="card">
-      <div class="card-body">
-        ${properties.length > 0 ? `
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>Property</th>
-                  <th>Type</th>
-                  <th>Price</th>
-                  <th>Status</th>
-                  <th>Agent</th>
-                  <th>Created</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${properties.map(property => `
-                  <tr>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        ${property.images && property.images.length > 0 ? 
-                          `<img src="${property.images[0].url}" alt="${property.title}" class="rounded me-3" style="width: 60px; height: 45px; object-fit: cover;">` : 
-                          '<div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 45px;"><i class="bi bi-image text-muted"></i></div>'
-                        }
-                        <div>
-                          <h6 class="mb-1">${property.title}</h6>
-                          <small class="text-muted">${property.address.street}, ${property.address.city}</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td><span class="badge bg-light text-dark">${property.propertyType}</span></td>
-                    <td><strong>$${property.price.toLocaleString()}</strong></td>
-                    <td><span class="badge bg-${property.status}">${property.status.replace('-', ' ')}</span></td>
-                    <td>${property.agent ? property.agent.firstName + ' ' + property.agent.lastName : 'No agent'}</td>
-                    <td>${new Date(property.createdAt).toLocaleDateString()}</td>
-                    <td>
-                      <div class="btn-group btn-group-sm">
-                        <a href="/admin/properties/${property._id}" class="btn btn-outline-info" title="View">
-                          <i class="bi bi-eye"></i>
-                        </a>
-                        <a href="/admin/properties/${property._id}/edit" class="btn btn-outline-primary" title="Edit">
-                          <i class="bi bi-pencil"></i>
-                        </a>
-                        <button class="btn btn-outline-danger" data-confirm-delete data-url="/admin/properties/${property._id}" title="Delete">
-                          <i class="bi bi-trash"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
+    <!-- Professional Properties Grid -->
+    <div class="row">
+      ${properties.length > 0 ? properties.map(property => `
+        <div class="col-lg-6 col-xl-4 mb-4">
+          <div class="property-card h-100">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-start mb-3">
+                ${property.images && property.images.length > 0 ? 
+                  `<img src="${property.images[0].url}" alt="${property.title}" class="property-image me-3">` : 
+                  '<div class="property-placeholder me-3"><i class="fas fa-home"></i></div>'
+                }
+                <div class="flex-grow-1">
+                  <h5 class="mb-1 fw-bold">${property.title}</h5>
+                  <p class="text-muted mb-2 small">
+                    <i class="fas fa-map-marker-alt me-1"></i>
+                    ${property.address.street}, ${property.address.city}
+                  </p>
+                  <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="type-badge">${property.propertyType}</span>
+                    <span class="status-badge bg-${property.status}">${property.status.replace('-', ' ')}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <div class="h4 mb-0 fw-bold text-success">$${property.price.toLocaleString()}</div>
+                  <small class="text-muted">
+                    <i class="fas fa-user me-1"></i>
+                    ${property.agent ? property.agent.firstName + ' ' + property.agent.lastName : 'No agent'}
+                  </small>
+                </div>
+                <div class="text-end">
+                  <small class="text-muted d-block">${new Date(property.createdAt).toLocaleDateString()}</small>
+                  ${property.features && property.features.bedrooms ? `<small class="text-muted"><i class="fas fa-bed me-1"></i>${property.features.bedrooms} beds</small>` : ''}
+                </div>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex gap-2">
+                  <a href="/admin/properties/${property._id}" class="action-btn btn-outline-info" title="View Details">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <a href="/admin/properties/${property._id}/edit" class="action-btn btn-outline-primary" title="Edit Property">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <button class="action-btn btn-outline-danger" data-confirm-delete data-url="/admin/properties/${property._id}" title="Delete Property">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+                <a href="/admin/properties/${property._id}/edit" class="btn btn-sm btn-primary">
+                  <i class="fas fa-arrow-right me-1"></i> Manage
+                </a>
+              </div>
+            </div>
           </div>
+        </div>
+      `).join('') : `
+        <div class="col-12">
+          <div class="text-center py-5">
+            <i class="fas fa-home text-muted mb-3" style="font-size: 4rem; opacity: 0.3;"></i>
+            <h4 class="text-muted mb-3">No Properties Found</h4>
+            <p class="text-muted mb-4">Start building your property portfolio by adding your first listing.</p>
+            <a href="/admin/properties/new" class="btn btn-primary btn-lg">
+              <i class="fas fa-plus me-2"></i> Add Your First Property
+            </a>
+          </div>
+        </div>
+      `}
+    </div>
 
-          <!-- Pagination -->
-          ${pagination.totalPages > 1 ? `
-            <nav class="mt-4">
-              <ul class="pagination justify-content-center">
-                ${pagination.hasPrev ? `
-                  <li class="page-item">
-                    <a class="page-link" href="?page=${pagination.prevPage}&${new URLSearchParams(filters).toString()}">Previous</a>
-                  </li>
-                ` : ''}
+    <!-- Enhanced Pagination -->
+    ${pagination && pagination.totalPages > 1 ? `
+      <div class="d-flex justify-content-center mt-5">
+        <nav>
+          <ul class="pagination pagination-lg">
+            ${pagination.hasPrev ? `
+              <li class="page-item">
+                <a class="page-link rounded-pill me-2" href="?page=${pagination.prevPage}&${new URLSearchParams(filters).toString()}">
+                  <i class="fas fa-chevron-left me-1"></i> Previous
+                </a>
+              </li>
+            ` : ''}
                 
                 ${Array.from({length: pagination.totalPages}, (_, i) => i + 1).map(page => `
                   <li class="page-item ${page === pagination.currentPage ? 'active' : ''}">
