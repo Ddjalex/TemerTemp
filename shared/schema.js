@@ -44,8 +44,8 @@ export const properties = pgTable("properties", {
   stories: integer("stories").default(1),
   
   // Additional features
-  amenities: jsonb("amenities").$type<string[]>(),
-  images: jsonb("images").$type<Array<{url: string, alt: string, isPrimary: boolean}>>(),
+  amenities: jsonb("amenities"),
+  images: jsonb("images"),
   
   // Meta fields
   agentId: integer("agent_id"),
@@ -65,14 +65,9 @@ export const teamMembers = pgTable("team_members", {
   email: varchar("email", { length: 255 }),
   phone: varchar("phone", { length: 20 }),
   bio: text("bio"),
-  specialties: jsonb("specialties").$type<string[]>(),
+  specialties: jsonb("specialties"),
   image: varchar("image", { length: 500 }),
-  socialMedia: jsonb("social_media").$type<{
-    linkedin?: string;
-    twitter?: string;
-    facebook?: string;
-    instagram?: string;
-  }>(),
+  socialMedia: jsonb("social_media"),
   isActive: boolean("is_active").default(true),
   displayOrder: integer("display_order").default(0),
   createdAt: timestamp("created_at").defaultNow(),
@@ -88,7 +83,7 @@ export const blogPosts = pgTable("blog_posts", {
   content: text("content"),
   featuredImage: varchar("featured_image", { length: 500 }),
   authorId: integer("author_id"),
-  tags: jsonb("tags").$type<string[]>(),
+  tags: jsonb("tags"),
   isPublished: boolean("is_published").default(false),
   publishedAt: timestamp("published_at"),
   views: integer("views").default(0),
@@ -141,17 +136,3 @@ export const blogPostsRelations = relations(blogPosts, ({ one }) => ({
     references: [users.id],
   }),
 }));
-
-// Types
-export type User = typeof users.$inferSelect;
-export type InsertUser = typeof users.$inferInsert;
-export type Property = typeof properties.$inferSelect;
-export type InsertProperty = typeof properties.$inferInsert;
-export type TeamMember = typeof teamMembers.$inferSelect;
-export type InsertTeamMember = typeof teamMembers.$inferInsert;
-export type BlogPost = typeof blogPosts.$inferSelect;
-export type InsertBlogPost = typeof blogPosts.$inferInsert;
-export type HeroSlide = typeof heroSlides.$inferSelect;
-export type InsertHeroSlide = typeof heroSlides.$inferInsert;
-export type Setting = typeof settings.$inferSelect;
-export type InsertSetting = typeof settings.$inferInsert;
