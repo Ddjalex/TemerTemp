@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import PropertyCard from "@/components/PropertyCard";
 import PropertyFilters from "@/components/PropertyFilters";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Grid, List, ChevronLeft, ChevronRight } from "lucide-react";
+import { getProperties, getPublicSettings } from "@/lib/api";
+import { formatCurrency } from "@/lib/currency";
 
 // Import generated images
 import luxuryVilla from "@assets/generated_images/Luxury_villa_hero_image_3dfce514.png";
@@ -17,81 +20,31 @@ export default function ListingsPage() {
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
 
-  //todo: remove mock functionality
-  const properties = [
-    {
-      id: "1",
-      title: "Luxury Villa with Ocean View",
-      price: "ETB 142,500,000",
-      location: "Miami Beach, FL",
-      beds: 5,
-      baths: 4,
-      sqft: "4,200",
-      image: luxuryVilla,
-      status: "sale",
-      featured: true
-    },
-    {
-      id: "2",
-      title: "Modern Family Home",
-      price: "ETB 43,750,000",
-      location: "Coral Gables, FL",
-      beds: 4,
-      baths: 3,
-      sqft: "3,100",
-      image: modernHome,
-      status: "sale",
-      featured: false
-    },
-    {
-      id: "3",
-      title: "Downtown Luxury Condominium",
-      price: "ETB 62,500,000",
-      location: "Downtown Miami, FL",
-      beds: 3,
-      baths: 2,
-      sqft: "2,400",
-      image: luxuryCondo,
-      status: "rent",
-      featured: true
-    },
-    {
-      id: "4",
-      title: "Spacious Modern Apartment",
-      price: "ETB 160,000/month",
-      location: "Brickell, FL",
-      beds: 2,
-      baths: 2,
-      sqft: "1,800",
-      image: modernInterior,
-      status: "rent",
-      featured: false
-    },
-    {
-      id: "5",
-      title: "Waterfront Luxury Villa",
-      price: "ETB 247,500,000",
-      location: "Key Biscayne, FL",
-      beds: 6,
-      baths: 5,
-      sqft: "5,500",
-      image: luxuryVilla,
-      status: "sale",
-      featured: true
-    },
-    {
-      id: "6",
-      title: "Contemporary Townhouse",
-      price: "ETB 34,750,000",
-      location: "Aventura, FL",
-      beds: 3,
-      baths: 3,
-      sqft: "2,100",
-      image: modernHome,
-      status: "sale",
-      featured: false
-    }
-  ];
+  // Fetch properties from API
+  const { data: propertiesData, isLoading: isLoadingProperties } = useQuery({
+    queryKey: ['properties'],
+    queryFn: getProperties
+  });
+
+  const { data: settingsData } = useQuery({
+    queryKey: ['admin-settings'],
+    queryFn: getPublicSettings
+  });
+
+  const properties = (propertiesData?.data || []).map(property => ({
+    id: property._id,
+    title: property.title,
+    price: formatCurrency(property.price),
+    location: `${property.address.city}, ${property.address.state}`,
+    beds: property.features.bedrooms,
+    baths: property.features.bathrooms,
+    sqft: property.features.sqft.toLocaleString(),
+    image: property.images.find(img => img.isPrimary)?.url || property.images[0]?.url,
+    status: property.status === 'for-sale' ? 'sale' : property.status,
+    featured: property.isFeatured
+  }));
+  
+  const adminSettings = settingsData?.data || {};
 
   const totalPages = Math.ceil(properties.length / 6);
   const startIndex = (currentPage - 1) * 6;
@@ -111,8 +64,23 @@ export default function ListingsPage() {
   const handleViewDetails = (id) => console.log("View property:", id);
   const handleFavorite = (id) => console.log("Favorite property:", id);
   const handleShare = (id) => console.log("Share property:", id);
-  const handleCall = (id) => console.log("Call property:", id);
-  const handleWhatsApp = (id) => console.log("WhatsApp property:", id);
+  const handleCall = (id) => {
+    const adminPhone = adminSettings?.contact?.contact_phone || '+1 (555) 123-4567';
+    const cleanPhone = adminPhone.replace(/[^\d+]/g, '');
+    window.location.href = `tel:${cleanPhone}`;
+  };
+  const handleWhatsApp = (id) => {
+    const adminWhatsApp = adminSettings?.contact?.contact_whatsapp || '+1 (555) 123-4567';
+    const property = properties.find(p => p.id === id);
+    const propertyTitle = property ? property.title : 'this property';
+    const propertyUrl = `${window.location.origin}/property/${id}`;
+    
+    const message = `Hi! I'm interested in ${propertyTitle} from Temer Properties. Could you provide more information? Property link: ${propertyUrl}`;
+    const phone = adminWhatsApp.replace(/[^\d]/g, '');
+    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, '_blank');
+  };
 
   const handleSortChange = (value) => {
     setSortBy(value);

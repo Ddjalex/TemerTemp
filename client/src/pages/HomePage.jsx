@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Award, Users, Home, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
-import { getFeaturedProperties, getTeamMembers, getBlogPosts, getPropertyStats } from "@/lib/api";
+import { getFeaturedProperties, getTeamMembers, getBlogPosts, getPropertyStats, getPublicSettings } from "@/lib/api";
 import { formatCurrency } from "@/lib/currency";
 
 // Fallback images
@@ -36,6 +36,11 @@ export default function HomePage() {
   const { data: statsData } = useQuery({
     queryKey: ['property-stats'],
     queryFn: getPropertyStats
+  });
+
+  const { data: settingsData } = useQuery({
+    queryKey: ['admin-settings'],
+    queryFn: getPublicSettings
   });
 
   const featuredProperties = featuredData?.data || [];
@@ -70,12 +75,29 @@ export default function HomePage() {
     }
   ];
 
-  // Mock handlers
+  const adminSettings = settingsData?.data || {};
+
+  // Property handlers
   const handleViewDetails = (id) => console.log("View property:", id);
   const handleFavorite = (id) => console.log("Favorite property:", id);
   const handleShare = (id) => console.log("Share property:", id);
-  const handleCall = (id) => console.log("Call property:", id);
-  const handleWhatsApp = (id) => console.log("WhatsApp property:", id);
+  const handleCall = (id) => {
+    const adminPhone = adminSettings?.contact?.contact_phone || '+1 (555) 123-4567';
+    const cleanPhone = adminPhone.replace(/[^\d+]/g, '');
+    window.location.href = `tel:${cleanPhone}`;
+  };
+  const handleWhatsApp = (id) => {
+    const adminWhatsApp = adminSettings?.contact?.contact_whatsapp || '+1 (555) 123-4567';
+    const property = featuredProperties.find(p => p._id === id);
+    const propertyTitle = property ? property.title : 'this property';
+    const propertyUrl = `${window.location.origin}/property/${id}`;
+    
+    const message = `Hi! I'm interested in ${propertyTitle} from Temer Properties. Could you provide more information? Property link: ${propertyUrl}`;
+    const phone = adminWhatsApp.replace(/[^\d]/g, '');
+    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, '_blank');
+  };
   const handleAgentCall = (phone) => console.log("Call:", phone);
   const handleEmail = (email) => console.log("Email:", email);
   const handleMessage = (id) => console.log("Message agent:", id);
