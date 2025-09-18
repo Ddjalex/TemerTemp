@@ -1,0 +1,82 @@
+Task: Convert my backend from TypeScript to plain JavaScript (CommonJS) with ZERO UI changes.
+
+Absolute Goals
+- Do NOT change the website UI in any way.
+- Do NOT change any HTML, CSS, classes, IDs, data-attributes, EJS templates, or frontend JS behavior.
+- Keep every API route, URL path, query/body params, JSON schema, status codes, and response headers EXACTLY the same.
+- Only convert server-side TypeScript code to JavaScript (CommonJS). No ES modules, no TypeScript anywhere after conversion.
+
+Context
+- Frontend (UI) must remain exactly as-is (static pages and/or EJS views). No DOM/markup/CSS changes.
+- Backend is in TypeScript (e.g., server/index.ts and other .ts files).
+- Deployment target is cPanel Node.js App (Apache + Passenger). Requires entry file: app.js using CommonJS.
+
+Strict Conversion Requirements
+1) Remove TypeScript everywhere:
+   - Delete all type annotations, interfaces, generics, enums, type-only imports/exports.
+   - Remove ts-node / tsconfig usage. No build step needed after this.
+
+2) CommonJS ONLY (no ES modules):
+   - Replace ALL `import ... from` with `const ... = require('...')`.
+   - Replace ALL exports with `module.exports = ...` or `module.exports.foo = ...`.
+   - Ensure all internal requires use relative paths with `.js` file extensions (e.g., `require('./lib/db.js')`).
+
+3) Entrypoint & structure:
+   - Rename/convert `server/index.ts` (or current TS entry) into `app.js` at the backend root.
+   - `app.js` must:
+     • `require('dotenv').config()`
+     • create the Express app
+     • keep existing middlewares (helmet, compression, cors, morgan, body parsers)
+     • connect to MongoDB (mongoose) with the same env var names and logic
+     • set up sessions (express-session + connect-mongo) to preserve admin login behavior
+     • serve uploads if currently supported (e.g., `app.use('/uploads', express.static(...))`)
+     • set view engine and views path if using EJS (unchanged)
+     • mount the SAME routers under the SAME paths (e.g., `/api/*`, `/admin/*`)
+     • keep the existing health route (or add `GET /health` returning `{status:'OK'}` if missing)
+     • listen on `process.env.PORT || 5000`, host `'0.0.0.0'`
+
+4) Preserve admin login exactly:
+   - Keep bcrypt comparison logic intact.
+   - Keep session cookie name, options, roles/permissions, and middlewares identical.
+   - Keep all `/admin/*` routes and redirects exactly the same.
+   - Do not alter EJS templates or their locals/variables.
+
+5) Models and libs:
+   - Convert all Mongoose models (TS) to JS CommonJS files. Keep schema names, indexes, hooks, and validation identical.
+   - Convert any utilities/middleware to JS CommonJS without changing runtime behavior.
+
+6) package.json (backend):
+   - `"type": "commonjs"`
+   - `"main": "app.js"`
+   - `"scripts": { "start": "node app.js" }`
+   - Remove all TypeScript dev deps (`typescript`, `ts-node`, `@types/*`).
+   - Keep only runtime deps (express, mongoose, bcrypt, multer, helmet, compression, cors, morgan, express-session, connect-mongo, ejs, dotenv, uuid, sanitize-html, csurf, etc.).
+
+7) Environment variables:
+   - Keep the SAME variable names used before (e.g., MONGODB_URI, SESSION_SECRET, PORT, NODE_ENV, etc.).
+   - Do not change their semantics or fallback values.
+
+8) NO UI CHANGES:
+   - Do NOT modify any frontend assets, HTML, CSS, classes, IDs, or EJS templates.
+   - Do NOT rename routes used by the frontend.
+   - Do NOT change API payload shapes or status codes.
+
+Quality Checklist (must pass)
+- No `.ts` files remain.
+- Backend starts with `node app.js` using CommonJS requires only.
+- Visiting all existing endpoints returns the exact same JSON shape and status codes as before.
+- `/admin/login` renders and logs in successfully, sets the session, and protects `/admin/*` as before.
+- Frontend UI looks pixel-identical and behaves identically (network calls unchanged).
+- If any path aliases existed in TS, replace with correct relative `require('./...js')` paths.
+
+Deliverables
+- Converted backend JS files (CommonJS) with `app.js` as the entry.
+- Updated backend `package.json` and a short migration note listing converted files and any import path rewrites.
+- (Optional) A minimal `README` with the exact start command: `node app.js`.
+
+Important
+- If any TypeScript-specific feature had no runtime effect (types only), remove it without changing logic.
+- If the original code had `enum`, convert to `const Enum = Object.freeze({ ... })`.
+- If the original code used ESM-only patterns (`__dirname` polyfills), restore Node’s CommonJS globals where needed.
+
+Start by finding ALL `.ts` files under the backend/server folder (including subfolders), convert one by one to `.js` (CommonJS), fix imports/exports, then ensure the app boots and admin login works. Do NOT touch UI files or API behavior.
