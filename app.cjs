@@ -138,30 +138,17 @@ async function startServer() {
       res.status(status).json({ message });
     });
 
-    // Serve static frontend files
-    if (process.env.NODE_ENV === 'production') {
-      // Production: serve from frontend directory for cPanel
-      const frontendPath = path.join(__dirname, 'frontend');
-      app.use(express.static(frontendPath));
-      app.use("*", (req, res) => {
-        // Skip if it's an API or admin route (already handled above)
-        if (req.originalUrl.startsWith('/admin') || req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/health')) {
-          return res.status(404).json({ message: 'Route not found' });
-        }
-        // Serve the main frontend page for all other routes
-        res.sendFile(path.join(frontendPath, 'index.html'));
-      });
-    } else {
-      // Development mode - serve the frontend directory  
-      app.use(express.static(path.join(__dirname, 'frontend')));
-      app.use("*", (req, res) => {
-        // Skip if it's an API or admin route (already handled above)
-        if (req.originalUrl.startsWith('/admin') || req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/health')) {
-          return res.status(404).json({ message: 'Route not found' });
-        }
-        res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
-      });
-    }
+    // Serve static React app files
+    const reactAppPath = path.join(__dirname, 'dist/public');
+    app.use(express.static(reactAppPath));
+    app.use("*", (req, res) => {
+      // Skip if it's an API or admin route (already handled above)
+      if (req.originalUrl.startsWith('/admin') || req.originalUrl.startsWith('/api') || req.originalUrl.startsWith('/health')) {
+        return res.status(404).json({ message: 'Route not found' });
+      }
+      // Serve the React app for all other routes (SPA routing)
+      res.sendFile(path.join(reactAppPath, 'index.html'));
+    });
 
     // Start server
     const port = parseInt(process.env.PORT || '5000', 10);
