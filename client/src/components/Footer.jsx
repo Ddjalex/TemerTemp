@@ -130,7 +130,9 @@ export default function Footer() {
               <div className="mt-1 text-xs">
                 For Website Development Contact Us{' '}
                 <a 
-                  href="mailto:ethioads012@gmail.com" 
+                  href="https://t.me/Ethioads012" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-primary hover:text-primary/80 hover:underline transition-colors cursor-pointer"
                   data-testid="link-website-development"
                 >
