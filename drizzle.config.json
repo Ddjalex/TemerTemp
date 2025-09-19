@@ -1,8 +1,0 @@
-{
-  "schema": "./shared/schema.ts",
-  "dialect": "postgresql",
-  "dbCredentials": {
-    "url": "postgresql://neondb_owner:npg_T1Sxn0aHJAvR@ep-bold-union-aeltccub.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require"
-  },
-  "out": "./drizzle"
-}
