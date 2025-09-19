@@ -21,11 +21,69 @@ export default function ListingsPage() {
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
+  const [filters, setFilters] = useState({
+    location: '',
+    propertyType: '',
+    status: '',
+    priceRange: [0, 250000000],
+    bedrooms: '',
+    bathrooms: '',
+    sqftRange: [0, 10000]
+  });
 
-  // Fetch properties from API
+  // Convert frontend filters to backend API parameters
+  const getAPIParams = () => {
+    const params = {
+      page: currentPage,
+      limit: 12,
+      sort: sortBy === 'newest' ? '-createdAt' : 
+             sortBy === 'price-low' ? 'price' :
+             sortBy === 'price-high' ? '-price' :
+             sortBy === 'beds' ? '-features.bedrooms' :
+             sortBy === 'sqft' ? '-features.sqft' : '-createdAt'
+    };
+
+    // Map frontend status to backend format
+    if (filters.status) {
+      if (filters.status === 'sale') params.status = 'for-sale';
+      else if (filters.status === 'rent') params.status = 'for-rent';
+      else params.status = filters.status;
+    }
+
+    // Map property type
+    if (filters.propertyType) {
+      params.type = filters.propertyType;
+    }
+
+    // Handle location - split into city for now (could be enhanced)
+    if (filters.location) {
+      params.city = filters.location;
+    }
+
+    // Handle price range
+    if (filters.priceRange[0] > 0) {
+      params.minPrice = filters.priceRange[0];
+    }
+    if (filters.priceRange[1] < 250000000) {
+      params.maxPrice = filters.priceRange[1];
+    }
+
+    // Handle bedrooms/bathrooms
+    if (filters.bedrooms) {
+      params.bedrooms = filters.bedrooms;
+    }
+    if (filters.bathrooms) {
+      params.bathrooms = filters.bathrooms;
+    }
+
+    return params;
+  };
+
+  // Fetch properties from API with filters
+  const apiParams = getAPIParams();
   const { data: propertiesData, isLoading: isLoadingProperties } = useQuery({
-    queryKey: ['properties'],
-    queryFn: getProperties
+    queryKey: ['properties', apiParams],
+    queryFn: () => getProperties(apiParams)
   });
 
   const { data: settingsData } = useQuery({
@@ -33,7 +91,9 @@ export default function ListingsPage() {
     queryFn: getPublicSettings
   });
 
-  const properties = Array.isArray(propertiesData?.data) ? propertiesData.data.map(property => ({
+  // Handle both paginated response format and direct array format
+  const propertiesArray = propertiesData?.data?.properties || propertiesData?.data || [];
+  const properties = Array.isArray(propertiesArray) ? propertiesArray.map(property => ({
     id: property._id,
     title: property.title,
     price: formatCurrency(property.price),
@@ -48,19 +108,32 @@ export default function ListingsPage() {
   
   const adminSettings = settingsData?.data || {};
 
-  const totalPages = Math.ceil(properties.length / 6);
-  const startIndex = (currentPage - 1) * 6;
-  const endIndex = startIndex + 6;
-  const currentProperties = properties.slice(startIndex, endIndex);
+  // Use server-side pagination if available, otherwise fall back to client-side
+  const pagination = propertiesData?.data?.pagination;
+  const totalPages = pagination ? Math.ceil(pagination.total / pagination.itemsPerPage) : Math.ceil(properties.length / 6);
+  
+  // If server provides pagination, use all properties directly, otherwise slice for client-side pagination
+  const currentProperties = pagination ? properties : properties.slice((currentPage - 1) * 6, currentPage * 6);
 
-  const handleFilterChange = (filters) => {
-    console.log('Filters applied:', filters);
-    // In real app, this would filter the properties
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+    setCurrentPage(1); // Reset to first page when filters change
+    console.log('Filters applied:', newFilters);
   };
 
   const handleFilterReset = () => {
+    const resetFilters = {
+      location: '',
+      propertyType: '',
+      status: '',
+      priceRange: [0, 250000000],
+      bedrooms: '',
+      bathrooms: '',
+      sqftRange: [0, 10000]
+    };
+    setFilters(resetFilters);
+    setCurrentPage(1);
     console.log('Filters reset');
-    // In real app, this would reset all filters
   };
 
   const handleViewDetails = (id) => {
@@ -89,6 +162,7 @@ export default function ListingsPage() {
 
   const handleSortChange = (value) => {
     setSortBy(value);
+    setCurrentPage(1); // Reset to first page when sorting changes
     console.log('Sort by:', value);
   };
 
@@ -127,10 +201,13 @@ export default function ListingsPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
               <div className="flex items-center gap-4">
                 <Badge variant="secondary" className="text-sm">
-                  {properties.length} properties found
+                  {pagination ? pagination.total : properties.length} properties found
                 </Badge>
                 <div className="text-sm text-muted-foreground">
-                  Showing {startIndex + 1}-{Math.min(endIndex, properties.length)} of {properties.length}
+                  {pagination ? 
+                    `Showing ${pagination.itemsFrom}-${pagination.itemsTo} of ${pagination.total}` :
+                    `Showing ${(currentPage - 1) * 6 + 1}-${Math.min(currentPage * 6, properties.length)} of ${properties.length}`
+                  }
                 </div>
               </div>
 

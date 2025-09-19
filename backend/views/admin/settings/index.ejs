@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>">
     <title><%= title %></title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -244,6 +245,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         body: JSON.stringify(data)
     })
@@ -281,6 +283,7 @@ document.getElementById('socialForm').addEventListener('submit', function(e) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         body: JSON.stringify(data)
     })

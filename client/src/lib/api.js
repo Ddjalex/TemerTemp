@@ -3,8 +3,19 @@ import { apiRequest } from './queryClient';
 
 // Properties API
 export const getProperties = async (params = {}) => {
-  const searchParams = new URLSearchParams(params);
-  const response = await fetch(`/api/properties?${searchParams}`);
+  // Filter out any React Query internal parameters
+  const cleanParams = {};
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null && value !== '' && !['queryKey', 'meta', 'signal'].includes(key)) {
+      cleanParams[key] = value;
+    }
+  }
+  
+  const searchParams = new URLSearchParams(cleanParams);
+  const url = `/api/properties${searchParams.toString() ? `?${searchParams}` : ''}`;
+  console.log('API Request URL:', url, 'Params:', cleanParams);
+  
+  const response = await fetch(url);
   if (!response.ok) throw new Error('Failed to fetch properties');
   return response.json();
 };
