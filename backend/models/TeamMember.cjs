@@ -50,7 +50,8 @@ const teamMemberSchema = new mongoose.Schema({
     linkedin: { type: String, trim: true },
     twitter: { type: String, trim: true },
     facebook: { type: String, trim: true },
-    instagram: { type: String, trim: true }
+    instagram: { type: String, trim: true },
+    telegram: { type: String, trim: true }
   },
   specialties: [{
     type: String,

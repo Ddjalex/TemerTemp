@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Phone, Mail, MessageCircle, Star } from "lucide-react";
+import { Phone, Mail, MessageCircle, Star, Send } from "lucide-react";
 
 export default function TeamMemberCard({
   id,
@@ -11,12 +11,14 @@ export default function TeamMemberCard({
   photo,
   phone,
   email,
+  telegram,
   specialties,
   rating,
   salesCount,
   onCall,
   onEmail,
-  onMessage
+  onMessage,
+  onTelegram
 }) {
 
   const handleCall = () => {
@@ -32,6 +34,11 @@ export default function TeamMemberCard({
   const handleMessage = () => {
     console.log('Message clicked for:', name);
     onMessage(id);
+  };
+
+  const handleTelegram = () => {
+    console.log('Telegram clicked for:', name);
+    onTelegram(telegram);
   };
 
   const getInitials = (name) => {
@@ -104,6 +111,19 @@ export default function TeamMemberCard({
             </Button>
           </div>
           
+          {telegram && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleTelegram}
+              className="w-full flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white border-blue-500"
+              data-testid={`button-telegram-${id}`}
+            >
+              <Send className="w-4 h-4" />
+              Contact on Telegram
+            </Button>
+          )}
+          
           <Button
             onClick={handleMessage}
             className="w-full bg-primary hover:bg-primary/90"
@@ -124,6 +144,12 @@ export default function TeamMemberCard({
             <Mail className="w-4 h-4" />
             <span className="truncate" data-testid={`text-email-${id}`}>{email}</span>
           </div>
+          {telegram && (
+            <div className="flex items-center gap-2">
+              <Send className="w-4 h-4" />
+              <span data-testid={`text-telegram-${id}`}>@{telegram.replace(/^@/, '')}</span>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

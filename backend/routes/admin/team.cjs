@@ -93,18 +93,32 @@ router.post('/new', upload.single('image'), async (req, res) => {
   try {
     const {
       firstName, lastName, position, email, phone, bio, specialties,
-      linkedin, twitter, facebook, instagram, displayOrder, isActive
+      linkedin, twitter, facebook, instagram, telegram, displayOrder, isActive
     } = req.body;
     
     // Process specialties
     const specialtiesArray = specialties ? specialties.split(',').map(s => s.trim()).filter(s => s) : [];
     
+    // Helper function to normalize Telegram username
+    const normalizeTelegram = (value) => {
+      if (!value) return value;
+      const trimmed = value.trim();
+      // If it's a t.me URL, extract the username
+      if (trimmed.includes('t.me/')) {
+        const match = trimmed.match(/t\.me\/([a-zA-Z0-9_]+)/);
+        return match ? match[1] : trimmed.replace(/^@/, '');
+      }
+      // Remove leading @ if present
+      return trimmed.replace(/^@/, '');
+    };
+
     // Process social media
     const socialMedia = {};
     if (linkedin) socialMedia.linkedin = linkedin;
     if (twitter) socialMedia.twitter = twitter;
     if (facebook) socialMedia.facebook = facebook;
     if (instagram) socialMedia.instagram = instagram;
+    if (telegram) socialMedia.telegram = normalizeTelegram(telegram);
     
     const memberData = {
       firstName,
@@ -144,18 +158,32 @@ router.post('/edit/:id', upload.single('image'), async (req, res) => {
     
     const {
       firstName, lastName, position, email, phone, bio, specialties,
-      linkedin, twitter, facebook, instagram, displayOrder, isActive
+      linkedin, twitter, facebook, instagram, telegram, displayOrder, isActive
     } = req.body;
     
     // Process specialties
     const specialtiesArray = specialties ? specialties.split(',').map(s => s.trim()).filter(s => s) : [];
     
+    // Helper function to normalize Telegram username
+    const normalizeTelegram = (value) => {
+      if (!value) return value;
+      const trimmed = value.trim();
+      // If it's a t.me URL, extract the username
+      if (trimmed.includes('t.me/')) {
+        const match = trimmed.match(/t\.me\/([a-zA-Z0-9_]+)/);
+        return match ? match[1] : trimmed.replace(/^@/, '');
+      }
+      // Remove leading @ if present
+      return trimmed.replace(/^@/, '');
+    };
+
     // Process social media
     const socialMedia = {};
     if (linkedin) socialMedia.linkedin = linkedin;
     if (twitter) socialMedia.twitter = twitter;
     if (facebook) socialMedia.facebook = facebook;
     if (instagram) socialMedia.instagram = instagram;
+    if (telegram) socialMedia.telegram = normalizeTelegram(telegram);
     
     member.firstName = firstName;
     member.lastName = lastName;

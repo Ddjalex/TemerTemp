@@ -41,6 +41,7 @@ export default function TeamPage() {
     photo: member.image?.url || member.photo || agentPhoto1, // Use fallback images for missing photos
     phone: member.phone || member.contact?.phone,
     email: member.email || member.contact?.email,
+    telegram: member.socialMedia?.telegram,
     specialties: member.specialties || member.skills || [],
     rating: member.rating || 5.0,
     salesCount: member.salesCount || member.propertiesSold || 0
@@ -67,6 +68,21 @@ export default function TeamPage() {
   const handleMessage = (id) => {
     console.log("Message agent:", id);
     // In a real app, this would open a contact form or messaging system
+  };
+
+  const handleTelegram = (telegram) => {
+    if (!telegram) return;
+    
+    let telegramUrl;
+    // If it's already a URL, use it directly
+    if (telegram.startsWith('http://') || telegram.startsWith('https://')) {
+      telegramUrl = telegram;
+    } else {
+      // Clean telegram username (remove @ if present) and build URL
+      const cleanTelegram = telegram.replace(/^@/, '');
+      telegramUrl = `https://t.me/${cleanTelegram}`;
+    }
+    window.open(telegramUrl, '_blank');
   };
 
 
@@ -152,6 +168,7 @@ export default function TeamPage() {
                   onCall={handleCall}
                   onEmail={handleEmail}
                   onMessage={handleMessage}
+                  onTelegram={handleTelegram}
                 />
               ))}
             </div>
