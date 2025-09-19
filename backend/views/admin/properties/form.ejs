@@ -95,8 +95,7 @@
             </a>
         </div>
 
-        <form id="propertyForm" action="<%= property ? '/admin/properties/edit/' + property._id : '/admin/properties/new' %>" method="POST" enctype="multipart/form-data" class="space-y-6">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <form id="propertyForm" action="<%= property ? '/admin/properties/edit/' + property._id + '?_csrf=' + csrfToken : '/admin/properties/new?_csrf=' + csrfToken %>" method="POST" enctype="multipart/form-data" class="space-y-6">
             <!-- Basic Information -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-6">Basic Information</h2>

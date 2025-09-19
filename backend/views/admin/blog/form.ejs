@@ -53,8 +53,7 @@
             </a>
         </div>
 
-        <form action="<%= post ? '/admin/blog/edit/' + post._id : '/admin/blog/new' %>" method="POST" enctype="multipart/form-data" class="space-y-6">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <form action="<%= post ? '/admin/blog/edit/' + post._id + '?_csrf=' + csrfToken : '/admin/blog/new?_csrf=' + csrfToken %>" method="POST" enctype="multipart/form-data" class="space-y-6">
             <!-- Basic Information -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-6">Post Details</h2>
