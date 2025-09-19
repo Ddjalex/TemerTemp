@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import PropertyCard from "@/components/PropertyCard";
 import PropertyFilters from "@/components/PropertyFilters";
@@ -16,6 +17,7 @@ import luxuryCondo from "@assets/generated_images/Downtown_luxury_condo_15b7acf1
 import modernInterior from "@assets/generated_images/Modern_apartment_interior_61087e44.png";
 
 export default function ListingsPage() {
+  const [, setLocation] = useLocation();
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
@@ -63,7 +65,7 @@ export default function ListingsPage() {
 
   const handleViewDetails = (id) => {
     console.log("View property:", id);
-    window.location.href = `/property/${id}`;
+    setLocation(`/property/${id}`);
   };
   const handleFavorite = (id) => console.log("Favorite property:", id);
   const handleShare = (id) => console.log("Share property:", id);

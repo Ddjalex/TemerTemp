@@ -75,6 +75,16 @@ export default function PropertyDetailsPage() {
     }
   };
 
+  const handleBackToListings = () => {
+    // Use browser history if available and previous page was listings
+    if (window.history.length > 1 && document.referrer.includes('/listings')) {
+      window.history.back();
+    } else {
+      // Fallback to direct navigation
+      setLocation('/listings');
+    }
+  };
+
   const handleFavorite = () => {
     // This could be implemented with local storage or user accounts
     console.log('Add to favorites:', id);
@@ -111,7 +121,7 @@ export default function PropertyDetailsPage() {
         <div className="max-w-7xl mx-auto px-4 py-8">
           <Button 
             variant="outline" 
-            onClick={() => setLocation('/listings')}
+            onClick={handleBackToListings}
             className="mb-6"
             data-testid="button-back-to-listings"
           >
@@ -121,7 +131,7 @@ export default function PropertyDetailsPage() {
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold mb-4">Property Not Found</h2>
             <p className="text-muted-foreground mb-6">The property you're looking for doesn't exist or has been removed.</p>
-            <Button onClick={() => setLocation('/listings')}>
+            <Button onClick={handleBackToListings}>
               View All Properties
             </Button>
           </div>
@@ -154,7 +164,7 @@ export default function PropertyDetailsPage() {
         {/* Back Button */}
         <Button 
           variant="outline" 
-          onClick={() => setLocation('/listings')}
+          onClick={handleBackToListings}
           className="mb-6"
           data-testid="button-back-to-listings"
         >
