@@ -61,7 +61,10 @@ export default function ListingsPage() {
     // In real app, this would reset all filters
   };
 
-  const handleViewDetails = (id) => console.log("View property:", id);
+  const handleViewDetails = (id) => {
+    console.log("View property:", id);
+    window.location.href = `/property/${id}`;
+  };
   const handleFavorite = (id) => console.log("Favorite property:", id);
   const handleShare = (id) => console.log("Share property:", id);
   const handleCall = (id) => {

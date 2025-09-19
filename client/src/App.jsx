@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 // Import pages
 import HomePage from "@/pages/HomePage";
 import ListingsPage from "@/pages/ListingsPage";
+import PropertyDetailsPage from "@/pages/PropertyDetailsPage";
 import TeamPage from "@/pages/TeamPage";
 import BlogPage from "@/pages/BlogPage";
 import AboutPage from "@/pages/AboutPage";
@@ -24,6 +25,7 @@ function Router() {
     <Switch>
       <Route path="/" component={HomePage} />
       <Route path="/listings" component={ListingsPage} />
+      <Route path="/property/:id" component={PropertyDetailsPage} />
       <Route path="/team" component={TeamPage} />
       <Route path="/blog" component={BlogPage} />
       <Route path="/about" component={AboutPage} />
