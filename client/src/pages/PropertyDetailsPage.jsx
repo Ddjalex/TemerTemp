@@ -76,13 +76,8 @@ export default function PropertyDetailsPage() {
   };
 
   const handleBackToListings = () => {
-    // Use browser history if available and previous page was listings
-    if (window.history.length > 1 && document.referrer.includes('/listings')) {
-      window.history.back();
-    } else {
-      // Fallback to direct navigation
-      setLocation('/listings');
-    }
+    // Always navigate directly to listings page
+    setLocation('/listings');
   };
 
   const handleFavorite = () => {
