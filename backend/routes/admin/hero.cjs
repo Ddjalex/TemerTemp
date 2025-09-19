@@ -116,24 +116,29 @@ router.get('/edit/:id', async (req, res) => {
 
 // Create slide
 router.post('/new', upload.single('image'), async (req, res) => {
+  const startTime = Date.now();
+  
   try {
     const { title, subtitle, description, buttonText, buttonLink, displayOrder, isActive, imageAlt } = req.body;
     
-    // Validate required fields
+    // Validate required fields early
+    if (!title || !title.trim()) {
+      return res.status(400).json({ success: false, message: 'Hero slide title is required' });
+    }
     if (!req.file) {
-      throw new Error('Hero image is required');
+      return res.status(400).json({ success: false, message: 'Hero image is required' });
     }
     if (!imageAlt || !imageAlt.trim()) {
-      throw new Error('Image alt text is required');
+      return res.status(400).json({ success: false, message: 'Image alt text is required' });
     }
     
     const slideData = {
-      title,
-      subtitle,
-      description,
+      title: title.trim(),
+      subtitle: subtitle ? subtitle.trim() : '',
+      description: description ? description.trim() : '',
       ctaButton: {
-        text: buttonText || 'Learn More',
-        link: buttonLink || '/listings'
+        text: buttonText ? buttonText.trim() : 'Learn More',
+        link: buttonLink ? buttonLink.trim() : '/listings'
       },
       order: displayOrder ? parseInt(displayOrder) : 0,
       isActive: isActive === 'true',
@@ -145,61 +150,129 @@ router.post('/new', upload.single('image'), async (req, res) => {
     
     const slide = new HeroSlide(slideData);
     await slide.save();
-    res.redirect('/admin/hero');
+    
+    const duration = Date.now() - startTime;
+    console.log(`✅ Hero slide created successfully in ${duration}ms`);
+    
+    res.json({ 
+      success: true, 
+      message: 'Hero slide created successfully',
+      data: { id: slide._id, title: slide.title },
+      processingTime: `${duration}ms`,
+      redirectUrl: '/admin/hero'
+    });
   } catch (error) {
-    console.error('Create slide error:', error);
-    res.render('admin/hero/form', {
-      title: 'New Hero Slide - Temer Properties Admin',
-      user: req.session.user,
-      slide: req.body,
-      errors: error.errors || { general: error.message || 'Failed to create slide' }
+    const duration = Date.now() - startTime;
+    console.error(`❌ Create hero slide error (${duration}ms):`, error.message);
+    
+    // Provide more specific error messages
+    let errorMessage = 'Failed to create hero slide';
+    if (error.name === 'ValidationError') {
+      errorMessage = 'Please check all required fields are filled correctly';
+    } else if (error.code === 11000) {
+      errorMessage = 'A hero slide with this information already exists';
+    } else if (error.message.includes('timeout')) {
+      errorMessage = 'Operation timed out - please try again';
+    }
+    
+    res.status(500).json({ 
+      success: false, 
+      message: errorMessage,
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });
 
 // Update slide
 router.post('/edit/:id', upload.single('image'), async (req, res) => {
+  const startTime = Date.now();
+  
   try {
+    // Validate ID format early
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ success: false, message: 'Invalid hero slide ID format' });
+    }
+
     const slide = await HeroSlide.findById(req.params.id);
     if (!slide) {
-      return res.status(404).json({ success: false, message: 'Slide not found' });
+      return res.status(404).json({ success: false, message: 'Hero slide not found' });
     }
     
     const { title, subtitle, description, buttonText, buttonLink, displayOrder, isActive, imageAlt } = req.body;
     
-    slide.title = title;
-    slide.subtitle = subtitle;
-    slide.description = description;
-    slide.ctaButton = {
-      text: buttonText || 'Learn More',
-      link: buttonLink || '/listings'
+    // Validate required fields early
+    if (!title || !title.trim()) {
+      return res.status(400).json({ success: false, message: 'Hero slide title is required' });
+    }
+
+    // Prepare update data
+    const updateData = {
+      title: title.trim(),
+      subtitle: subtitle ? subtitle.trim() : '',
+      description: description ? description.trim() : '',
+      ctaButton: {
+        text: buttonText ? buttonText.trim() : 'Learn More',
+        link: buttonLink ? buttonLink.trim() : '/listings'
+      },
+      order: displayOrder ? parseInt(displayOrder) : 0,
+      isActive: isActive === 'true'
     };
-    slide.order = displayOrder ? parseInt(displayOrder) : 0;
-    slide.isActive = isActive === 'true';
-    
-    // Handle image update
+
+    // Handle image update efficiently
     if (req.file) {
       if (!imageAlt || !imageAlt.trim()) {
-        throw new Error('Image alt text is required when uploading a new image');
+        return res.status(400).json({ success: false, message: 'Image alt text is required when uploading a new image' });
       }
-      slide.image = {
+      updateData.image = {
         url: `/uploads/hero/${req.file.filename}`,
         alt: imageAlt.trim()
       };
     } else if (imageAlt && imageAlt.trim() && slide.image && slide.image.url) {
       // Update only alt text if no new image uploaded
-      slide.image.alt = imageAlt.trim();
+      updateData.image = {
+        url: slide.image.url,
+        alt: imageAlt.trim()
+      };
+    } else {
+      // Keep existing image if no changes
+      updateData.image = slide.image;
     }
     
-    await slide.save();
-    res.redirect('/admin/hero');
+    // Use atomic update for better performance
+    const updatedSlide = await HeroSlide.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    const duration = Date.now() - startTime;
+    console.log(`✅ Hero slide updated successfully in ${duration}ms`);
+    
+    res.json({ 
+      success: true, 
+      message: 'Hero slide updated successfully',
+      data: { id: updatedSlide._id, title: updatedSlide.title },
+      processingTime: `${duration}ms`,
+      redirectUrl: '/admin/hero'
+    });
   } catch (error) {
-    console.error('Update slide error:', error);
-    res.render('admin/hero/form', {
-      title: 'Edit Hero Slide - Temer Properties Admin',
-      user: req.session.user,
-      slide: req.body,
-      errors: error.errors || { general: error.message || 'Failed to update slide' }
+    const duration = Date.now() - startTime;
+    console.error(`❌ Update hero slide error (${duration}ms):`, error.message);
+    
+    // Provide more specific error messages
+    let errorMessage = 'Failed to update hero slide';
+    if (error.name === 'ValidationError') {
+      errorMessage = 'Please check all required fields are filled correctly';
+    } else if (error.name === 'CastError') {
+      errorMessage = 'Invalid data format provided';
+    } else if (error.message.includes('timeout')) {
+      errorMessage = 'Operation timed out - please try again';
+    }
+    
+    res.status(500).json({ 
+      success: false, 
+      message: errorMessage,
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });

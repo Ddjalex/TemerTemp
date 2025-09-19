@@ -129,6 +129,19 @@ async function startServer() {
     // Serve uploaded files
     app.use('/uploads', express.static(path.join(__dirname, 'backend/uploads')));
 
+    // Add timeout middleware for admin routes (30 seconds for uploads)
+    app.use('/admin', (req, res, next) => {
+      // Set longer timeout for file uploads, shorter for regular requests
+      const timeout = req.headers['content-type'] && req.headers['content-type'].includes('multipart') ? 30000 : 15000;
+      req.setTimeout(timeout, () => {
+        console.error(`Admin request timeout: ${req.method} ${req.originalUrl}`);
+        if (!res.headersSent) {
+          res.status(408).json({ success: false, message: 'Request timeout - please try again' });
+        }
+      });
+      next();
+    });
+
     // Mount CSRF protection on admin routes FIRST
     app.use('/admin', csrfProtection);
     

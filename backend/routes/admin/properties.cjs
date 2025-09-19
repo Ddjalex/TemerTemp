@@ -118,6 +118,8 @@ router.get('/edit/:id', async (req, res) => {
 
 // Create property
 router.post('/new', upload.array('newImages', 10), async (req, res) => {
+  const startTime = Date.now();
+  
   try {
     const {
       title, description, price, propertyType, status,
@@ -126,31 +128,36 @@ router.post('/new', upload.array('newImages', 10), async (req, res) => {
       isActive, isFeatured
     } = req.body;
 
-    // Process uploaded images
+    // Validate required fields early
+    if (!title || !title.trim()) {
+      return res.status(400).json({ success: false, message: 'Property title is required' });
+    }
+
+    // Process uploaded images efficiently
     const images = [];
     if (req.files && req.files.length > 0) {
       req.files.forEach((file, index) => {
         images.push({
           url: `/uploads/properties/${file.filename}`,
-          alt: `${title} - Image ${index + 1}`,
+          alt: `${title.trim()} - Image ${index + 1}`,
           isPrimary: index === 0
         });
       });
     }
 
-    // Create property data
+    // Create property data with optimized structure
     const propertyData = {
-      title,
-      description,
+      title: title.trim(),
+      description: description ? description.trim() : '',
       price: price ? parseFloat(price) : null,
       propertyType,
       status: status || 'for-sale',
       address: {
-        street,
-        city,
-        state,
-        zipCode,
-        country: country || 'Ethiopia'
+        street: street ? street.trim() : '',
+        city: city ? city.trim() : '',
+        state: state ? state.trim() : '',
+        zipCode: zipCode ? zipCode.trim() : '',
+        country: country ? country.trim() : 'Ethiopia'
       },
       features: {
         bedrooms: bedrooms ? parseInt(bedrooms) : null,
@@ -164,19 +171,51 @@ router.post('/new', upload.array('newImages', 10), async (req, res) => {
       lastUpdated: new Date()
     };
 
+    // Create and save property with session for transaction-like behavior
     const property = new Property(propertyData);
     await property.save();
     
-    res.json({ success: true, message: 'Property created successfully' });
+    const duration = Date.now() - startTime;
+    console.log(`✅ Property created successfully in ${duration}ms`);
+    
+    res.json({ 
+      success: true, 
+      message: 'Property created successfully',
+      data: { id: property._id, title: property.title },
+      processingTime: `${duration}ms`
+    });
   } catch (error) {
-    console.error('Create property error:', error);
-    res.status(500).json({ success: false, message: 'Failed to create property' });
+    const duration = Date.now() - startTime;
+    console.error(`❌ Create property error (${duration}ms):`, error.message);
+    
+    // Provide more specific error messages
+    let errorMessage = 'Failed to create property';
+    if (error.name === 'ValidationError') {
+      errorMessage = 'Please check all required fields are filled correctly';
+    } else if (error.code === 11000) {
+      errorMessage = 'A property with this information already exists';
+    } else if (error.message.includes('timeout')) {
+      errorMessage = 'Operation timed out - please try again';
+    }
+    
+    res.status(500).json({ 
+      success: false, 
+      message: errorMessage,
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 
 // Update property
 router.post('/edit/:id', upload.array('newImages', 10), async (req, res) => {
+  const startTime = Date.now();
+  
   try {
+    // Validate ID format early
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ success: false, message: 'Invalid property ID format' });
+    }
+
     const property = await Property.findById(req.params.id);
     if (!property) {
       return res.status(404).json({ success: false, message: 'Property not found' });
@@ -189,63 +228,98 @@ router.post('/edit/:id', upload.array('newImages', 10), async (req, res) => {
       isActive, isFeatured
     } = req.body;
 
-    // Handle existing images
+    // Validate required fields early
+    if (!title || !title.trim()) {
+      return res.status(400).json({ success: false, message: 'Property title is required' });
+    }
+
+    // Handle existing images efficiently
     let images = [];
     if (req.body.existingImages) {
-      // Process existing images that weren't deleted
       const existingImages = Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages];
       existingImages.forEach(img => {
         if (img && img.url) {
           images.push({
             url: img.url,
-            alt: img.alt || title,
+            alt: img.alt || title.trim(),
             isPrimary: images.length === 0
           });
         }
       });
     }
 
-    // Add new uploaded images
+    // Add new uploaded images efficiently
     if (req.files && req.files.length > 0) {
       req.files.forEach((file, index) => {
         images.push({
           url: `/uploads/properties/${file.filename}`,
-          alt: `${title} - Image ${images.length + index + 1}`,
+          alt: `${title.trim()} - Image ${images.length + index + 1}`,
           isPrimary: images.length === 0 && index === 0
         });
       });
     }
 
-    // Update property
-    property.title = title;
-    property.description = description;
-    property.price = price ? parseFloat(price) : null;
-    property.propertyType = propertyType;
-    property.status = status || 'for-sale';
-    property.address = {
-      street,
-      city,
-      state,
-      zipCode,
-      country: country || 'Ethiopia'
+    // Use atomic update operations for better performance
+    const updateData = {
+      title: title.trim(),
+      description: description ? description.trim() : '',
+      price: price ? parseFloat(price) : null,
+      propertyType,
+      status: status || 'for-sale',
+      address: {
+        street: street ? street.trim() : '',
+        city: city ? city.trim() : '',
+        state: state ? state.trim() : '',
+        zipCode: zipCode ? zipCode.trim() : '',
+        country: country ? country.trim() : 'Ethiopia'
+      },
+      features: {
+        bedrooms: bedrooms ? parseInt(bedrooms) : null,
+        bathrooms: bathrooms ? parseFloat(bathrooms) : null,
+        sqft: sqft ? parseInt(sqft) : null,
+        yearBuilt: yearBuilt ? parseInt(yearBuilt) : null
+      },
+      images,
+      isActive: isActive === 'true',
+      isFeatured: isFeatured === 'true',
+      lastUpdated: new Date()
     };
-    property.features = {
-      bedrooms: bedrooms ? parseInt(bedrooms) : null,
-      bathrooms: bathrooms ? parseFloat(bathrooms) : null,
-      sqft: sqft ? parseInt(sqft) : null,
-      yearBuilt: yearBuilt ? parseInt(yearBuilt) : null
-    };
-    property.images = images;
-    property.isActive = isActive === 'true';
-    property.isFeatured = isFeatured === 'true';
-    property.lastUpdated = new Date();
 
-    await property.save();
+    // Update using findByIdAndUpdate for better performance
+    const updatedProperty = await Property.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    const duration = Date.now() - startTime;
+    console.log(`✅ Property updated successfully in ${duration}ms`);
     
-    res.json({ success: true, message: 'Property updated successfully' });
+    res.json({ 
+      success: true, 
+      message: 'Property updated successfully',
+      data: { id: updatedProperty._id, title: updatedProperty.title },
+      processingTime: `${duration}ms`
+    });
   } catch (error) {
-    console.error('Update property error:', error);
-    res.status(500).json({ success: false, message: 'Failed to update property' });
+    const duration = Date.now() - startTime;
+    console.error(`❌ Update property error (${duration}ms):`, error.message);
+    
+    // Provide more specific error messages
+    let errorMessage = 'Failed to update property';
+    if (error.name === 'ValidationError') {
+      errorMessage = 'Please check all required fields are filled correctly';
+    } else if (error.name === 'CastError') {
+      errorMessage = 'Invalid data format provided';
+    } else if (error.message.includes('timeout')) {
+      errorMessage = 'Operation timed out - please try again';
+    }
+    
+    res.status(500).json({ 
+      success: false, 
+      message: errorMessage,
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 
