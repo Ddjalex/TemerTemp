@@ -81,7 +81,7 @@ export default function HomePage() {
   const handleViewDetails = (id) => {
     console.log("View property:", id);
     // Navigate to property details page
-    window.location.href = `/listings?property=${id}`;
+    window.location.href = `/property/${id}`;
   };
   const handleFavorite = (id) => console.log("Favorite property:", id);
   const handleShare = (id) => console.log("Share property:", id);
