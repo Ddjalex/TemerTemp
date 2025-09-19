@@ -78,6 +78,9 @@ async function startServer() {
     app.use(compression());
     app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
+    // Trust proxy for sessions to work properly in Replit
+    app.set('trust proxy', 1);
+
     // Session configuration with MongoDB store
     const MongoStore = require('connect-mongo');
     app.use(session({
@@ -126,6 +129,9 @@ async function startServer() {
     // Serve uploaded files
     app.use('/uploads', express.static(path.join(__dirname, 'backend/uploads')));
 
+    // Mount CSRF protection on admin routes FIRST
+    app.use('/admin', csrfProtection);
+    
     // Add CSRF token to all admin GET requests for templating
     app.use('/admin', (req, res, next) => {
       if (req.method === 'GET') {
