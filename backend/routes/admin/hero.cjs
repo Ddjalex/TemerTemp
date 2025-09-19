@@ -213,9 +213,12 @@ router.delete('/delete/:id', async (req, res) => {
     }
     
     // Delete image file if exists
-    if (slide.image && slide.image.startsWith('/uploads/')) {
-      const imagePath = path.join(__dirname, '../..', slide.image);
-      if (fs.existsSync(imagePath)) {
+    if (slide.image && slide.image.url && slide.image.url.startsWith('/uploads/')) {
+      const baseDir = path.join(__dirname, '../../uploads');
+      const relativePath = slide.image.url.replace(/^\/uploads\//, '');
+      const imagePath = path.resolve(baseDir, relativePath);
+      // Security check: ensure path is within uploads directory
+      if (imagePath.startsWith(baseDir + path.sep) && fs.existsSync(imagePath)) {
         fs.unlinkSync(imagePath);
       }
     }
