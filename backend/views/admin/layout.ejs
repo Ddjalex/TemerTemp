@@ -154,6 +154,38 @@
                 }
             });
         };
+        
+        // Global admin delete function
+        window.confirmDelete = async function(type, id, title) {
+            const endpoint = type === 'property' ? 'properties' : 
+                           type === 'blog' ? 'blog' : 
+                           type === 'hero' ? 'hero' : 
+                           type === 'team' ? 'team' : type;
+            
+            if (confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
+                try {
+                    const response = await fetch(`/admin/${endpoint}/delete/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        showToast('Item deleted successfully', 'success');
+                        location.reload();
+                    } else {
+                        showToast(data.message || 'Failed to delete item', 'error');
+                    }
+                } catch (error) {
+                    console.error('Delete error:', error);
+                    showToast('Failed to delete item', 'error');
+                }
+            }
+        };
     </script>
 </body>
 </html>

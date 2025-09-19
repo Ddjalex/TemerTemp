@@ -31,16 +31,19 @@ router.get('/', async (req, res) => {
     const recentProperties = await Property.find({ isActive: true })
       .sort({ updatedAt: -1 })
       .limit(5)
-      .select('title status price updatedAt');
+      .select('_id title status price updatedAt');
 
     const recentPosts = await BlogPost.find()
       .sort({ updatedAt: -1 })
       .limit(5)
-      .select('title isPublished updatedAt');
+      .select('_id title isPublished updatedAt');
 
     const activities = [
       ...recentProperties.map(p => ({
+        _id: p._id,
+        id: p._id.toString(),
         type: 'property',
+        endpoint: 'properties',
         title: p.title,
         status: p.status,
         price: p.price,
@@ -48,7 +51,10 @@ router.get('/', async (req, res) => {
         action: 'Property updated'
       })),
       ...recentPosts.map(p => ({
+        _id: p._id,
+        id: p._id.toString(),
         type: 'blog',
+        endpoint: 'blog',
         title: p.title,
         status: p.isPublished ? 'published' : 'draft',
         updatedAt: p.updatedAt,
