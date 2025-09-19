@@ -77,14 +77,16 @@ async function startServer() {
     app.use(compression());
     app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
-    // Session configuration with MongoDB store
-    const MongoStore = require('connect-mongo');
+    // Session configuration with PostgreSQL store
+    const pgSession = require('connect-pg-simple')(session);
     app.use(session({
       secret: process.env.SESSION_SECRET || 'temer-properties-secret-key',
       resave: false,
       saveUninitialized: false,
-      store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_URI || 'mongodb+srv://wondimualmeseged_db_user:A1l2m3e4s5@cluster0.dtusgpq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+      store: new pgSession({
+        conString: process.env.DATABASE_URL,
+        createTableIfMissing: true,
+        tableName: 'session'
       }),
       cookie: {
         secure: process.env.NODE_ENV === 'production',
@@ -97,10 +99,10 @@ async function startServer() {
     app.set('view engine', 'ejs');
     app.set('views', path.join(__dirname, 'backend/views'));
 
-    // Connect to MongoDB first
-    const connectDB = require('./backend/lib/database.cjs');
-    await connectDB();
-    console.log('✅ MongoDB connected successfully');
+    // Connect to PostgreSQL first
+    const connectDB = require('./backend/lib/database-pg.cjs');
+    await connectDB.connectDB();
+    console.log('✅ PostgreSQL connected successfully');
 
 
 
@@ -108,7 +110,7 @@ async function startServer() {
 
     // Create admin user if needed
     try {
-      const { createAdminUser } = require('./backend/create-admin.cjs');
+      const { createAdminUser } = require('./backend/create-admin-pg.cjs');
       await createAdminUser();
     } catch (error) {
       console.error('Admin user creation:', error);
