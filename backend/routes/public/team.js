@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const TeamMember = require('../../models/TeamMember.cjs');
-const Property = require('../../models/Property.cjs');
-const { sendError, sendSuccess } = require('../../lib/utils.cjs');
+const TeamMember = require('../../models/TeamMember.js');
+const Property = require('../../models/Property.js');
+const { sendError, sendSuccess } = require('../../lib/utils.js');
 
 // Get all active team members
 router.get('/', async (req, res) => {

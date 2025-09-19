@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const Property = require('../../models/Property.cjs');
-const BlogPost = require('../../models/BlogPost.cjs');
-const HeroSlide = require('../../models/HeroSlide.cjs');
-const TeamMember = require('../../models/TeamMember.cjs');
+const Property = require('../../models/Property.js');
+const BlogPost = require('../../models/BlogPost.js');
+const HeroSlide = require('../../models/HeroSlide.js');
+const TeamMember = require('../../models/TeamMember.js');
 
 // Dashboard overview
 router.get('/', async (req, res) => {

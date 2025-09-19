@@ -3,7 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const router = express.Router();
-const TeamMember = require('../../models/TeamMember.cjs');
+const TeamMember = require('../../models/TeamMember.js');
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({

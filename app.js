@@ -102,7 +102,7 @@ async function startServer() {
     app.set('views', path.join(__dirname, 'backend/views'));
 
     // Connect to MongoDB first
-    const connectDB = require('./backend/lib/database.cjs');
+    const connectDB = require('./backend/lib/database.js');
     await connectDB();
     console.log('✅ MongoDB connected successfully');
 
@@ -112,7 +112,7 @@ async function startServer() {
 
     // Create admin user if needed
     try {
-      const { createAdminUser } = require('./backend/create-admin.cjs');
+      const { createAdminUser } = require('./backend/create-admin.js');
       await createAdminUser();
     } catch (error) {
       console.error('Admin user creation:', error);
@@ -123,8 +123,8 @@ async function startServer() {
     const csrfProtection = csrf({ cookie: false }); // Use session-based CSRF
 
     // Load backend routes
-    const adminRoutes = require('./backend/routes/admin.cjs');
-    const publicRoutes = require('./backend/routes/public.cjs');
+    const adminRoutes = require('./backend/routes/admin.js');
+    const publicRoutes = require('./backend/routes/public.js');
 
     // Serve uploaded files
     app.use('/uploads', express.static(path.join(__dirname, 'backend/uploads')));
@@ -145,11 +145,9 @@ async function startServer() {
     // Mount CSRF protection on admin routes FIRST
     app.use('/admin', csrfProtection);
     
-    // Add CSRF token to all admin GET requests for templating
+    // Add CSRF token to all admin requests for templating
     app.use('/admin', (req, res, next) => {
-      if (req.method === 'GET') {
-        res.locals.csrfToken = req.csrfToken();
-      }
+      res.locals.csrfToken = req.csrfToken();
       next();
     });
 

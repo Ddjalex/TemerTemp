@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Setting = require('../../models/Setting.cjs');
-const { sendError, sendSuccess } = require('../../lib/utils.cjs');
+const Setting = require('../../models/Setting.js');
+const { sendError, sendSuccess } = require('../../lib/utils.js');
 
 // Get public settings (company info, contact details, etc.)
 router.get('/public', async (req, res) => {

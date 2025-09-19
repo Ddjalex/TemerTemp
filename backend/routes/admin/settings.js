@@ -1,8 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const router = express.Router();
-const User = require('../../models/User.cjs');
-const Setting = require('../../models/Setting.cjs');
+const User = require('../../models/User.js');
+const Setting = require('../../models/Setting.js');
 
 // Settings page
 router.get('/', async (req, res) => {

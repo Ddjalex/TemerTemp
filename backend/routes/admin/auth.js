@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../../models/User.cjs');
-const { redirectIfAuth, loginRateLimit } = require('../../middleware/auth.cjs');
+const User = require('../../models/User.js');
+const { redirectIfAuth, loginRateLimit } = require('../../middleware/auth.js');
 
 // Show login page
 router.get('/', redirectIfAuth, (req, res) => {

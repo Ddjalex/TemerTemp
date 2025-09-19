@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 
 // Import route modules
-const propertyRoutes = require('./properties.cjs');
-const heroRoutes = require('./hero.cjs');
-const teamRoutes = require('./team.cjs');
-const blogRoutes = require('./blog.cjs');
-const contactRoutes = require('./contact.cjs');
-const settingsRoutes = require('./settings.cjs');
+const propertyRoutes = require('./properties.js');
+const heroRoutes = require('./hero.js');
+const teamRoutes = require('./team.js');
+const blogRoutes = require('./blog.js');
+const contactRoutes = require('./contact.js');
+const settingsRoutes = require('./settings.js');
 
 
 // Mount routes

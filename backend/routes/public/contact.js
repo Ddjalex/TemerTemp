@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { isValidEmail, isValidPhone, sendError, sendSuccess } = require('../../lib/utils.cjs');
+const { isValidEmail, isValidPhone, sendError, sendSuccess } = require('../../lib/utils.js');
 
 
 // Contact form submission
@@ -91,7 +91,7 @@ router.post('/property-inquiry', async (req, res) => {
     }
 
     // Verify property exists
-    const Property = require('../../models/Property.cjs');
+    const Property = require('../../models/Property.js');
     const property = await Property.findOne({ _id: propertyId, isActive: true });
     
     if (!property) {

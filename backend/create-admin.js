@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const User = require('./models/User.cjs');
+const User = require('./models/User.js');
 
 // Create admin user
 const createAdminUser = async () => {

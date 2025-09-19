@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { requireAuth, requireAdmin, redirectIfAuth } = require('../middleware/auth.cjs');
+const { requireAuth, requireAdmin, redirectIfAuth } = require('../middleware/auth.js');
 
 // Import admin route modules
-const authRoutes = require('./admin/auth.cjs');
-const dashboardRoutes = require('./admin/dashboard.cjs');
-const propertiesRoutes = require('./admin/properties.cjs');
-const settingsRoutes = require('./admin/settings.cjs');
-const blogRoutes = require('./admin/blog.cjs');
-const heroRoutes = require('./admin/hero.cjs');
-const teamRoutes = require('./admin/team.cjs');
+const authRoutes = require('./admin/auth.js');
+const dashboardRoutes = require('./admin/dashboard.js');
+const propertiesRoutes = require('./admin/properties.js');
+const settingsRoutes = require('./admin/settings.js');
+const blogRoutes = require('./admin/blog.js');
+const heroRoutes = require('./admin/hero.js');
+const teamRoutes = require('./admin/team.js');
 
 // Public admin routes (login, etc.)
 router.use('/login', authRoutes);
