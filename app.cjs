@@ -115,12 +115,24 @@ async function startServer() {
       console.error('Admin user creation:', error);
     }
 
+    // CSRF Protection for admin routes
+    const csrf = require('csurf');
+    const csrfProtection = csrf({ cookie: false }); // Use session-based CSRF
+
     // Load backend routes
     const adminRoutes = require('./backend/routes/admin.cjs');
     const publicRoutes = require('./backend/routes/public.cjs');
 
     // Serve uploaded files
     app.use('/uploads', express.static(path.join(__dirname, 'backend/uploads')));
+
+    // Add CSRF token to all admin GET requests for templating
+    app.use('/admin', (req, res, next) => {
+      if (req.method === 'GET') {
+        res.locals.csrfToken = req.csrfToken();
+      }
+      next();
+    });
 
     // Register routes
     app.use('/api', publicRoutes);
