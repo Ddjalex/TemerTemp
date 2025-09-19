@@ -75,9 +75,9 @@ export default function PropertyDetailsPage() {
     }
   };
 
-  const handleBackToListings = () => {
-    // Always navigate directly to listings page
-    setLocation('/listings');
+  const handleBackToHome = () => {
+    // Navigate to home page
+    setLocation('/');
   };
 
   const handleFavorite = () => {
@@ -116,18 +116,18 @@ export default function PropertyDetailsPage() {
         <div className="max-w-7xl mx-auto px-4 py-8">
           <Button 
             variant="outline" 
-            onClick={handleBackToListings}
+            onClick={handleBackToHome}
             className="mb-6"
-            data-testid="button-back-to-listings"
+            data-testid="button-back-to-home"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Listings
+            Back to Home
           </Button>
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold mb-4">Property Not Found</h2>
             <p className="text-muted-foreground mb-6">The property you're looking for doesn't exist or has been removed.</p>
-            <Button onClick={handleBackToListings}>
-              View All Properties
+            <Button onClick={handleBackToHome}>
+              Go to Home
             </Button>
           </div>
         </div>
@@ -159,12 +159,12 @@ export default function PropertyDetailsPage() {
         {/* Back Button */}
         <Button 
           variant="outline" 
-          onClick={handleBackToListings}
+          onClick={handleBackToHome}
           className="mb-6"
-          data-testid="button-back-to-listings"
+          data-testid="button-back-to-home"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Listings
+          Back to Home
         </Button>
 
         {/* Property Images */}
